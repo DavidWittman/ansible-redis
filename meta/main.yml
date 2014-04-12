@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  author: David Wittman
+  description: Installs redis-server from source
+  min_ansible_version: 1.4
+  platforms:
+  - name: Ubuntu
+    versions:
+    - precise
+  categories:
+  - database
+  - database:nosql
