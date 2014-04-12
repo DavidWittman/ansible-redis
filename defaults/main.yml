@@ -21,7 +21,17 @@ redis_slave_read_only: "yes"
 redis_slave_priority: 100
 redis_repl_backlog_size: false
 
+## Logging
+redis_logfile: '""'                                                             
+# Enable syslog. "yes" or "no"                                                  
+redis_syslog_enabled: "yes"                                                     
+redis_syslog_ident: redis_{{ redis_port }}                                      
+# Syslog facility. Must be USER or LOCAL0-LOCAL7                                
+redis_syslog_facility: USER   
+
 ## General configuration
+redis_daemonize: "yes"                                                          
+redis_pidfile: /var/run/redis_{{ redis_port }}.pid                              
 # Number of databases to allow
 redis_databases: 16
 redis_loglevel: notice
@@ -43,6 +53,8 @@ redis_save:
 ## Redis sentinel configs
 redis_sentinel: false
 redis_sentinel_port: 26379
+redis_sentinel_logfile: '""'                                                    
+redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
 redis_sentinel_monitors:
   - name: master01
     host: localhost
