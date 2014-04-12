@@ -1,0 +1,10 @@
+---
+- name: create init script
+  template: src=redis_init.j2 dest=/etc/init.d/redis_{{ redis_port }}
+            mode=0755
+
+- name: create config file
+  template: src=redis.conf.j2 dest=/etc/redis/{{ redis_port }}.conf
+  notify: restart redis
+  tags:
+    - config

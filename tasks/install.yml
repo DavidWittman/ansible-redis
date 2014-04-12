@@ -1,0 +1,28 @@
+---
+# TODO(dw): Make this work on RHEL
+- name: install dependencies
+  apt: pkg=build-essential state=present update_cache=yes
+
+- name: download redis
+  get_url: url=http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz
+           dest=/usr/local/src/
+
+- name: extract redis tarball
+  shell: tar xf /usr/local/src/redis-{{ redis_version }}.tar.gz -C /usr/local/src
+         creates=/usr/local/src/redis-{{ redis_version }}
+
+- name: compile redis
+  command: make -j5
+           chdir=/usr/local/src/redis-{{ redis_version }}
+           creates=/usr/local/src/redis-{{ redis_version }}/src/redis-server
+
+- name: create redis install directory
+  file: path={{ redis_install_dir }} state=directory
+
+- name: create /etc/redis
+  file: path=/etc/redis state=directory
+
+- name: install redis
+  command: make PREFIX={{ redis_install_dir }} install
+           chdir=/usr/local/src/redis-{{ redis_version }}
+           creates={{ redis_install_dir }}/bin/redis-server

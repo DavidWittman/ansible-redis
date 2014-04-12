@@ -1,0 +1,10 @@
+---
+- name: create init script
+  template: src=redis_sentinel_init.j2 dest=/etc/init.d/sentinel_{{ redis_sentinel_port }}
+            mode=0755
+
+- name: create config file
+  template: src=redis_sentinel.conf.j2 dest=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+  notify: restart sentinel
+  tags:
+    - config

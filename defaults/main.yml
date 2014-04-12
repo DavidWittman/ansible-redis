@@ -24,3 +24,18 @@ redis_maxclients: 10000
 redis_maxmemory: false
 redis_tcp_backlog: 511
 redis_rename_commands: []
+
+## Redis sentinel configs
+redis_sentinel: false
+redis_sentinel_port: 26379
+redis_sentinel_monitors:
+  - name: master01
+    host: localhost
+    port: 6379
+    quorum: 2
+    auth_pass: ant1r3z
+    down_after_milliseconds: 30000
+    parallel_syncs: 1
+    failover_timeout: 180000
+    notification_script: false
+    client_reconfig_script: false
