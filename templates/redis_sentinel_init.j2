@@ -11,7 +11,7 @@ CLIEXEC='{{ redis_install_dir }}/bin/redis-cli -a {{ redis_password }}'
 CLIEXEC={{ redis_install_dir }}/bin/redis-cli
 {% endif %}
 
-PIDFILE=/var/run/redis_sentinel_${REDISPORT}.pid
+PIDFILE={{ redis_sentinel_pidfile }}
 CONF="/etc/redis/sentinel_${REDISPORT}.conf"
 
 case "$1" in

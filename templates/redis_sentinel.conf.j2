@@ -1,7 +1,10 @@
 # redis-sentinel {{ redis_version }} configuration file
 # sentinel_{{ redis_sentinel_port }}.conf
 
+daemonize {{ redis_daemonize }}
+pidfile {{ redis_sentinel_pidfile }}
 port {{ redis_sentinel_port }}
+bind {{ redis_sentinel_bind }}
 
 {% for master in redis_sentinel_monitors -%}
 sentinel monitor {{ master.name }} {{ master.host }} {{ master.port }} {{ master.quorum|d('2') }}
