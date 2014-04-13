@@ -1,6 +1,9 @@
 ---
 - name: install dependencies
-  apt: pkg=build-essential state=present update_cache=yes
+  apt: pkg={{ item }} state=present update_cache=yes
+  with_items:
+    - gcc
+    - make
   when: ansible_os_family == "Debian"
 
 - name: install dependencies
