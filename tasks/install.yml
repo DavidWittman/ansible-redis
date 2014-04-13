@@ -1,7 +1,14 @@
 ---
-# TODO(dw): Make this work on RHEL
 - name: install dependencies
   apt: pkg=build-essential state=present update_cache=yes
+  when: ansible_os_family == "Debian"
+
+- name: install dependencies
+  yum: name={{ item }} state=present
+  with_items:
+    - gcc
+    - make
+  when: ansible_os_family == "RedHat"
 
 - name: download redis
   get_url: url=http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz

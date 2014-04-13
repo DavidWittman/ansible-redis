@@ -3,7 +3,8 @@
 # Simple Redis Sentinel init.d script conceived to work on
 # Linux systems as it does use of the /proc filesystem.
 
-REDISPORT={{ redis_sentinel_port }}
+SENTINEL_PORT={{ redis_sentinel_port }}
+BIND_ADDRESS={{ redis_sentinel_bind }}
 EXEC={{ redis_install_dir }}/bin/redis-server
 {% if redis_password -%}
 CLIEXEC='{{ redis_install_dir }}/bin/redis-cli -a {{ redis_password }}'
@@ -12,7 +13,7 @@ CLIEXEC={{ redis_install_dir }}/bin/redis-cli
 {% endif %}
 
 PIDFILE={{ redis_sentinel_pidfile }}
-CONF="/etc/redis/sentinel_${REDISPORT}.conf"
+CONF="/etc/redis/sentinel_${SENTINEL_PORT}.conf"
 
 case "$1" in
     start)
@@ -20,7 +21,7 @@ case "$1" in
         then
                 echo "$PIDFILE exists, process is already running or crashed"
         else
-                echo "Starting Redis server..."
+                echo "Starting Redis Sentinel..."
                 $EXEC $CONF --sentinel
         fi
         ;;
@@ -31,10 +32,10 @@ case "$1" in
         else
                 PID=$(cat $PIDFILE)
                 echo "Stopping ..."
-                $CLIEXEC -p $REDISPORT shutdown
+                $CLIEXEC -p $SENTINEL_PORT -h $BIND_ADDRESS shutdown
                 while [ -x /proc/${PID} ]
                 do
-                    echo "Waiting for Redis to shutdown ..."
+                    echo "Waiting for Redis Sentinel to shutdown ..."
                     sleep 1
                 done
                 echo "Redis stopped"
