@@ -24,18 +24,14 @@
             owner={{ redis_user }}
   notify: restart redis
 
-- name: add open file limit to redis init config file
-  lineinfile: dest=/etc/sysconfig/redis_{{ redis_port }}
-              line="NOFILE_LIMIT={{ redis_nofile_limit }}"
-              regexp="^NOFILE_LIMIT="
-              create=yes
+- name: add redis init config file
+  template: dest=/etc/sysconfig/redis_{{ redis_port }}
+            src=redis.init.conf.j2
   when: ansible_os_family == "RedHat"
   notify: restart redis
 
-- name: add open file limit to redis init config file
-  lineinfile: dest=/etc/default/redis_{{ redis_port }}
-              line="NOFILE_LIMIT={{ redis_nofile_limit }}"
-              regexp="^NOFILE_LIMIT="
-              create=yes
+- name: add redis init config file
+  template: dest=/etc/default/redis_{{ redis_port }}
+            src=redis.init.conf.j2
   when: ansible_os_family == "Debian"
   notify: restart redis

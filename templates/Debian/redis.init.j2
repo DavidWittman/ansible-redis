@@ -15,21 +15,21 @@
 # Description:       Redis key-value store
 ### END INIT INFO
 
-if [[ -f /etc/default/redis_{{ redis_port }} ]]; then
-    . /etc/default/redis_{{ redis_port }}
+REDIS_PORT={{ redis_port }}
+
+if [ -r /etc/default/redis_${REDIS_PORT} ]; then
+    . /etc/default/redis_${REDIS_PORT}
 fi
 
-REDIS_PORT={{ redis_port }}
 REDIS_USER={{ redis_user }}
-EXEC={{ redis_install_dir }}/bin/redis-server
-{% if redis_password -%}
-CLIEXEC='{{ redis_install_dir }}/bin/redis-cli -a {{ redis_password }}'
-{% else -%}
-CLIEXEC={{ redis_install_dir }}/bin/redis-cli
-{% endif %}
-
 PIDFILE={{ redis_pidfile }}
 CONF="/etc/redis/${REDIS_PORT}.conf"
+EXEC={{ redis_install_dir }}/bin/redis-server
+CLIEXEC={{ redis_install_dir }}/bin/redis-cli
+
+if [ -n "$REDIS_PASSWORD" ]; then
+    CLIEXEC="${CLIEXEC} -a ${REDIS_PASSWORD}"
+fi
 
 case "$1" in
     start)
@@ -37,7 +37,7 @@ case "$1" in
         then
                 echo "$PIDFILE exists, process is already running or crashed"
         else
-                if [[ -n "$NOFILE_LIMIT" ]]; then
+                if [ -n "$NOFILE_LIMIT" ]; then
                     ulimit -n $NOFILE_LIMIT
                 fi
                 echo "Starting Redis server..."

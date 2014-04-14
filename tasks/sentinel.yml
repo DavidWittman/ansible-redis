@@ -26,18 +26,14 @@
             owner={{ redis_user }}
   notify: restart sentinel
 
-- name: add open file limit to sentinel init config file
-  lineinfile: dest=/etc/sysconfig/sentinel_{{ redis_sentinel_port }}
-              line="NOFILE_LIMIT={{ redis_nofile_limit }}"
-              regexp="^NOFILE_LIMIT="
-              create=yes
+- name: add sentinel init config file
+  template: dest=/etc/sysconfig/sentinel_{{ redis_sentinel_port }}
+            src=redis.init.conf.j2
   when: ansible_os_family == "RedHat"
   notify: restart sentinel
 
-- name: add open file limit to sentinel init config file
-  lineinfile: dest=/etc/default/sentinel_{{ redis_sentinel_port }}
-              line="NOFILE_LIMIT={{ redis_nofile_limit }}"
-              regexp="^NOFILE_LIMIT="
-              create=yes
+- name: add sentinel init config file
+  template: dest=/etc/default/sentinel_{{ redis_sentinel_port }}
+            src=redis.init.conf.j2
   when: ansible_os_family == "Debian"
   notify: restart sentinel
