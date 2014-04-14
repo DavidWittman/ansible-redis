@@ -30,6 +30,9 @@ case "$1" in
         then
                 echo "$PIDFILE exists, process is already running or crashed"
         else
+                if [[ -n "$NOFILE_LIMIT" ]]; then
+                    ulimit -n $NOFILE_LIMIT
+                fi
                 echo "Starting Redis server..."
                 su $REDIS_USER -c "$EXEC $CONF"
         fi

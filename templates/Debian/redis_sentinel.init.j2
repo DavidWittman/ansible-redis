@@ -20,6 +20,7 @@ if [[ -f /etc/default/sentinel_{{ redis_sentinel_port }} ]]; then
 fi
 
 SENTINEL_PORT={{ redis_sentinel_port }}
+REDIS_USER={{ redis_user }}
 BIND_ADDRESS={{ redis_sentinel_bind }}
 EXEC={{ redis_install_dir }}/bin/redis-server
 {% if redis_password -%}
@@ -37,8 +38,11 @@ case "$1" in
         then
                 echo "$PIDFILE exists, process is already running or crashed"
         else
+                if [[ -n "$NOFILE_LIMIT" ]]; then
+                    ulimit -n $NOFILE_LIMIT
+                fi
                 echo "Starting Redis Sentinel..."
-                $EXEC $CONF --sentinel
+                su $REDIS_USER -c "$EXEC $CONF --sentinel"
         fi
         ;;
     stop)

@@ -4,7 +4,7 @@
         recurse=yes
         owner={{ redis_user }}
 
-- name: create init script
+- name: create redis init script
   template: src={{ item }} dest=/etc/init.d/redis_{{ redis_port }}
             mode=0755
   # Choose the distro-specific template. We must specify the templates
@@ -19,7 +19,23 @@
 - name: set redis to start at boot
   service: name=redis_{{ redis_port }} enabled=yes
 
-- name: create config file
+- name: create redis config file
   template: src=redis.conf.j2 dest=/etc/redis/{{ redis_port }}.conf
             owner={{ redis_user }}
+  notify: restart redis
+
+- name: add open file limit to redis init config file
+  lineinfile: dest=/etc/sysconfig/redis_{{ redis_port }}
+              line="NOFILE_LIMIT={{ redis_nofile_limit }}"
+              regexp="^NOFILE_LIMIT="
+              create=yes
+  when: ansible_os_family == "RedHat"
+  notify: restart redis
+
+- name: add open file limit to redis init config file
+  lineinfile: dest=/etc/default/redis_{{ redis_port }}
+              line="NOFILE_LIMIT={{ redis_nofile_limit }}"
+              regexp="^NOFILE_LIMIT="
+              create=yes
+  when: ansible_os_family == "Debian"
   notify: restart redis

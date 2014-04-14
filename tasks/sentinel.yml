@@ -1,10 +1,10 @@
 ---
-- name: create redis working directory
+- name: create sentinel working directory
   file: path={{ redis_sentinel_dir }} state=directory
         recurse=yes
         owner={{ redis_user }}
 
-- name: create init script
+- name: create sentinel init script
   template: src={{ item }}
             dest=/etc/init.d/sentinel_{{ redis_sentinel_port }}
             mode=0755
@@ -20,8 +20,24 @@
 - name: set sentinel to start at boot
   service: name=sentinel_{{ redis_sentinel_port }} enabled=yes
 
-- name: create config file
+- name: create sentinel config file
   template: src=redis_sentinel.conf.j2
             dest=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf
             owner={{ redis_user }}
+  notify: restart sentinel
+
+- name: add open file limit to sentinel init config file
+  lineinfile: dest=/etc/sysconfig/sentinel_{{ redis_sentinel_port }}
+              line="NOFILE_LIMIT={{ redis_nofile_limit }}"
+              regexp="^NOFILE_LIMIT="
+              create=yes
+  when: ansible_os_family == "RedHat"
+  notify: restart sentinel
+
+- name: add open file limit to sentinel init config file
+  lineinfile: dest=/etc/default/sentinel_{{ redis_sentinel_port }}
+              line="NOFILE_LIMIT={{ redis_nofile_limit }}"
+              regexp="^NOFILE_LIMIT="
+              create=yes
+  when: ansible_os_family == "Debian"
   notify: restart sentinel

@@ -22,6 +22,7 @@ case "$1" in
         then
                 echo "$PIDFILE exists, process is already running or crashed"
         else
+                ulimit -n {{ redis_nofile_limit }}
                 echo "Starting Redis Sentinel..."
                 su $REDIS_USER -c "$EXEC $CONF --sentinel"
         fi
