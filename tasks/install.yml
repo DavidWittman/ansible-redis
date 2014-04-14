@@ -13,6 +13,13 @@
     - make
   when: ansible_os_family == "RedHat"
 
+- name: enable overcommit in sysctl
+  sysctl: name=vm.overcommit_memory value=1 state=present reload=yes
+  ignore_errors: True
+
+- name: add redis user
+  user: name={{ redis_user }} comment="Redis"
+
 - name: download redis
   get_url: url=http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz
            dest=/usr/local/src/
@@ -31,6 +38,10 @@
 
 - name: create /etc/redis
   file: path=/etc/redis state=directory
+
+- name: create /var/run/redis
+  file: path=/var/run/redis state=directory
+        owner={{ redis_user }}
 
 - name: install redis
   command: make PREFIX={{ redis_install_dir }} install

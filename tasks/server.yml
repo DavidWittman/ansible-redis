@@ -1,12 +1,25 @@
 ---
+- name: create redis working directory
+  file: path={{ redis_dir }} state=directory
+        recurse=yes
+        owner={{ redis_user }}
+
 - name: create init script
-  template: src=redis_init.j2 dest=/etc/init.d/redis_{{ redis_port }}
+  template: src={{ item }} dest=/etc/init.d/redis_{{ redis_port }}
             mode=0755
-  tags:
-    - config
+  # Choose the distro-specific template. We must specify the templates
+  # path here because with_first_found tries to find files in files/
+  with_first_found:
+    - files:
+      - "{{ ansible_os_family }}/redis.init.j2"
+      - default/redis.init.j2
+      paths:
+        - ../templates
+
+- name: set redis to start at boot
+  service: name=redis_{{ redis_port }} enabled=yes
 
 - name: create config file
   template: src=redis.conf.j2 dest=/etc/redis/{{ redis_port }}.conf
+            owner={{ redis_user }}
   notify: restart redis
-  tags:
-    - config
