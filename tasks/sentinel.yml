@@ -1,12 +1,27 @@
 ---
+- name: create redis working directory
+  file: path={{ redis_sentinel_dir }} state=directory
+        recurse=yes
+        owner={{ redis_user }}
+
 - name: create init script
-  template: src=redis_sentinel_init.j2 dest=/etc/init.d/sentinel_{{ redis_sentinel_port }}
+  template: src={{ item }}
+            dest=/etc/init.d/sentinel_{{ redis_sentinel_port }}
             mode=0755
-  tags:
-    - config
+  # Choose the distro-specific template. We must specify the templates
+  # path here because with_first_found tries to find files in files/
+  with_first_found:
+    - files:
+      - "{{ ansible_os_family }}/redis_sentinel.init.j2"
+      - default/redis_sentinel.init.j2
+      paths:
+        - ../templates
+
+- name: set sentinel to start at boot
+  service: name=sentinel_{{ redis_sentinel_port }} enabled=yes
 
 - name: create config file
-  template: src=redis_sentinel.conf.j2 dest=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+  template: src=redis_sentinel.conf.j2
+            dest=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+            owner={{ redis_user }}
   notify: restart sentinel
-  tags:
-    - config
