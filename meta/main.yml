@@ -1,12 +1,15 @@
 ---
 galaxy_info:
   author: David Wittman
-  description: Installs redis-server from source
+  description: Highly configurable role to install Redis and Redis Sentinel from source
   min_ansible_version: 1.4
   platforms:
-  - name: Ubuntu
-    versions:
-    - precise
+    - name: Ubuntu
+      versions:
+        - precise
+    - name: EL
+      versions:
+        - 6
   categories:
-  - database
-  - database:nosql
+    - database
+    - database:nosql
