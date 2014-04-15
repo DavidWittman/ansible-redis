@@ -1,7 +1,13 @@
 # ansible-redis
 
  - Requires Ansible 1.4+
- - Tested on Ubuntu 12.04 (Precise)
+ - Tested on Ubuntu 12.04 (Precise) and CentOS 6.5
+
+## Installation
+
+``` bash
+$ ansible-galaxy install DavidWittman.redis
+```
 
 ## Configurables
 
