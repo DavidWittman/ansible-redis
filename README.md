@@ -9,6 +9,68 @@
 $ ansible-galaxy install DavidWittman.redis
 ```
 
+## Getting started
+
+### Single Redis node
+
+Deploying a single Redis server node is pretty trivial; just add the role to your playbook and go. Here's an example which we'll make a little more exciting by setting the bind address to 127.0.0.1:
+
+``` yaml
+---
+- hosts: redis01.example.com
+  vars:
+    - redis_bind: 127.0.0.1
+  roles:
+    - redis
+```
+
+``` bash
+$ ansible-playbook -i redis01.example.com, redis.yml
+```
+
+**Note:** You may have noticed above that I just passed a hostname in as the ansible inventory file. This is an easy way to run ansible without first having to create an inventory file, you just need to suffix the hostname with a comma so ansible knows what to do with it.
+
+That's it! You'll now have a Redis server listening on 127.0.0.1 on redis01.example.com.
+
+### Master-Slave replication
+
+Configuring [replication](http://redis.io/topics/replication) in Redis is accomplished by deploying multiple nodes, and setting `{{ redis_slaveof }}` on the slave nodes, just as you would in the redis.conf. In the example that follows, we'll deploy a Redis master with 3 slaves.
+
+In this example, we're going to use groups to separate the master and slave nodes. Let's start with the inventory file:
+
+```
+[redis-master]
+redis-master.example.com
+
+[redis-slave]
+redis-slave0[1:3].example.com
+```
+
+And here's the playbook:
+
+``` yaml
+---
+- name: configure the master redis server
+  hosts: redis-master
+  roles:
+    - redis
+
+- name: configure redis slaves
+  hosts: redis-slave
+  vars:
+    - redis_slaveof: redis-master.example.com 6379
+  roles:
+    - redis
+```
+
+In this case, I'm assuming you have DNS records set up for redis-master.example.com, but that's not always the case. You can pretty much go crazy with whatever you need this to be set to. In many cases, I tell Ansible to use the eth1 IP address for the master. Here's a more flexible value for the sake of posterity:
+
+``` yaml
+redis_slaveof: "{{ hostvars['redis-master.example.com'].ansible_eth1.ipv4.address }} 6379"
+```
+
+### Redis Sentinel
+
 ## Configurables
 
 ``` yaml
