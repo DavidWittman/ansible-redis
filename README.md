@@ -66,10 +66,61 @@ And here's the playbook:
 In this case, I'm assuming you have DNS records set up for redis-master.example.com, but that's not always the case. You can pretty much go crazy with whatever you need this to be set to. In many cases, I tell Ansible to use the eth1 IP address for the master. Here's a more flexible value for the sake of posterity:
 
 ``` yaml
-redis_slaveof: "{{ hostvars['redis-master.example.com'].ansible_eth1.ipv4.address }} 6379"
+redis_slaveof: "{{ hostvars['redis-master.example.com'].ansible_eth1.ipv4.address }} {{ redis_port }}"
 ```
 
 ### Redis Sentinel
+
+#### Introduction
+
+Using Master-Slave replication is great for durability and distributing reads and writes, but not so much for high availability. If the master node fails, a slave must be manually promoted to master, and connections will need to be redirected to the new master. The solution for this problem is [Redis Sentinel](http://redis.io/topics/sentinel), a distributed system which uses Redis itself to communicate and handle automatic failover in a Redis cluster.
+
+Sentinel itself uses the same redis-server binary that Redis uses, but runs with the `--sentinel` flag and with a different configuration file. All of this, of course, is abstracted with this Ansible role, but it's still good to know.
+
+#### Configuration
+
+To add a Sentinel node to an existing deployment, assign this role to it, and set the variable `redis_sentinel` to True on that particular host. This can be done in any number of ways, and for the purposes of this example I'll extend on the inventory file used above in the Master/Slave configuration:
+
+``` ini
+[redis-master]
+redis-master.example.com
+
+[redis-slave]
+redis-slave0[1:3].example.com
+
+[redis-sentinel]
+redis-sentinel0[1:3].example.com redis_sentinel=True
+```
+
+Above, we've added three more hosts in the `redis-sentinel` group (though this group serves no purpose... it's merely an identifier), and set the redis_sentinel variable inline within the inventory file.
+
+Now, all we need to do is set the `redis_sentinel_monitors` variable to define the Redis masters which Sentinel should monitor. In this case, I'm going to do this at the playbook level:
+
+``` yaml
+- name: configure the master redis server
+  hosts: redis-master
+  roles:
+    - redis
+
+- name: configure redis slaves
+  hosts: redis-slave
+  vars:
+    - redis_slaveof: redis-master.example.com 6379
+  roles:
+    - redis
+
+- name: configure redis sentinel nodes
+  hosts: redis-sentinel
+  vars:
+    - redis_sentinel_monitors:
+      - name: master01
+        host: redis-master.example.com
+        port: 6379
+```
+
+This will configure the Sentinel nodes to monitor the master we created above using the identifier `master01`. By default, Sentinel will use a quorum of 2, which means that at least 2 Sentinels must agree that a master is down in order for a failover to take place. This value can be overridden by setting the `quorum` key within your monitor definition. See the [Sentinel docs](http://redis.io/topics/sentinel) for more details.
+
+Along with the variables listed above, Sentinel has a number of its own configurables just as Redis server does. These are prefixed with `redis_sentinel_`, and are enumerated in the **Configurables** section below.
 
 ## Configurables
 
