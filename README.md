@@ -28,7 +28,7 @@ Deploying a single Redis server node is pretty trivial; just add the role to you
 $ ansible-playbook -i redis01.example.com, redis.yml
 ```
 
-**Note:** You may have noticed above that I just passed a hostname in as the ansible inventory file. This is an easy way to run ansible without first having to create an inventory file, you just need to suffix the hostname with a comma so ansible knows what to do with it.
+**Note:** You may have noticed above that I just passed a hostname in as the Ansible inventory file. This is an easy way to run Ansible without first having to create an inventory file, you just need to suffix the hostname with a comma so Ansible knows what to do with it.
 
 That's it! You'll now have a Redis server listening on 127.0.0.1 on redis01.example.com.
 
@@ -94,9 +94,9 @@ redis-slave0[1:3].example.com
 redis-sentinel0[1:3].example.com redis_sentinel=True
 ```
 
-Above, we've added three more hosts in the `redis-sentinel` group (though this group serves no purpose... it's merely an identifier), and set the redis_sentinel variable inline within the inventory file.
+Above, we've added three more hosts in the **redis-sentinel** group (though this group serves no purpose within the role, it's merely an identifier), and set the `redis_sentinel` variable inline within the inventory file.
 
-Now, all we need to do is set the `redis_sentinel_monitors` variable to define the Redis masters which Sentinel should monitor. In this case, I'm going to do this at the playbook level:
+Now, all we need to do is set the `redis_sentinel_monitors` variable to define the Redis masters which Sentinel should monitor. In this case, I'm going to do this within the playbook:
 
 ``` yml
 - name: configure the master redis server
@@ -137,6 +137,7 @@ redis_version: 2.8.8
 redis_install_dir: /opt/redis
 redis_user: redis
 redis_dir: /var/redis/{{ redis_port }}
+# The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
 
 ## Networking/connection options
@@ -187,6 +188,7 @@ redis_save:
   - 60 10000
 
 ## Redis sentinel configs
+# Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false
 redis_sentinel_dir: /var/redis/sentinel_{{ redis_sentinel_port }}
 redis_sentinel_bind: 0.0.0.0
