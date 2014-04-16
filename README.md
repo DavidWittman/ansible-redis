@@ -1,7 +1,7 @@
 # ansible-redis
 
  - Requires Ansible 1.4+
- - Tested on Ubuntu 12.04 (Precise) and CentOS 6.5
+ - Compatible with Ubuntu 12.04+ and CentOS 6.5
 
 ## Installation
 

@@ -4,6 +4,7 @@ redis_version: 2.8.8
 redis_install_dir: /opt/redis
 redis_user: redis
 redis_dir: /var/redis/{{ redis_port }}
+# The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
 
 ## Networking/connection options
@@ -54,6 +55,7 @@ redis_save:
   - 60 10000
 
 ## Redis sentinel configs
+# Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false
 redis_sentinel_dir: /var/redis/sentinel_{{ redis_sentinel_port }}
 redis_sentinel_bind: 0.0.0.0
