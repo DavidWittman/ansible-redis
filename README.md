@@ -34,7 +34,7 @@ That's it! You'll now have a Redis server listening on 127.0.0.1 on redis01.exam
 
 ### Master-Slave replication
 
-Configuring [replication](http://redis.io/topics/replication) in Redis is accomplished by deploying multiple nodes, and setting `{{ redis_slaveof }}` on the slave nodes, just as you would in the redis.conf. In the example that follows, we'll deploy a Redis master with 3 slaves.
+Configuring [replication](http://redis.io/topics/replication) in Redis is accomplished by deploying multiple nodes, and setting the `redis_slaveof` variable on the slave nodes, just as you would in the redis.conf. In the example that follows, we'll deploy a Redis master with three slaves.
 
 In this example, we're going to use groups to separate the master and slave nodes. Let's start with the inventory file:
 
@@ -69,6 +69,8 @@ In this case, I'm assuming you have DNS records set up for redis-master.example.
 redis_slaveof: "{{ hostvars['redis-master.example.com'].ansible_eth1.ipv4.address }} {{ redis_port }}"
 ```
 
+Now you're cooking with gas! Running this playbook should have you ready to go with a Redis master and three slaves.
+
 ### Redis Sentinel
 
 #### Introduction
@@ -79,7 +81,7 @@ Sentinel itself uses the same redis-server binary that Redis uses, but runs with
 
 #### Configuration
 
-To add a Sentinel node to an existing deployment, assign this role to it, and set the variable `redis_sentinel` to True on that particular host. This can be done in any number of ways, and for the purposes of this example I'll extend on the inventory file used above in the Master/Slave configuration:
+To add a Sentinel node to an existing deployment, assign this same `redis` role to it, and set the variable `redis_sentinel` to True on that particular host. This can be done in any number of ways, and for the purposes of this example I'll extend on the inventory file used above in the Master/Slave configuration:
 
 ``` ini
 [redis-master]
@@ -116,6 +118,8 @@ Now, all we need to do is set the `redis_sentinel_monitors` variable to define t
       - name: master01
         host: redis-master.example.com
         port: 6379
+  roles:
+    - redis
 ```
 
 This will configure the Sentinel nodes to monitor the master we created above using the identifier `master01`. By default, Sentinel will use a quorum of 2, which means that at least 2 Sentinels must agree that a master is down in order for a failover to take place. This value can be overridden by setting the `quorum` key within your monitor definition. See the [Sentinel docs](http://redis.io/topics/sentinel) for more details.
@@ -124,11 +128,16 @@ Along with the variables listed above, Sentinel has a number of its own configur
 
 ## Configurables
 
+Here is a list of all the default variables for this role, which are also available in defaults/main.yml. One of these days I'll format these into a table or something.
+
 ``` yml
 ---
 ## Installation options
 redis_version: 2.8.8
 redis_install_dir: /opt/redis
+redis_user: redis
+redis_dir: /var/redis/{{ redis_port }}
+redis_nofile_limit: 16384
 
 ## Networking/connection options
 redis_bind: 0.0.0.0
@@ -148,7 +157,17 @@ redis_slave_read_only: "yes"
 redis_slave_priority: 100
 redis_repl_backlog_size: false
 
+## Logging
+redis_logfile: '""'                                                             
+# Enable syslog. "yes" or "no"                                                  
+redis_syslog_enabled: "yes"                                                     
+redis_syslog_ident: redis_{{ redis_port }}                                      
+# Syslog facility. Must be USER or LOCAL0-LOCAL7                                
+redis_syslog_facility: USER   
+
 ## General configuration
+redis_daemonize: "yes"                                                          
+redis_pidfile: /var/run/redis/{{ redis_port }}.pid
 # Number of databases to allow
 redis_databases: 16
 redis_loglevel: notice
@@ -167,13 +186,23 @@ redis_save:
   - 300 10
   - 60 10000
 
-redis_daemonize: "yes"
-redis_pidfile: /var/run/redis_{{ redis_port }}.pid
-redis_logfile: '""'
-redis_sentinel_logfile: '""'
-# Enable syslog. "yes" or "no"
-redis_syslog_enabled: "yes"
-redis_syslog_ident: redis_{{ redis_port }}
-# Syslog facility. Must be USER or LOCAL0-LOCAL7
-redis_syslog_facility: USER
+## Redis sentinel configs
+redis_sentinel: false
+redis_sentinel_dir: /var/redis/sentinel_{{ redis_sentinel_port }}
+redis_sentinel_bind: 0.0.0.0
+redis_sentinel_port: 26379
+redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
+redis_sentinel_logfile: '""'                                                    
+redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
+redis_sentinel_monitors:
+  - name: master01
+    host: localhost
+    port: 6379
+    quorum: 2
+    auth_pass: ant1r3z
+    down_after_milliseconds: 30000
+    parallel_syncs: 1
+    failover_timeout: 180000
+    notification_script: false
+    client_reconfig_script: false
 ```
