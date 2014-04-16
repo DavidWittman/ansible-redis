@@ -15,7 +15,7 @@ $ ansible-galaxy install DavidWittman.redis
 
 Deploying a single Redis server node is pretty trivial; just add the role to your playbook and go. Here's an example which we'll make a little more exciting by setting the bind address to 127.0.0.1:
 
-``` yaml
+``` yml
 ---
 - hosts: redis01.example.com
   vars:
@@ -38,7 +38,7 @@ Configuring [replication](http://redis.io/topics/replication) in Redis is accomp
 
 In this example, we're going to use groups to separate the master and slave nodes. Let's start with the inventory file:
 
-```
+``` ini
 [redis-master]
 redis-master.example.com
 
@@ -48,7 +48,7 @@ redis-slave0[1:3].example.com
 
 And here's the playbook:
 
-``` yaml
+``` yml
 ---
 - name: configure the master redis server
   hosts: redis-master
@@ -65,7 +65,7 @@ And here's the playbook:
 
 In this case, I'm assuming you have DNS records set up for redis-master.example.com, but that's not always the case. You can pretty much go crazy with whatever you need this to be set to. In many cases, I tell Ansible to use the eth1 IP address for the master. Here's a more flexible value for the sake of posterity:
 
-``` yaml
+``` yml
 redis_slaveof: "{{ hostvars['redis-master.example.com'].ansible_eth1.ipv4.address }} {{ redis_port }}"
 ```
 
@@ -96,7 +96,7 @@ Above, we've added three more hosts in the `redis-sentinel` group (though this g
 
 Now, all we need to do is set the `redis_sentinel_monitors` variable to define the Redis masters which Sentinel should monitor. In this case, I'm going to do this at the playbook level:
 
-``` yaml
+``` yml
 - name: configure the master redis server
   hosts: redis-master
   roles:
@@ -124,7 +124,7 @@ Along with the variables listed above, Sentinel has a number of its own configur
 
 ## Configurables
 
-``` yaml
+``` yml
 ---
 ## Installation options
 redis_version: 2.8.8
