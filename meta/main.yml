@@ -10,6 +10,7 @@ galaxy_info:
         - quantal
         - raring
         - saucy
+        - trusty
     - name: EL
       versions:
         - 6
