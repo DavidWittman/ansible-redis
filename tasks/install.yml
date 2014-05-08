@@ -1,6 +1,6 @@
 ---
 - name: install dependencies
-  apt: pkg={{ item }} state=present update_cache=yes
+  apt: pkg={{ item }} state=present
   with_items:
     - gcc
     - make
