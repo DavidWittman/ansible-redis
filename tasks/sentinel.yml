@@ -20,6 +20,9 @@
 - name: set sentinel to start at boot
   service: name=sentinel_{{ redis_sentinel_port }} enabled=yes
 
+- name: ensure sentinel is running
+  service: name=sentinel_{{ redis_sentinel_port }} state=started
+
 - name: create sentinel config file
   template: src=redis_sentinel.conf.j2
             dest=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf

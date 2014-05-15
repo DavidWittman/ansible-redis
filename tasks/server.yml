@@ -19,6 +19,9 @@
 - name: set redis to start at boot
   service: name=redis_{{ redis_port }} enabled=yes
 
+- name: ensure redis is running
+  service: name=redis_{{ redis_port }} state=started
+
 - name: create redis config file
   template: src=redis.conf.j2 dest=/etc/redis/{{ redis_port }}.conf
             owner={{ redis_user }}
