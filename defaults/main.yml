@@ -1,6 +1,6 @@
 ---
 ## Installation options
-redis_version: 2.8.8
+redis_version: 2.8.9
 redis_install_dir: /opt/redis
 redis_user: redis
 redis_dir: /var/redis/{{ redis_port }}
