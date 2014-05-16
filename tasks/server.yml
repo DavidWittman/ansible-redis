@@ -35,3 +35,6 @@
             src=redis.init.conf.j2
   when: ansible_os_family == "Debian"
   notify: restart redis
+
+- name: ensure redis is running
+  service: name=redis_{{ redis_port }} state=started
