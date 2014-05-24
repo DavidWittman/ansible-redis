@@ -21,4 +21,4 @@ script:
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotency: PASS' && exit 0)
     || (echo 'Idempotency: FAIL' && exit 1)
-  # TODO(dw): Add some redis smoke tests
+  - "/opt/redis/bin/redis-cli PING"
