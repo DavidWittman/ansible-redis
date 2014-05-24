@@ -1,0 +1,24 @@
+---
+language: python
+python: "2.7"
+env: PLAYBOOK=test.yml
+
+before_install:
+  - sudo apt-get update -qq
+
+install:
+  - pip install ansible
+  - "printf '[defaults]\nroles_path = ../' > ansible.cfg"
+
+script:
+  # Syntax check
+  - "ansible-playbook -i tests/localhost tests/$PLAYBOOK --syntax-check"
+  # Run role
+  - "ansible-playbook -i tests/localhost tests/$PLAYBOOK --connection=local --sudo"
+  # Idempotency check
+  - >
+    ansible-playbook -i tests/localhost tests/$PLAYBOOK --connection=local --sudo
+    | grep -q 'changed=0.*failed=0'
+    && (echo 'Idempotency: PASS' && exit 0)
+    || (echo 'Idempotency: FAIL' && exit 1)
+  - "/opt/redis/bin/redis-cli PING"
