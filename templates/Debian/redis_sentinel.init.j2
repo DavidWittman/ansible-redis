@@ -48,7 +48,7 @@ case "$1" in
                 ulimit -n $NOFILE_LIMIT
             fi
             log_daemon_msg "Starting $NAME..."
-            if start-stop-daemon --start -q --oknodo -p $PIDFILE -c $REDIS_USER --exec $DAEMON -- $CONF; then
+            if start-stop-daemon --start -q --oknodo -p $PIDFILE -c $REDIS_USER --exec $DAEMON -- $CONF --sentinel; then
                 log_end_msg 0
             else
                 log_end_msg 1
