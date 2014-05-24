@@ -1,5 +1,6 @@
 ---
 - hosts: localhost
+  gather_facts: no
   remote_user: root
   vars:
     - redis_travis_ci: true
