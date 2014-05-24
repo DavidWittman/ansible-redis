@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  remote_user: root
+  vars:
+    - redis_travis_ci: true
+    - redis_sentinel: true
+  roles:
+    - ansible-redis

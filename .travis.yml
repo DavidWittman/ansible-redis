@@ -1,7 +1,6 @@
 ---
 language: python
 python: "2.7"
-env: PLAYBOOK=test.yml
 
 before_install:
   - sudo apt-get update -qq
@@ -12,13 +11,21 @@ install:
 
 script:
   # Syntax check
-  - "ansible-playbook -i localhost, tests/$PLAYBOOK --syntax-check"
+  - "ansible-playbook -i localhost, tests/test_server.yml --syntax-check"
+  - "ansible-playbook -i localhost, tests/test_sentinel.yml --syntax-check"
   # Run role
-  - "ansible-playbook -i localhost, tests/$PLAYBOOK --connection=local --sudo"
+  - "ansible-playbook -i localhost, tests/test_server.yml --connection=local --sudo"
+  - "ansible-playbook -i localhost, tests/test_sentinel.yml --connection=local --sudo"
   # Idempotency check
   - >
-    ansible-playbook -i localhost, tests/$PLAYBOOK --connection=local --sudo
+    ansible-playbook -i localhost, tests/test_server.yml --connection=local --sudo
+    | grep -q 'changed=0.*failed=0'
+    && (echo 'Idempotency: PASS' && exit 0)
+    || (echo 'Idempotency: FAIL' && exit 1)
+  - >
+    ansible-playbook -i localhost, tests/test_sentinel.yml --connection=local --sudo
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotency: PASS' && exit 0)
     || (echo 'Idempotency: FAIL' && exit 1)
   - "/opt/redis/bin/redis-cli PING"
+  - "/opt/redis/bin/redis-cli -p 26379 PING"
