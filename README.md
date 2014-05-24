@@ -1,5 +1,7 @@
 # ansible-redis
 
+[![Build Status](https://travis-ci.org/DavidWittman/ansible-redis.svg?branch=master)](https://travis-ci.org/DavidWittman/ansible-redis)
+
  - Requires Ansible 1.4+
  - Compatible with Ubuntu 12.04+ and CentOS 6.5
 
