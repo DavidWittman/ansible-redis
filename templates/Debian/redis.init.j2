@@ -35,6 +35,10 @@ if [ -n "$REDIS_PASSWORD" ]; then
     CLIEXEC="${CLIEXEC} -a ${REDIS_PASSWORD}"
 fi
 
+if [ -n "$BIND_ADDRESS" ]; then
+    CLIEXEC="${CLIEXEC} -h ${BIND_ADDRESS}"
+fi
+
 case "$1" in
     start)
         if [ -f $PIDFILE ]; then
@@ -55,9 +59,9 @@ case "$1" in
         if [ -f $PIDFILE ]; then
             PID=$(cat $PIDFILE)
             log_daemon_msg "Stopping $NAME..."
-            $CLIEXEC -p $REDIS_PORT shutdown
+            $CLIEXEC -h $BIND_ADDRESS -p $REDIS_PORT shutdown
             while [ -x /proc/${PID} ]; do
-                echo "Waiting for Redis to shutdown ..."
+                log_daemon_msg "Waiting for Redis to shutdown ..."
                 sleep 1
             done
             log_end_msg 0
