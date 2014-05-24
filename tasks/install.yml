@@ -46,4 +46,7 @@
 - name: install redis
   command: make PREFIX={{ redis_install_dir }} install
            chdir=/usr/local/src/redis-{{ redis_version }}
-           creates={{ redis_install_dir }}/bin/redis-server
+
+- name: add Redis binaries to PATH
+  lineinfile: dest="~{{ ansible_ssh_user }}/.bashrc"
+              line="export PATH=$PATH:{{ redis_install_dir }}/bin"
