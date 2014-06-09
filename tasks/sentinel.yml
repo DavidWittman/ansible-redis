@@ -20,11 +20,22 @@
 - name: set sentinel to start at boot
   service: name=sentinel_{{ redis_sentinel_port }} enabled=yes
 
-- name: create sentinel config file
-  template: src=redis_sentinel.conf.j2
-            dest=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+- name: create dynamic sentinel config file
+  template: src=redis_sentinel.dyn.conf.j2
+            dest=/etc/redis/sentinel_{{ redis_sentinel_port }}.dyn.conf
             owner={{ redis_user }}
-  notify: restart sentinel
+  notify: restart redis
+
+- name: check if sentinel config file exists
+  stat: path=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+  register: p
+
+- name: create sentinel config file if it does not exist
+  template: src=redis_sentinel.conf.j2
+            path=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+            owner={{ redis_user }}
+  when: p.stat.exists == False
+  notify: restart redis
 
 - name: add sentinel init config file
   template: dest=/etc/sysconfig/sentinel_{{ redis_sentinel_port }}
