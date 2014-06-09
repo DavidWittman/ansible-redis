@@ -1,5 +1,7 @@
 # ansible-redis
 
+[![Build Status](https://travis-ci.org/DavidWittman/ansible-redis.svg?branch=master)](https://travis-ci.org/DavidWittman/ansible-redis)
+
  - Requires Ansible 1.4+
  - Compatible with Ubuntu 12.04+ and CentOS 6.5
 
@@ -30,7 +32,7 @@ $ ansible-playbook -i redis01.example.com, redis.yml
 
 **Note:** You may have noticed above that I just passed a hostname in as the Ansible inventory file. This is an easy way to run Ansible without first having to create an inventory file, you just need to suffix the hostname with a comma so Ansible knows what to do with it.
 
-That's it! You'll now have a Redis server listening on 127.0.0.1 on redis01.example.com.
+That's it! You'll now have a Redis server listening on 127.0.0.1 on redis01.example.com. By default, the Redis binaries are installed under /opt/redis, though this can be overridden by setting the `redis_install_dir` variable.
 
 ### Master-Slave replication
 

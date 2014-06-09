@@ -10,7 +10,7 @@ bind {{ redis_sentinel_bind }}
 {% for master in redis_sentinel_monitors -%}
 sentinel monitor {{ master.name }} {{ master.host }} {{ master.port }} {{ master.quorum|d('2') }}
 {% for option in ('auth_pass', 'down_after_milliseconds', 'parallel_syncs', 'failover_timeout', 'notification_script', 'client_reconfig_script') -%}
-{% if master[option] is defined -%}
+{% if master[option] is defined and master[option] -%}
 sentinel {{ option|replace('_', '-') }} {{ master.name }} {{ master[option] }}
 {% endif %}
 {% endfor -%}
