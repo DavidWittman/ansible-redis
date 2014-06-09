@@ -20,7 +20,7 @@
   service: name=redis_{{ redis_port }} enabled=yes
 
 - name: create dynamic redis config file
-  template: src={{ redis_port }}.dyn.conf.j2
+  template: src=redis.dyn.conf.j2
             dest=/etc/redis/{{ redis_port }}.dyn.conf
             owner={{ redis_user }}
   notify: restart redis
@@ -31,7 +31,7 @@
 
 - name: create redis config file if it does not exist
   template: src=redis.conf.j2
-            path=/etc/redis/{{ redis_port }}.conf
+            dest=/etc/redis/{{ redis_port }}.conf
             owner={{ redis_user }}
   when: p.stat.exists == False
   notify: restart redis

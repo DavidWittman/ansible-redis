@@ -32,7 +32,7 @@
 
 - name: create sentinel config file if it does not exist
   template: src=redis_sentinel.conf.j2
-            path=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+            dest=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf
             owner={{ redis_user }}
   when: p.stat.exists == False
   notify: restart redis
