@@ -31,6 +31,7 @@
 - name: create dynamic sentinel config file
   template: src=redis_sentinel.dyn.conf.j2
             dest=/etc/redis/.sentinel_{{ redis_sentinel_port }}.dyn.conf
+            owner={{ redis_user }}
 
 - name: check if sentinel config file exists
   stat: path=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf
@@ -41,7 +42,6 @@
         owner={{ redis_user }}
         state=touch
   when: p.stat.exists == False
-  notify: restart redis
 
 - name: read contents of sentinel config into a variable
   shell: "cat /etc/redis/.sentinel_{{ redis_sentinel_port }}.dyn.conf"
@@ -52,6 +52,7 @@
               line="{{ item }}"
               regexp="^{{ item }}$"
   with_items: sentinel_conf.stdout_lines
+  notify: restart redis
 
 - name: add sentinel init config file
   template: dest=/etc/sysconfig/sentinel_{{ redis_sentinel_port }}
