@@ -43,15 +43,11 @@
         state=touch
   when: p.stat.exists == False
 
-- name: read contents of sentinel config into a variable
-  shell: "cat /etc/redis/.sentinel_{{ redis_sentinel_port }}.dyn.conf"
-  register: sentinel_conf
-
 - name: ensure base config is present in sentinel config file
   lineinfile: dest=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf
               line="{{ item }}"
               regexp="^{{ item }}$"
-  with_items: sentinel_conf.stdout_lines
+  with_items: lookup('template', '../templates/redis_sentinel.dyn.conf.j2').split('\n')
   notify: restart redis
 
 - name: add sentinel init config file
