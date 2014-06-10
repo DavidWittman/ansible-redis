@@ -30,6 +30,8 @@
 - name: create dynamic redis config file
   template: src=redis.dyn.conf.j2
             dest=/etc/redis/{{ redis_port }}.dyn.conf
+            owner={{ redis_user }}
+  notify: restart redis
 
 - name: check if redis config file exists
   stat: path=/etc/redis/{{ redis_port }}.conf
