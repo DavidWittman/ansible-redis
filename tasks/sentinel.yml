@@ -22,7 +22,7 @@
 
 - name: create dynamic sentinel config file
   template: src=redis_sentinel.dyn.conf.j2
-            dest=/etc/redis/sentinel_{{ redis_sentinel_port }}.dyn.conf
+            dest=/etc/redis/.sentinel_{{ redis_sentinel_port }}.dyn.conf
             owner={{ redis_user }}
   notify: restart redis
 
@@ -31,11 +31,21 @@
   register: p
 
 - name: create sentinel config file if it does not exist
-  template: src=redis_sentinel.conf.j2
-            dest=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf
-            owner={{ redis_user }}
+  file: dest=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+        owner={{ redis_user }}
+        state=touch
   when: p.stat.exists == False
   notify: restart redis
+
+- name: read contents of sentinel config into a variable
+  shell: "cat /etc/redis/.sentinel_{{ redis_sentinel_port }}.dyn.conf"
+  register: sentinel_conf
+
+- name: ensure base config is present in sentinel config file
+  lineinfile: dest=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+              line="{{ item }}"
+              regexp="^{{ item }}$"
+  with_items: sentinel_conf.stdout_lines
 
 - name: add sentinel init config file
   template: dest=/etc/sysconfig/sentinel_{{ redis_sentinel_port }}
