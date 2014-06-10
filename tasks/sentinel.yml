@@ -20,11 +20,17 @@
 - name: set sentinel to start at boot
   service: name=sentinel_{{ redis_sentinel_port }} enabled=yes
 
+- name: ensure that sentinel log file exists and is writable by redis
+  file: path={{ redis_sentinel_logfile }}
+        owner={{ redis_user }}
+        group={{ redis_user }}
+        mode=0600
+        state=touch
+  when: redis_sentinel_logfile != '""'
+
 - name: create dynamic sentinel config file
   template: src=redis_sentinel.dyn.conf.j2
             dest=/etc/redis/.sentinel_{{ redis_sentinel_port }}.dyn.conf
-            owner={{ redis_user }}
-  notify: restart redis
 
 - name: check if sentinel config file exists
   stat: path=/etc/redis/sentinel_{{ redis_sentinel_port }}.conf

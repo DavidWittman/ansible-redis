@@ -19,11 +19,17 @@
 - name: set redis to start at boot
   service: name=redis_{{ redis_port }} enabled=yes
 
+- name: ensure that log file exists and is writable by redis
+  file: path={{ redis_logfile }}
+        owner={{ redis_user }}
+        group={{ redis_user }}
+        mode=0600
+        state=touch
+  when: redis_logfile != '""'
+
 - name: create dynamic redis config file
   template: src=redis.dyn.conf.j2
             dest=/etc/redis/{{ redis_port }}.dyn.conf
-            owner={{ redis_user }}
-  notify: restart redis
 
 - name: check if redis config file exists
   stat: path=/etc/redis/{{ redis_port }}.conf
