@@ -27,9 +27,21 @@
         state=touch
   when: redis_logfile != '""'
 
-- name: create redis config file
-  template: src=redis.conf.j2 dest=/etc/redis/{{ redis_port }}.conf
+- name: create dynamic redis config file
+  template: src=redis.dyn.conf.j2
+            dest=/etc/redis/{{ redis_port }}.dyn.conf
             owner={{ redis_user }}
+  notify: restart redis
+
+- name: check if redis config file exists
+  stat: path=/etc/redis/{{ redis_port }}.conf
+  register: p
+
+- name: create redis config file if it does not exist
+  template: src=redis.conf.j2
+            dest=/etc/redis/{{ redis_port }}.conf
+            owner={{ redis_user }}
+  when: p.stat.exists == False
   notify: restart redis
 
 - name: add redis init config file
