@@ -35,4 +35,3 @@ script:
     | python -m json.tool
     && (echo 'Facts syntax: PASS' && exit 0)
     || (echo 'Facts syntax: FAIL' && exit 1)
-  - "sudo cat /etc/ansible/facts.d/redis.fact"
