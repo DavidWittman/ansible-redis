@@ -29,3 +29,10 @@ script:
     || (echo 'Idempotency: FAIL' && exit 1)
   - "/opt/redis/bin/redis-cli PING"
   - "/opt/redis/bin/redis-cli -p 26379 PING"
+  # Facts syntax check
+  - >
+    "sudo cat /etc/ansible/facts.d/redis.fact"
+    | python -m json.tool
+    && (echo 'Facts syntax: PASS' && exit 0)
+    || (echo 'Facts syntax: FAIL' && exit 1)
+  - "sudo cat /etc/ansible/facts.d/redis.fact"
