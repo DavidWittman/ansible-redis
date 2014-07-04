@@ -31,7 +31,7 @@ script:
   - "/opt/redis/bin/redis-cli -p 26379 PING"
   # Facts syntax check
   - >
-    "sudo cat /etc/ansible/facts.d/redis.fact"
+    sudo cat /etc/ansible/facts.d/redis.fact
     | python -m json.tool
     && (echo 'Facts syntax: PASS' && exit 0)
     || (echo 'Facts syntax: FAIL' && exit 1)
