@@ -210,3 +210,13 @@ redis_sentinel_monitors:
     notification_script: false
     client_reconfig_script: false
 ```
+
+## Facts
+
+The following facts are accessible in your inventory or tasks outside of this role.
+
+- `{{ ansible_local.redis.bind }}`
+- `{{ ansible_local.redis.port }}`
+- `{{ ansible_local.redis.sentinel_bind }}`
+- `{{ ansible_local.redis.sentinel_port }}`
+- `{{ ansible_local.redis.sentinel_monitors }}`

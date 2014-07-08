@@ -8,3 +8,4 @@
   when: redis_sentinel
   tags:
     - config
+- include: local_facts.yml

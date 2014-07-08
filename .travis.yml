@@ -15,13 +15,13 @@ script:
   - "ansible-playbook -i localhost, tests/test_sentinel.yml --syntax-check"
   # Run role
   - "ansible-playbook -i localhost, tests/test_server.yml --connection=local --sudo"
-  - "ansible-playbook -i localhost, tests/test_sentinel.yml --connection=local --sudo"
   # Idempotency check
   - >
     ansible-playbook -i localhost, tests/test_server.yml --connection=local --sudo
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotency: PASS' && exit 0)
     || (echo 'Idempotency: FAIL' && exit 1)
+  - "ansible-playbook -i localhost, tests/test_sentinel.yml --connection=local --sudo"
   - >
     ansible-playbook -i localhost, tests/test_sentinel.yml --connection=local --sudo
     | grep -q 'changed=0.*failed=0'
@@ -29,3 +29,9 @@ script:
     || (echo 'Idempotency: FAIL' && exit 1)
   - "/opt/redis/bin/redis-cli PING"
   - "/opt/redis/bin/redis-cli -p 26379 PING"
+  # Facts syntax check
+  - >
+    sudo cat /etc/ansible/facts.d/redis.fact
+    | python -m json.tool
+    && (echo 'Facts syntax: PASS' && exit 0)
+    || (echo 'Facts syntax: FAIL' && exit 1)
