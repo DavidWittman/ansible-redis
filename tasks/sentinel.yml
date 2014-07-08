@@ -20,13 +20,17 @@
 - name: set sentinel to start at boot
   service: name=sentinel_{{ redis_sentinel_port }} enabled=yes
 
+- name: check if sentinel log file exists
+  stat: path={{ redis_sentinel_logfile }}
+  register: sentinel_logfile_stat
+
 - name: ensure that sentinel log file exists and is writable by redis
   file: path={{ redis_sentinel_logfile }}
         owner={{ redis_user }}
         group={{ redis_user }}
         mode=0600
         state=touch
-  when: redis_sentinel_logfile != '""'
+  when: sentinel_logfile_stat.stat.exists == False and redis_sentinel_logfile != '""'
 
 - name: create sentinel config file
   template: src=redis_sentinel.conf.j2
