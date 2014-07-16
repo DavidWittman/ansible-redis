@@ -18,7 +18,12 @@
   when: redis_travis_ci is not defined
 
 - name: add redis user
-  user: name={{ redis_user }} comment="Redis"
+  user:
+    name={{ redis_user }}
+    comment="Redis"
+    home={{ redis_install_dir}}
+    shell=/bin/false
+    system=yes
 
 - name: download redis
   get_url: url=http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz
