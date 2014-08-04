@@ -4,6 +4,7 @@
   with_items:
     - gcc
     - make
+    - libc6-dev
   when: ansible_os_family == "Debian"
 
 - name: install dependencies
