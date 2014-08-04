@@ -6,11 +6,10 @@ galaxy_info:
   platforms:
     - name: Ubuntu
       versions:
-        - precise
-        - quantal
-        - raring
-        - saucy
-        - trusty
+        - all
+    - name: Debian
+      versions:
+        - all
     - name: EL
       versions:
         - 6
