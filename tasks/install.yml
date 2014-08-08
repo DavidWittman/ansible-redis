@@ -53,3 +53,7 @@
   command: make PREFIX={{ redis_install_dir }} install
            chdir=/usr/local/src/redis-{{ redis_version }}
            creates={{ redis_install_dir }}/bin/redis-server
+
+- name: add redis binaries to alternatives
+  alternatives: name="{{ item | basename }}" path="{{ item }}" link="/usr/bin/{{ item | basename }}"
+  with_fileblob: "{{ redis_install_dir }}/bin/*"
