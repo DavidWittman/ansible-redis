@@ -56,4 +56,4 @@
 
 - name: add redis binaries to alternatives
   alternatives: name="{{ item | basename }}" path="{{ item }}" link="/usr/bin/{{ item | basename }}"
-  with_fileblob: "{{ redis_install_dir }}/bin/*"
+  with_fileglob: "{{ redis_install_dir }}/bin/*"
