@@ -57,6 +57,7 @@
 - name: list redis binaries
   command: ls -1 {{ redis_install_dir}}/bin
   register: redis_binaries
+  changed_when: false
 
 - name: add redis binaries to alternatives
   alternatives: name={{ item }} path={{ redis_install_dir }}/bin/{{ item }} link=/usr/bin/{{ item }}
