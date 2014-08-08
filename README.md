@@ -220,4 +220,3 @@ The following facts are accessible in your inventory or tasks outside of this ro
 - `{{ ansible_local.redis.sentinel_bind }}`
 - `{{ ansible_local.redis.sentinel_port }}`
 - `{{ ansible_local.redis.sentinel_monitors }}`
-
