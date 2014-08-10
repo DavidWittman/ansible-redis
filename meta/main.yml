@@ -2,7 +2,7 @@
 galaxy_info:
   author: David Wittman
   description: Highly configurable role to install Redis and Redis Sentinel from source
-  min_ansible_version: 1.4
+  min_ansible_version: 1.6.3
   platforms:
     - name: Ubuntu
       versions:
