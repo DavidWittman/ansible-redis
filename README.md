@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/DavidWittman/ansible-redis.svg?branch=master)](https://travis-ci.org/DavidWittman/ansible-redis)
 
  - Requires Ansible 1.6.3+
- - Compatible with most versions of Ubuntu/Debian and RHEL/CentOS 6 and 7
+ - Compatible with most versions of Ubuntu/Debian and RHEL/CentOS 6.x
 
 ## Installation
 

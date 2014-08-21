@@ -13,7 +13,6 @@ galaxy_info:
     - name: EL
       versions:
         - 6
-        - 7
   categories:
     - database
     - database:nosql
