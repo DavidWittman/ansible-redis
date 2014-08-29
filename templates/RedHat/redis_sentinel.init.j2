@@ -35,7 +35,7 @@ case "$1" in
                     ulimit -n $NOFILE_LIMIT
                 fi
                 echo "Starting Redis Sentinel..."
-                su $REDIS_USER -c "$EXEC $CONF --sentinel"
+                daemon --user $REDIS_USER $EXEC $CONF --sentinel
         fi
         ;;
     stop)
