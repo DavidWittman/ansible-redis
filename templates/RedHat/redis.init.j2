@@ -34,7 +34,7 @@ case "$1" in
                     ulimit -n $NOFILE_LIMIT
                 fi
                 echo "Starting Redis server..."
-                su $REDIS_USER -c "$EXEC $CONF"
+                daemon --user $REDIS_USER $EXEC $CONF
         fi
         ;;
     stop)
