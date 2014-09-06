@@ -131,9 +131,17 @@ Along with the variables listed above, Sentinel has a number of its own configur
 
 ## Installing redis from a source file in the ansible role
 
-If the environment your server resides in does not allow downloads (i.e. if the machine is sitting in a dmz) set the variable `redis_download` to false to prevent a http download from redis.io.  
-In this case the source archive is copied towards the server over ssh and needs to be present in the `files/` folder.
-You should just download the source and keep the naming as used on the redis.io download page. If necessary adjust the `redis_version` variable to match your locally stored version.
+If the environment your server resides in does not allow downloads (i.e. if the machine is sitting in a dmz) set the variable `redis_tarball` to the path of a locally downloaded tar.gz file to prevent a http download from redis.io.  
+Do not forget to set the version variable to the same version of the tar.gz. to avoid confusion !
+
+For example (file was stored in same folder as the playbook that included the redis role):
+```yml
+vars:
+  - redis_version: 2.8.14
+  - redis_tarball: redis-2.8.14.tar.gz
+```
+In this case the source archive is copied towards the server over ssh rather than downloaded.
+
 
 
 ## Configurables
@@ -147,7 +155,7 @@ redis_version: 2.8.8
 redis_install_dir: /opt/redis
 redis_user: redis
 redis_dir: /var/redis/{{ redis_port }}
-redis_download: true
+redis_tarball: false
 # The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
 
