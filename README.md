@@ -128,6 +128,22 @@ This will configure the Sentinel nodes to monitor the master we created above us
 
 Along with the variables listed above, Sentinel has a number of its own configurables just as Redis server does. These are prefixed with `redis_sentinel_`, and are enumerated in the **Configurables** section below.
 
+
+## Installing redis from a source file in the ansible role
+
+If the environment your server resides in does not allow downloads (i.e. if the machine is sitting in a dmz) set the variable `redis_tarball` to the path of a locally downloaded tar.gz file to prevent a http download from redis.io.  
+Do not forget to set the version variable to the same version of the tar.gz. to avoid confusion !
+
+For example (file was stored in same folder as the playbook that included the redis role):
+```yml
+vars:
+  - redis_version: 2.8.14
+  - redis_tarball: redis-2.8.14.tar.gz
+```
+In this case the source archive is copied towards the server over ssh rather than downloaded.
+
+
+
 ## Configurables
 
 Here is a list of all the default variables for this role, which are also available in defaults/main.yml. One of these days I'll format these into a table or something.
@@ -139,6 +155,7 @@ redis_version: 2.8.8
 redis_install_dir: /opt/redis
 redis_user: redis
 redis_dir: /var/redis/{{ redis_port }}
+redis_tarball: false
 # The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
 

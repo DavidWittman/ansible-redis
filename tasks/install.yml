@@ -22,13 +22,19 @@
   user:
     name={{ redis_user }}
     comment="Redis"
-    home={{ redis_install_dir}}
+    home={{ redis_install_dir }}
     shell=/bin/false
     system=yes
 
 - name: download redis
   get_url: url=http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz
            dest=/usr/local/src/redis-{{ redis_version }}.tar.gz
+  when: not redis_tarball
+  
+- name: upload redis
+  copy: src={{ redis_tarball }}
+        dest=/usr/local/src/redis-{{ redis_version }}.tar.gz  
+  when: redis_tarball
 
 - name: extract redis tarball
   shell: tar xf /usr/local/src/redis-{{ redis_version }}.tar.gz -C /usr/local/src
@@ -55,7 +61,7 @@
            creates={{ redis_install_dir }}/bin/redis-server
 
 - name: list redis binaries
-  command: ls -1 {{ redis_install_dir}}/bin
+  command: ls -1 {{ redis_install_dir }}/bin
   register: redis_binaries
   changed_when: false
   when: ansible_os_family == "Debian"
