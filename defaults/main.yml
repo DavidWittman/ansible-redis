@@ -53,6 +53,12 @@ redis_save:
   - 900 1
   - 300 10
   - 60 10000
+redis_appendonly: "no"
+redis_appendfilename: "appendonly.aof"
+redis_appendfsync: "everysec"
+redis_no_appendfsync_on_rewrite: "no"
+redis_auto_aof_rewrite_percentage: "100"
+redis_auto_aof_rewrite_min_size: "64mb"
 
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
@@ -61,7 +67,7 @@ redis_sentinel_dir: /var/redis/sentinel_{{ redis_sentinel_port }}
 redis_sentinel_bind: 0.0.0.0
 redis_sentinel_port: 26379
 redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
-redis_sentinel_logfile: '""'                                                    
+redis_sentinel_logfile: '""'
 redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
 redis_sentinel_monitors:
   - name: master01
