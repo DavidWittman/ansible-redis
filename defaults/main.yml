@@ -64,7 +64,7 @@ redis_auto_aof_rewrite_min_size: "64mb"
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false
-redis_sentinel_dir: /var/redis/sentinel_{{ redis_sentinel_port }}
+redis_sentinel_dir: /var/lib/redis/sentinel_{{ redis_sentinel_port }}
 redis_sentinel_bind: 0.0.0.0
 redis_sentinel_port: 26379
 redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
