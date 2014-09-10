@@ -154,7 +154,8 @@ Here is a list of all the default variables for this role, which are also availa
 redis_version: 2.8.8
 redis_install_dir: /opt/redis
 redis_user: redis
-redis_dir: /var/redis/{{ redis_port }}
+# Working directory for Redis. RDB and AOF files will be written here.
+redis_dir: /var/lib/redis/{{ redis_port }}
 redis_tarball: false
 # The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
@@ -209,7 +210,7 @@ redis_save:
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false
-redis_sentinel_dir: /var/redis/sentinel_{{ redis_sentinel_port }}
+redis_sentinel_dir: /var/lib/redis/sentinel_{{ redis_sentinel_port }}
 redis_sentinel_bind: 0.0.0.0
 redis_sentinel_port: 26379
 redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
