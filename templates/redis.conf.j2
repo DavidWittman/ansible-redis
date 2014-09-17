@@ -69,8 +69,10 @@ bind {{ redis_bind }}
 # incoming connections. There is no default, so Redis will not listen
 # on a unix socket when not specified.
 #
-# unixsocket /tmp/redis.sock
-# unixsocketperm 755
+{% if redis_socket_path -%}
+unixsocket {{ redis_socket_path }}
+unixsocketperm {{ redis_socket_perm }}
+{% endif -%}
 
 # Close the connection after a client is idle for N seconds (0 to disable)
 timeout {{ redis_timeout }}
