@@ -18,8 +18,8 @@ redis_tcp_keepalive: 0
 redis_maxclients: 10000
 redis_timeout: 0
 # Socket options
-redis_use_socket: false
-redis_socket_path: /var/run/redis/{{ redis_port }}.sock
+# Set socket_path to the desired path to the socket. E.g. /var/run/redis/{{ redis_port }}.sock
+redis_socket_path: false
 redis_socket_perm: 755
 
 ## Replication options

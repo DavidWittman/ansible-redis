@@ -69,7 +69,7 @@ bind {{ redis_bind }}
 # incoming connections. There is no default, so Redis will not listen
 # on a unix socket when not specified.
 #
-{% if redis_use_socket -%}
+{% if redis_socket_path -%}
 unixsocket {{ redis_socket_path }}
 unixsocketperm {{ redis_socket_perm }}
 {% endif -%}
