@@ -15,10 +15,12 @@
       - default/redis.init.j2
       paths:
         - ../templates
-
+  when: redis_service
+ 
 - name: set redis to start at boot
   service: name=redis_{{ redis_port }} enabled=yes
-
+  when: redis_service
+   
 - name: check if log file exists
   stat: path={{ redis_logfile }}
   register: logfile_stat
@@ -55,3 +57,4 @@
 
 - name: ensure redis is running
   service: name=redis_{{ redis_port }} state=started
+  when: redis_service
