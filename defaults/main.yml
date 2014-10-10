@@ -13,7 +13,7 @@ redis_nofile_limit: 16384
 # Use case: 
 # Supervisor requires that the processes do not daemonized themselves.
 # If Redis will be managed by Supervisor, there is no need to manage the state of Redis so this must be set to false.
-redis_service: true
+redis_as_service: true
 
 ## Networking/connection options
 redis_bind: 0.0.0.0
