@@ -16,9 +16,11 @@
       - default/redis_sentinel.init.j2
       paths:
         - ../templates
+  when: redis_as_service
 
 - name: set sentinel to start at boot
   service: name=sentinel_{{ redis_sentinel_port }} enabled=yes
+  when: redis_as_service
 
 - name: check if sentinel log file exists
   stat: path={{ redis_sentinel_logfile }}
@@ -57,3 +59,4 @@
 
 - name: ensure sentinel is running
   service: name=sentinel_{{ redis_sentinel_port }} state=started
+  when: redis_as_service
