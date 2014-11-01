@@ -159,8 +159,10 @@ redis_dir: /var/lib/redis/{{ redis_port }}
 redis_tarball: false
 # The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
-# Configure Redis as a service by default.
-# Can be disabled by setting it to false, usually needed when a tool like Supervisor will manage the Redis process.
+# Configure Redis as a service
+# When set to false, this role will not create init scripts or manage
+# the Redis/Sentinel processes.
+# This is usually needed when a tool like Supervisor will manage the process.
 redis_as_service: true
 
 ## Networking/connection options
