@@ -8,5 +8,5 @@ NOFILE_LIMIT={{ redis_nofile_limit }}
 {% if redis_sentinel %}
 BIND_ADDRESS={{ redis_sentinel_bind }}
 {% else %}
-BIND_ADDRESS={{ redis_bind }}
+BIND_ADDRESS={{ redis_bind | regex_replace('^([^ ]+).*', '\\1') }}
 {% endif %}
