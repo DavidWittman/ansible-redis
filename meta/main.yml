@@ -16,3 +16,5 @@ galaxy_info:
   categories:
     - database
     - database:nosql
+
+dependencies: []
