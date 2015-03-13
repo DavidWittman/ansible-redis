@@ -67,6 +67,6 @@
   when: ansible_os_family == "Debian"
 
 - name: add redis binaries to alternatives
-  alternatives: name={{ item }} path={{ redis_install_dir }}/bin/{{ item }} link=/usr/bin/{{ item }}
+  shell: update-alternatives --install /usr/bin/{{ item }} {{item}} {{redis_install_dir}}/bin/{{item }} 1
   with_items: redis_binaries.stdout_lines
   when: ansible_os_family == "Debian"
