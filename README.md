@@ -5,6 +5,16 @@
  - Requires Ansible 1.6.3+
  - Compatible with most versions of Ubuntu/Debian and RHEL/CentOS 6.x
 
+## Contents
+
+ 1. [Installation](#installation)
+ 2. [Getting Started](#getting-started)
+  1. [Single Redis node](#single-redis-node)
+  2. [Master-Slave Replication](#master-slave-replication)
+  3. [Redis Sentinel](#redis-sentinel)
+ 3. [Installing redis from a source file in the ansible role](#installing-redis-from-a-source-file-in-the-ansible-role)
+ 4. [Configurables](#configurables)
+
 ## Installation
 
 ``` bash
