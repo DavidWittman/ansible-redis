@@ -6,3 +6,6 @@
 - name: restart sentinel
   service: name=sentinel_{{ redis_sentinel_port }} state=restarted
   when: redis_as_service
+
+- name: remove redis tarball
+  file: name=/usr/local/src/redis-{{ redis_version }}.tar.gz state=absent

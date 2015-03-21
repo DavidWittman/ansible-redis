@@ -29,11 +29,13 @@
 - name: download redis
   get_url: url=http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz
            dest=/usr/local/src/redis-{{ redis_version }}.tar.gz
+  notify: remove redis tarball
   when: not redis_tarball
-  
+
 - name: upload redis
   copy: src={{ redis_tarball }}
-        dest=/usr/local/src/redis-{{ redis_version }}.tar.gz  
+        dest=/usr/local/src/redis-{{ redis_version }}.tar.gz
+  notify: remove redis tarball
   when: redis_tarball
 
 - name: extract redis tarball
@@ -59,3 +61,6 @@
   command: make PREFIX={{ redis_install_dir }} install
            chdir=/usr/local/src/redis-{{ redis_version }}
            creates={{ redis_install_dir }}/bin/redis-server
+
+- name: remove redis build files
+  file: name=/usr/local/src/redis-{{ redis_version }} state=absent
