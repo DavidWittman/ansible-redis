@@ -32,6 +32,17 @@
         mode=0600
         state=touch
   when: logfile_stat.stat.exists == False and redis_logfile != '""'
+  
+- name: Redis | Make sure pidfile directory exists and have correct owner
+  sudo: yes
+  sudo_user: 'root'
+  file: path={{redis_pidfile|dirname}} owner={{redis_user}} state=directory recurse=yes
+
+- name: Redis | Make sure logfile directory exists and have correct owner
+  sudo: yes
+  sudo_user: 'root'
+  file: path={{redis_logfile|dirname}} owner={{redis_user}} state=directory recurse=yes
+  when: logfile_stat.stat.exists == False and redis_logfile != '""'
 
 - name: create redis config file
   template: src=redis.conf.j2 dest=/etc/redis/{{ redis_port }}.conf
