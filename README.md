@@ -174,6 +174,8 @@ redis_nofile_limit: 16384
 # the Redis/Sentinel processes.
 # This is usually needed when a tool like Supervisor will manage the process.
 redis_as_service: true
+# Upgrade Redis even if it is already installed
+redis_upgrade: false
 
 ## Networking/connection options
 redis_bind: 0.0.0.0

@@ -1,11 +1,23 @@
 ---
+- name: check for prior redis installation
+  command: "{{ redis_install_dir }}/bin/redis-server --version"
+  register: redis_exists
+  changed_when: redis_exists.rc
+  failed_when: False
+  always_run: yes
+  when: not redis_upgrade
+
 - include: install.yml
+  when: redis_upgrade or redis_exists.changed
+
 - include: server.yml
   when: not redis_sentinel
   tags:
     - config
+
 - include: sentinel.yml
   when: redis_sentinel
   tags:
     - config
+
 - include: local_facts.yml
