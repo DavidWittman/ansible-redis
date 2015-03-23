@@ -2,9 +2,8 @@
 - name: install dependencies
   apt: pkg={{ item }} update_cache=yes cache_valid_time=86400 state=present
   with_items:
-    - gcc
-    - make
-    - libc6-dev
+    - build-essential
+    - tcl
   when: ansible_os_family == "Debian"
 
 - name: install dependencies
