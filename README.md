@@ -184,10 +184,6 @@ redis_tcp_keepalive: 0
 # Max connected clients at a time
 redis_maxclients: 10000
 redis_timeout: 0
-# Socket options
-# Set socket_path to the desired path to the socket. E.g. /var/run/redis/{{ redis_port }}.sock
-redis_socket_path: false
-redis_socket_perm: 755
 
 ## Replication options
 # Set slaveof just as you would in redis.conf. (e.g. "redis01 6379")
