@@ -26,6 +26,19 @@
   stat: path={{ redis_sentinel_logfile }}
   register: sentinel_logfile_stat
 
+- name: ensure sentinel pidfile directory exists and has correct owner
+  file: path={{ redis_sentinel_pidfile|dirname }}
+        owner={{ redis_user }}
+        state=directory
+        recurse=yes
+
+- name: ensure sentinel logfile directory exists and has correct owner
+  file: path={{ redis_sentinel_logfile|dirname }}
+        owner={{ redis_user }}
+        state=directory
+        recurse=yes
+  when: redis_sentinel_logfile
+
 - name: ensure that sentinel log file exists and is writable by redis
   file: path={{ redis_sentinel_logfile }}
         owner={{ redis_user }}

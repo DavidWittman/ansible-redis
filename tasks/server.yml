@@ -25,12 +25,18 @@
   stat: path={{ redis_logfile }}
   register: logfile_stat
   
-- name: Redis | Make sure pidfile directory exists and have correct owner
-  file: path={{ redis_pidfile|dirname }} owner={{ redis_user }} state=directory recurse=yes
+- name: ensure pidfile directory exists and has correct owner
+  file: path={{ redis_pidfile|dirname }}
+        owner={{ redis_user }}
+        state=directory
+        recurse=yes
 
-- name: Redis | Make sure logfile directory exists and have correct owner
-  file: path={{ redis_logfile|dirname }} owner={{ redis_user }} state=directory recurse=yes
-  when: logfile_stat.stat.exists == False and redis_logfile != '""'
+- name: ensure logfile directory exists and has correct owner
+  file: path={{ redis_logfile|dirname }}
+        owner={{ redis_user }}
+        state=directory
+        recurse=yes
+  when: redis_logfile
 
 - name: ensure that log file exists and is writable by redis
   file: path={{ redis_logfile }}
