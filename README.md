@@ -103,10 +103,10 @@ redis-master.example.com
 redis-slave0[1:3].example.com
 
 [redis-sentinel]
-redis-sentinel0[1:3].example.com redis_sentinel=True
+redis-sentinel0[1:3].example.com
 ```
 
-Above, we've added three more hosts in the **redis-sentinel** group (though this group serves no purpose within the role, it's merely an identifier), and set the `redis_sentinel` variable inline within the inventory file.
+Above, we've added three more hosts in the **redis-sentinel** group (though this group serves no purpose within the role, it's merely an identifier).
 
 Now, all we need to do is set the `redis_sentinel_monitors` variable to define the Redis masters which Sentinel should monitor. In this case, I'm going to do this within the playbook:
 
@@ -126,6 +126,7 @@ Now, all we need to do is set the `redis_sentinel_monitors` variable to define t
 - name: configure redis sentinel nodes
   hosts: redis-sentinel
   vars:
+    - redis_sentinel: True
     - redis_sentinel_monitors:
       - name: master01
         host: redis-master.example.com
