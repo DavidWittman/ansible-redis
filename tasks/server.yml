@@ -36,7 +36,7 @@
         owner={{ redis_user }}
         state=directory
         recurse=yes
-  when: redis_logfile
+  when: logfile_stat.stat.exists == False and redis_logfile != '""'
 
 - name: ensure that log file exists and is writable by redis
   file: path={{ redis_logfile }}
