@@ -18,3 +18,4 @@ galaxy_info:
     - database:nosql
 
 dependencies: []
+version: 1.0.3
