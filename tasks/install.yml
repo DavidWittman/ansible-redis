@@ -60,7 +60,6 @@
 - name: install redis
   command: make PREFIX={{ redis_install_dir }} install
            chdir=/usr/local/src/redis-{{ redis_version }}
-           creates={{ redis_install_dir }}/bin/redis-server
 
 - name: remove redis build files
   file: name=/usr/local/src/redis-{{ redis_version }} state=absent
