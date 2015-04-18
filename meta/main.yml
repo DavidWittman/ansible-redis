@@ -17,4 +17,5 @@ galaxy_info:
     - database
     - database:nosql
 
+allow_duplicates: yes
 dependencies: []
