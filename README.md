@@ -23,6 +23,10 @@ $ ansible-galaxy install DavidWittman.redis
 
 ## Getting started
 
+Below are a few example playbooks and configurations for deploying a variety of Redis architectures.
+
+This role expects to be run as root or as a user with sudo privileges.
+
 ### Single Redis node
 
 Deploying a single Redis server node is pretty trivial; just add the role to your playbook and go. Here's an example which we'll make a little more exciting by setting the bind address to 127.0.0.1:
