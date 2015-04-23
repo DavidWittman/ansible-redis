@@ -5,7 +5,7 @@
         owner={{ redis_user }}
 
 - name: create redis init script
-  template: src={{ item }} dest=/etc/init.d/redis_{{ redis_port }}
+  template: src="{{ item }}" dest=/etc/init.d/redis_{{ redis_port }}
             mode=0755
   # Choose the distro-specific template. We must specify the templates
   # path here because with_first_found tries to find files in files/
