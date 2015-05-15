@@ -42,17 +42,16 @@ fi
 case "$1" in
     start)
         if [ -f $PIDFILE ]; then
-            echo "$PIDFILE exists, $NAME is already running or crashed"
+            status_of_proc -p $PIDFILE $DAEMON "$NAME process" && return 0
+        fi
+        if [ -n "$NOFILE_LIMIT" ]; then
+            ulimit -n $NOFILE_LIMIT
+        fi
+        log_daemon_msg "Starting $NAME..."
+        if start-stop-daemon --start -q --oknodo -p $PIDFILE -c $REDIS_USER --exec $DAEMON -- $CONF; then
+            log_end_msg 0
         else
-            if [ -n "$NOFILE_LIMIT" ]; then
-                ulimit -n $NOFILE_LIMIT
-            fi
-            log_daemon_msg "Starting $NAME..."
-            if start-stop-daemon --start -q --oknodo -p $PIDFILE -c $REDIS_USER --exec $DAEMON -- $CONF; then
-                log_end_msg 0
-            else
-                log_end_msg 1
-            fi
+            log_end_msg 1
         fi
         ;;
     stop)
