@@ -54,13 +54,7 @@ case "$1" in
         fi
         ;;
     status)
-        if [ -f $PIDFILE ] && ps $(cat $PIDFILE) > /dev/null 2>&1
-        then
-                echo "Running"
-        else
-                echo "Stopped"
-                exit 1
-        fi
+        status -p "${PIDFILE}" "redis_${REDIS_PORT}"
         ;;
     restart|force-reload)
         ${0} stop
