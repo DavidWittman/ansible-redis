@@ -55,7 +55,7 @@ case "$1" in
         fi
         ;;
     status)
-        status -p "${PIDFILE}" "redis_${REDIS_PORT}"
+        status -p "${PIDFILE}" "redis_sentinel_${REDIS_PORT}"
         ;;
     restart|force-reload)
         ${0} stop
