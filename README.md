@@ -210,6 +210,7 @@ redis_syslog_ident: redis_{{ redis_port }}
 redis_syslog_facility: USER   
 
 ## General configuration
+# Daemonize the redis server. Must be a string "yes" or "no".
 redis_daemonize: "yes"                                                          
 redis_pidfile: /var/run/redis/{{ redis_port }}.pid
 # Number of databases to allow
