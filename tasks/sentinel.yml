@@ -37,7 +37,7 @@
         owner={{ redis_user }}
         state=directory
         recurse=yes
-  when: redis_sentinel_logfile
+  when: redis_sentinel_logfile != '""'
 
 - name: ensure that sentinel log file exists and is writable by redis
   file: path={{ redis_sentinel_logfile }}
