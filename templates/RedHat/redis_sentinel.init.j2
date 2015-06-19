@@ -10,14 +10,14 @@
 
 SENTINEL_PORT={{ redis_sentinel_port }}
 
-if [ -r /etc/sysconfig/sentinel_${SENTINEL_PORT} ]; then
-    . /etc/sysconfig/sentinel_${SENTINEL_PORT}
+if [ -r /etc/sysconfig/sentinel ]; then
+    . /etc/sysconfig/sentinel
 fi
 
 REDIS_USER={{ redis_user }}
 BIND_ADDRESS={{ redis_sentinel_bind }}
 PIDFILE={{ redis_sentinel_pidfile }}
-CONF="/etc/redis/sentinel_${SENTINEL_PORT}.conf"
+CONF="/etc/redis/sentinel.conf"
 EXEC={{ redis_install_dir }}/bin/redis-server
 CLIEXEC={{ redis_install_dir }}/bin/redis-cli
 

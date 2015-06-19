@@ -59,3 +59,6 @@
   command: make PREFIX={{ redis_install_dir }} install
            chdir=/usr/local/src/redis-{{ redis_version }}
            creates={{ redis_install_dir }}/bin/redis-server
+
+- name: symlink redis-cli binary
+  file: src={{ redis_install_dir }}/bin/redis-cli dest={{ redis_cli_bin_dir }}/redis-cli state=link

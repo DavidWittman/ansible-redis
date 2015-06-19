@@ -10,13 +10,13 @@
 
 REDIS_PORT={{ redis_port }}
 
-if [ -r /etc/sysconfig/redis_${REDIS_PORT} ]; then
-    . /etc/sysconfig/redis_${REDIS_PORT}
+if [ -r /etc/sysconfig/redis ]; then
+    . /etc/sysconfig/redis
 fi
 
 REDIS_USER={{ redis_user }}
 PIDFILE={{ redis_pidfile }}
-CONF="/etc/redis/${REDIS_PORT}.conf"
+CONF="/etc/redis/redis.conf"
 EXEC={{ redis_install_dir }}/bin/redis-server
 CLIEXEC={{ redis_install_dir }}/bin/redis-cli
 
@@ -54,7 +54,7 @@ case "$1" in
         fi
         ;;
     status)
-        status -p "${PIDFILE}" "redis_${REDIS_PORT}"
+        status -p "${PIDFILE}" "redis"
         ;;
     restart|force-reload)
         ${0} stop

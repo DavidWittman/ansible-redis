@@ -1,9 +1,11 @@
 ---
 ## Installation options
+redis_server: true
 redis_version: 2.8.9
 redis_install_dir: /opt/redis
+redis_cli_bin_dir: /usr/bin
 redis_user: redis
-redis_dir: /var/lib/redis/{{ redis_port }}
+redis_dir: /var/lib/redis/
 redis_tarball: false
 # The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
@@ -38,13 +40,13 @@ redis_repl_backlog_size: false
 redis_logfile: '""'                                                             
 # Enable syslog. "yes" or "no"                                                  
 redis_syslog_enabled: "yes"                                                     
-redis_syslog_ident: redis_{{ redis_port }}                                      
+redis_syslog_ident: redis
 # Syslog facility. Must be USER or LOCAL0-LOCAL7                                
 redis_syslog_facility: USER   
 
 ## General configuration
 redis_daemonize: "yes"                                                          
-redis_pidfile: /var/run/redis/{{ redis_port }}.pid
+redis_pidfile: /var/run/redis/redis.pid
 # Number of databases to allow
 redis_databases: 16
 redis_loglevel: notice
@@ -72,12 +74,12 @@ redis_auto_aof_rewrite_min_size: "64mb"
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false
-redis_sentinel_dir: /var/lib/redis/sentinel_{{ redis_sentinel_port }}
+redis_sentinel_dir: /var/lib/redis/
 redis_sentinel_bind: 0.0.0.0
 redis_sentinel_port: 26379
-redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
+redis_sentinel_pidfile: /var/run/redis/sentinel.pid
 redis_sentinel_logfile: '""'
-redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
+redis_sentinel_syslog_ident: sentinel
 redis_sentinel_monitors:
   - name: master01
     host: localhost
