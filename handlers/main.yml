@@ -1,8 +1,8 @@
 ---
 - name: restart redis
-  service: name=redis_{{ redis_port }} state=restarted
+  service: name=redis-server state=restarted
   when: redis_as_service
 
 - name: restart sentinel
-  service: name=sentinel_{{ redis_sentinel_port }} state=restarted
+  service: name=redis-sentinel state=restarted
   when: redis_as_service

@@ -19,16 +19,16 @@
 . /lib/lsb/init-functions
 
 REDIS_PORT={{ redis_port }}
-NAME=redis_${REDIS_PORT}
+NAME=redis
 DAEMON={{ redis_install_dir }}/bin/redis-server
 PIDFILE={{ redis_pidfile }}
 
 REDIS_USER={{ redis_user }}
-CONF="/etc/redis/${REDIS_PORT}.conf"
+CONF="/etc/redis/redis.conf"
 CLIEXEC={{ redis_install_dir }}/bin/redis-cli
 
-if [ -r /etc/default/redis_${REDIS_PORT} ]; then
-    . /etc/default/redis_${REDIS_PORT}
+if [ -r /etc/default/redis ]; then
+    . /etc/default/redis
 fi
 
 if [ -n "$REDIS_PASSWORD" ]; then
@@ -58,7 +58,7 @@ case "$1" in
         if [ -f $PIDFILE ]; then
             PID=$(cat $PIDFILE)
             log_daemon_msg "Stopping $NAME..."
-            $CLIEXEC -h $BIND_ADDRESS -p $REDIS_PORT shutdown
+            $CLIEXEC -p $REDIS_PORT shutdown
             while [ -x /proc/${PID} ]; do
                 log_daemon_msg "Waiting for Redis to shutdown ..."
                 sleep 1
