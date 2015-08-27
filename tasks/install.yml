@@ -25,14 +25,6 @@
   sysctl: name=vm.overcommit_memory value=1 state=present reload=yes ignoreerrors=yes
   when: redis_travis_ci is not defined
 
-- name: add redis user
-  user:
-    name={{ redis_user }}
-    comment="Redis"
-    home={{ redis_install_dir }}
-    shell=/bin/false
-    system=yes
-
 - name: download redis
   get_url: url=http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz
            dest=/usr/local/src/redis-{{ redis_version }}.tar.gz
@@ -61,6 +53,14 @@
 - name: create /var/run/redis
   file: path=/var/run/redis state=directory
         owner={{ redis_user }}
+
+- name: add redis user
+  user:
+    name={{ redis_user }}
+    comment="Redis"
+    home={{ redis_install_dir }}
+    shell=/bin/false
+    system=yes
 
 - name: install redis
   command: make PREFIX={{ redis_install_dir }} install
