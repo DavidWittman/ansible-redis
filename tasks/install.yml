@@ -50,10 +50,6 @@
 - name: create /etc/redis
   file: path=/etc/redis state=directory
 
-- name: create /var/run/redis
-  file: path=/var/run/redis state=directory
-        owner={{ redis_user }}
-
 - name: add redis user
   user:
     name={{ redis_user }}
@@ -61,6 +57,10 @@
     home={{ redis_install_dir }}
     shell=/bin/false
     system=yes
+
+- name: create /var/run/redis
+  file: path=/var/run/redis state=directory
+        owner={{ redis_user }}
 
 - name: install redis
   command: make PREFIX={{ redis_install_dir }} install
