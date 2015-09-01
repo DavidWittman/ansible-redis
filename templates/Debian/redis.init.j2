@@ -41,6 +41,11 @@ fi
 
 case "$1" in
     start)
+        if [ ! -d /var/run/redis ]; then
+    	    mkdir /var/run/redis
+    	    chown {{ redis_user }}:{{ redis_user }} /var/run/redis
+    	    chmod 0755 /var/run/redis
+    	fi
         if [ -f $PIDFILE ]; then
             status_of_proc -p $PIDFILE $DAEMON "$NAME process" && return 0
         fi
