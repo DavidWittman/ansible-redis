@@ -19,10 +19,14 @@ BIND_ADDRESS={{ redis_sentinel_bind }}
 PIDFILE={{ redis_sentinel_pidfile }}
 CONF="/etc/redis/sentinel_${SENTINEL_PORT}.conf"
 EXEC={{ redis_install_dir }}/bin/redis-server
-CLIEXEC={{ redis_install_dir }}/bin/redis-cli
+CLIEXEC="{{ redis_install_dir }}/bin/redis-cli -p ${SENTINEL_PORT}"
 
 if [ -n "$REDIS_PASSWORD" ]; then
     CLIEXEC="${CLIEXEC} -a ${REDIS_PASSWORD}"
+fi
+
+if [ -n "$BIND_ADDRESS" ]; then
+    CLIEXEC="${CLIEXEC} -h ${BIND_ADDRESS}"
 fi
 
 case "$1" in
@@ -45,7 +49,7 @@ case "$1" in
         else
                 PID=$(cat $PIDFILE)
                 echo "Stopping ..."
-                $CLIEXEC -p $SENTINEL_PORT -h $BIND_ADDRESS shutdown
+                $CLIEXEC shutdown
                 while [ -x /proc/${PID} ]
                 do
                     echo "Waiting for Redis Sentinel to shutdown ..."

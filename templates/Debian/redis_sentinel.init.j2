@@ -26,7 +26,7 @@ PIDFILE_DIR=$(dirname "${PIDFILE}")
 
 REDIS_USER={{ redis_user }}
 CONF="/etc/redis/sentinel_${SENTINEL_PORT}.conf"
-CLIEXEC={{ redis_install_dir }}/bin/redis-cli
+CLIEXEC="{{ redis_install_dir }}/bin/redis-cli -p ${SENTINEL_PORT}"
 
 if [ -r /etc/default/sentinel_${SENTINEL_PORT} ]; then
     . /etc/default/sentinel_${SENTINEL_PORT}
@@ -67,7 +67,7 @@ case "$1" in
         if [ -f "$PIDFILE" ]; then
             PID=$(cat "$PIDFILE")
             log_daemon_msg "Stopping $NAME..."
-            $CLIEXEC -h $BIND_ADDRESS -p $SENTINEL_PORT shutdown
+            $CLIEXEC shutdown
             while [ -x /proc/${PID} ]; do
                 log_daemon_msg "Waiting for Redis to shutdown ..."
                 sleep 1
