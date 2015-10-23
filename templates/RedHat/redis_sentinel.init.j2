@@ -9,6 +9,7 @@
 . /etc/init.d/functions
 
 SENTINEL_PORT={{ redis_sentinel_port }}
+NAME="sentinel_${SENTINEL_PORT}"
 
 if [ -r /etc/sysconfig/sentinel_${SENTINEL_PORT} ]; then
     . /etc/sysconfig/sentinel_${SENTINEL_PORT}
@@ -59,7 +60,7 @@ case "$1" in
         fi
         ;;
     status)
-        status -p "${PIDFILE}" "redis_sentinel_${SENTINEL_PORT}"
+        status -p "${PIDFILE}" "sentinel_${SENTINEL_PORT}"
         ;;
     restart|force-reload)
         ${0} stop

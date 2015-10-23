@@ -9,6 +9,7 @@
 . /etc/init.d/functions
 
 REDIS_PORT={{ redis_port }}
+NAME="redis_${REDIS_PORT}"
 
 if [ -r /etc/sysconfig/redis_${REDIS_PORT} ]; then
     . /etc/sysconfig/redis_${REDIS_PORT}
