@@ -65,6 +65,10 @@ case "$1" in
         ${0} stop
         ${0} start
         ;;
+    status)
+        status -p ${PIDFILE} $EXEC
+        exit $?
+        ;;
     *)
         echo "Usage: /etc/init.d/$NAME {start|stop|status|restart|force-reload}" >&2
         exit 1

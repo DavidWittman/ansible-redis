@@ -11,6 +11,8 @@ redis_nofile_limit: 16384
 # This creates the init scripts for Redis and ensures the process is running
 # Also applies for Redis Sentinel
 redis_as_service: true
+# Upgrade Redis even if it is already installed
+redis_upgrade: false
 
 ## Networking/connection options
 redis_bind: 0.0.0.0
