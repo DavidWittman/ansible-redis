@@ -13,7 +13,7 @@
   2. [Master-Slave Replication](#master-slave-replication)
   3. [Redis Sentinel](#redis-sentinel)
  3. [Installing redis from a source file in the ansible role](#installing-redis-from-a-source-file-in-the-ansible-role)
- 4. [Configurables](#configurables)
+ 4. [Role Variables](#role-variables)
 
 ## Installation
 
@@ -140,7 +140,7 @@ Now, all we need to do is set the `redis_sentinel_monitors` variable to define t
 
 This will configure the Sentinel nodes to monitor the master we created above using the identifier `master01`. By default, Sentinel will use a quorum of 2, which means that at least 2 Sentinels must agree that a master is down in order for a failover to take place. This value can be overridden by setting the `quorum` key within your monitor definition. See the [Sentinel docs](http://redis.io/topics/sentinel) for more details.
 
-Along with the variables listed above, Sentinel has a number of its own configurables just as Redis server does. These are prefixed with `redis_sentinel_`, and are enumerated in the **Configurables** section below.
+Along with the variables listed above, Sentinel has a number of its own configurables just as Redis server does. These are prefixed with `redis_sentinel_`, and are enumerated in the **Role Variables** section below.
 
 
 ## Installing redis from a source file in the ansible role
@@ -158,26 +158,29 @@ In this case the source archive is copied towards the server over ssh rather tha
 
 
 
-## Configurables
+## Role Variables
 
 Here is a list of all the default variables for this role, which are also available in defaults/main.yml. One of these days I'll format these into a table or something.
 
 ``` yml
 ---
 ## Installation options
-redis_version: 2.8.8
+redis_version: 2.8.9
 redis_install_dir: /opt/redis
 redis_user: redis
-# Working directory for Redis. RDB and AOF files will be written here.
+redis_group: "{{ redis_user }}"
 redis_dir: /var/lib/redis/{{ redis_port }}
 redis_tarball: false
 # The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
+
+## Role options
 # Configure Redis as a service
-# When set to false, this role will not create init scripts or manage
-# the Redis/Sentinel processes.
-# This is usually needed when a tool like Supervisor will manage the process.
+# This creates the init scripts for Redis and ensures the process is running
+# Also applies for Redis Sentinel
 redis_as_service: true
+# Add local facts to /etc/ansible/facts.d for Redis
+redis_local_facts: true
 
 ## Networking/connection options
 redis_bind: 0.0.0.0
@@ -210,9 +213,7 @@ redis_syslog_ident: redis_{{ redis_port }}
 redis_syslog_facility: USER   
 
 ## General configuration
-# Daemonize the redis server. Must be a string "yes" or "no".
 redis_daemonize: "yes"                                                          
-# Pidfile. If the directory does not exist, it will be created with the redis user as the owner. The redis user must have rwx permissions on this directory.
 redis_pidfile: /var/run/redis/{{ redis_port }}.pid
 # Number of databases to allow
 redis_databases: 16
@@ -231,6 +232,12 @@ redis_save:
   - 900 1
   - 300 10
   - 60 10000
+redis_appendonly: "no"
+redis_appendfilename: "appendonly.aof"
+redis_appendfsync: "everysec"
+redis_no_appendfsync_on_rewrite: "no"
+redis_auto_aof_rewrite_percentage: "100"
+redis_auto_aof_rewrite_min_size: "64mb"
 
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
@@ -239,7 +246,7 @@ redis_sentinel_dir: /var/lib/redis/sentinel_{{ redis_sentinel_port }}
 redis_sentinel_bind: 0.0.0.0
 redis_sentinel_port: 26379
 redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
-redis_sentinel_logfile: '""'                                                    
+redis_sentinel_logfile: '""'
 redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
 redis_sentinel_monitors:
   - name: master01
@@ -252,6 +259,7 @@ redis_sentinel_monitors:
     failover_timeout: 180000
     notification_script: false
     client_reconfig_script: false
+
 ```
 
 ## Facts
@@ -263,3 +271,5 @@ The following facts are accessible in your inventory or tasks outside of this ro
 - `{{ ansible_local.redis.sentinel_bind }}`
 - `{{ ansible_local.redis.sentinel_port }}`
 - `{{ ansible_local.redis.sentinel_monitors }}`
+
+To disable these facts, set `redis_local_facts` to a false value.
