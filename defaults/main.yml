@@ -8,10 +8,14 @@ redis_dir: /var/lib/redis/{{ redis_port }}
 redis_tarball: false
 # The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
+
+## Role options
 # Configure Redis as a service
 # This creates the init scripts for Redis and ensures the process is running
 # Also applies for Redis Sentinel
 redis_as_service: true
+# Add local facts to /etc/ansible/facts.d for Redis
+redis_local_facts: true
 
 ## Networking/connection options
 redis_bind: 0.0.0.0

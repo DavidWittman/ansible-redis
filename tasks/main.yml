@@ -12,3 +12,4 @@
     - config
 
 - include: local_facts.yml
+  when: redis_local_facts|bool
