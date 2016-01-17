@@ -22,30 +22,43 @@
   service: name=sentinel_{{ redis_sentinel_port }} enabled=yes
   when: redis_as_service
 
-- name: check if sentinel log file exists
-  stat: path={{ redis_sentinel_logfile }}
-  register: sentinel_logfile_stat
-
-- name: ensure sentinel pidfile directory exists and has correct owner
-  file: path={{ redis_sentinel_pidfile|dirname }}
-        owner={{ redis_user }}
-        state=directory
-        recurse=yes
-
-- name: ensure sentinel logfile directory exists and has correct owner
-  file: path={{ redis_sentinel_logfile|dirname }}
-        owner={{ redis_user }}
-        state=directory
-        recurse=yes
+# Check then create log dir to prevent aggressively overwriting permissions
+- name: check if sentinel log directory exists
+  stat: path={{ redis_sentinel_logfile|dirname }}
+  register: sentinel_logdir
+  changed_when: false
   when: redis_sentinel_logfile != '""'
 
-- name: ensure that sentinel log file exists and is writable by redis
-  file: path={{ redis_sentinel_logfile }}
+- name: create sentinel log directory if it does not exist
+  file: state=directory
+        path={{ redis_sentinel_logfile|dirname }}
         owner={{ redis_user }}
-        group={{ redis_user }}
-        mode=0600
-        state=touch
-  when: sentinel_logfile_stat.stat.exists == False and redis_sentinel_logfile != '""'
+        group={{ redis_group }}
+  when:
+    - redis_sentinel_logfile != '""'
+    - not sentinel_logdir.stat.exists
+
+- name: touch the sentinel log file
+  file: state=touch
+        path={{ redis_sentinel_logfile }}
+        owner={{ redis_user }}
+        group={{ redis_group }}
+  when: redis_sentinel_logfile != '""'
+
+- name: check if sentinel pid directory exists
+  stat: path={{ redis_sentinel_pidfile|dirname }}
+  register: sentinel_piddir
+  changed_when: false
+  when: redis_sentinel_pidfile != '""'
+
+- name: create sentinel pid directory if it does not exist
+  file: state=directory
+        path={{ redis_sentinel_pidfile|dirname }}
+        owner={{ redis_user }}
+        group={{ redis_group }}
+  when:
+    - redis_sentinel_pidfile != '""'
+    - not sentinel_piddir.stat.exists
 
 - name: create sentinel config file
   template: src=redis_sentinel.conf.j2

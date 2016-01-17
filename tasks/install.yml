@@ -36,8 +36,8 @@
   when: redis_tarball
 
 - name: extract redis tarball
-  shell: tar xf /usr/local/src/redis-{{ redis_version }}.tar.gz -C /usr/local/src
-         creates=/usr/local/src/redis-{{ redis_version }}
+  unarchive: src=/usr/local/src/redis-{{ redis_version }}.tar.gz dest=/usr/local/src
+             creates=/usr/local/src/redis-{{ redis_version }}/Makefile
 
 - name: compile redis
   command: make -j5
