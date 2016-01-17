@@ -40,7 +40,7 @@
 
 - name: download redis
   get_url:
-    url: http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz
+    url: "{{ redis_download_url }}"
     dest: /usr/local/src/redis-{{ redis_version }}.tar.gz
   when: not redis_tarball
   
