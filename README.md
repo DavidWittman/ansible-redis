@@ -212,6 +212,7 @@ redis_syslog_facility: USER
 ## General configuration
 # Daemonize the redis server. Must be a string "yes" or "no".
 redis_daemonize: "yes"                                                          
+# Pidfile. If the directory does not exist, it will be created with the redis user as the owner. The redis user must have rwx permissions on this directory.
 redis_pidfile: /var/run/redis/{{ redis_port }}.pid
 # Number of databases to allow
 redis_databases: 16
