@@ -43,7 +43,7 @@
     url: "{{ redis_download_url }}"
     dest: /usr/local/src/redis-{{ redis_version }}.tar.gz
   when: not redis_tarball
-  
+
 - name: upload redis
   copy:
     src: "{{ redis_tarball }}"
@@ -55,6 +55,7 @@
     src: /usr/local/src/redis-{{ redis_version }}.tar.gz
     dest: /usr/local/src
     creates: /usr/local/src/redis-{{ redis_version }}/Makefile
+    copy: no
 
 - name: compile redis
   command: make -j{{ ansible_processor_cores + 1 }}
