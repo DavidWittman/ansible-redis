@@ -170,6 +170,7 @@ redis_install_dir: /opt/redis
 redis_user: redis
 redis_group: "{{ redis_user }}"
 redis_dir: /var/lib/redis/{{ redis_port }}
+redis_download_url: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
 redis_tarball: false
 # The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
