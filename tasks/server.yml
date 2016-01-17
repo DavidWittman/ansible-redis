@@ -1,12 +1,16 @@
 ---
 - name: create redis working directory
-  file: path={{ redis_dir }} state=directory
-        recurse=yes
-        owner={{ redis_user }}
+  file:
+    path: "{{ redis_dir }}"
+    state: directory
+    recurse: yes
+    owner: "{{ redis_user }}"
 
 - name: create redis init script
-  template: src="{{ item }}" dest=/etc/init.d/redis_{{ redis_port }}
-            mode=0755
+  template:
+    src: "{{ item }}"
+    dest: /etc/init.d/redis_{{ redis_port }}
+    mode: 0755
   # Choose the distro-specific template. We must specify the templates
   # path here because with_first_found tries to find files in files/
   with_first_found:
@@ -18,63 +22,74 @@
   when: redis_as_service
  
 - name: set redis to start at boot
-  service: name=redis_{{ redis_port }} enabled=yes
+  service:
+    name: redis_{{ redis_port }}
+    enabled: yes
   when: redis_as_service
    
 # Check then create log dir to prevent aggressively overwriting permissions
 - name: check if log directory exists
-  stat: path={{ redis_logfile|dirname }}
+  stat:
+    path: "{{ redis_logfile|dirname }}"
   register: logdir
   changed_when: false
   when: redis_logfile != '""'
 
 - name: create log directory if it does not exist
-  file: state=directory
-        path={{ redis_logfile|dirname }}
-        owner={{ redis_user }}
-        group={{ redis_group }}
+  file:
+    state: directory
+    path: "{{ redis_logfile|dirname }}"
+    owner: "{{ redis_user }}"
+    group: "{{ redis_group }}"
   when:
     - redis_logfile != '""'
     - not logdir.stat.exists
 
 - name: touch the log file
-  file: state=touch
-        path={{ redis_logfile }}
-        owner={{ redis_user }}
-        group={{ redis_group }}
+  file:
+    state: touch
+    path: "{{ redis_logfile }}"
+    owner: "{{ redis_user }}"
+    group: "{{ redis_group }}"
   when: redis_logfile != '""'
 
 - name: check if pid directory exists
-  stat: path={{ redis_pidfile|dirname }}
+  stat:
+    path: "{{ redis_pidfile|dirname }}"
   register: piddir
   changed_when: false
   when: redis_pidfile != '""'
 
 - name: create pid directory if it does not exist
-  file: state=directory
-        path={{ redis_pidfile|dirname }}
-        owner={{ redis_user }}
-        group={{ redis_group }}
+  file:
+    state: directory
+    path: "{{ redis_pidfile|dirname }}"
+    owner: "{{ redis_user }}"
+    group: "{{ redis_group }}"
   when:
     - redis_pidfile != '""'
     - not piddir.stat.exists
 
 - name: create redis config file
-  template: src=redis.conf.j2 dest=/etc/redis/{{ redis_port }}.conf
-            owner={{ redis_user }}
+  template:
+    src: redis.conf.j2
+    dest: /etc/redis/{{ redis_port }}.conf
+    owner: "{{ redis_user }}"
   notify: restart redis
 
 - name: add redis init config file
-  template: dest=/etc/sysconfig/redis_{{ redis_port }}
-            src=redis.init.conf.j2
-            mode=0600
+  template:
+    dest: /etc/sysconfig/redis_{{ redis_port }}
+    src: redis.init.conf.j2
+    mode: 0600
   when: ansible_os_family == "RedHat"
   notify: restart redis
 
 - name: add redis init config file
-  template: dest=/etc/default/redis_{{ redis_port }}
-            src=redis.init.conf.j2
-            mode=0600
+  template:
+    dest: /etc/default/redis_{{ redis_port }}
+    src: redis.init.conf.j2
+    mode: 0600
   when: ansible_os_family == "Debian"
   notify: restart redis
 
@@ -84,5 +99,7 @@
   meta: flush_handlers
 
 - name: ensure redis is running
-  service: name=redis_{{ redis_port }} state=started
+  service:
+    name: redis_{{ redis_port }}
+    state: started
   when: redis_as_service
