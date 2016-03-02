@@ -5,6 +5,7 @@ python: "2.7"
 env:
   - ANSIBLE_VERSION=1.9.4
   - ANSIBLE_VERSION=latest
+  - REDIS_PASSWORD=ant1r3z
 
 before_install:
   - sudo apt-get update -qq
@@ -15,23 +16,14 @@ install:
 
 script:
   # Syntax check
-  - "ansible-playbook -i localhost, test/test_server.yml --syntax-check"
-  - "ansible-playbook -i localhost, test/test_sentinel.yml --syntax-check"
+  - "ansible-playbook -i localhost, test/test_all.yml --syntax-check"
   # Run role
-  - "ansible-playbook -i localhost, test/test_server.yml --connection=local --sudo"
+  - "ansible-playbook -i localhost, test/test_all.yml --connection=local --sudo"
   # Idempotency check
   - >
-    ansible-playbook -i localhost, test/test_server.yml --connection=local --sudo
-    | grep -q 'changed=0.*failed=0'
-    && (echo 'Idempotency: PASS' && exit 0)
-    || (echo 'Idempotency: FAIL' && exit 1)
-  - "ansible-playbook -i localhost, test/test_sentinel.yml --connection=local --sudo"
-  - >
-    ansible-playbook -i localhost, test/test_sentinel.yml --connection=local --sudo
-    | grep -q 'changed=0.*failed=0'
-    && (echo 'Idempotency: PASS' && exit 0)
-    || (echo 'Idempotency: FAIL' && exit 1)
-  - "/opt/redis/bin/redis-cli PING"
+    ansible-playbook -i localhost, test/test_all.yml --connection=local --sudo -D
+  - "/opt/redis/bin/redis-cli -a $REDIS_PASSWORD PING"
+  - "/opt/redis/bin/redis-cli -p 7379 -a $REDIS_PASSWORD PING"
   - "/opt/redis/bin/redis-cli -p 26379 PING"
   # Facts syntax check
   - >
