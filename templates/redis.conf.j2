@@ -207,7 +207,7 @@ slaveof {{ redis_slaveof }}
 # refuse the slave request.
 #
 # masterauth <master-password>
-{% if redis_slaveof and redis_password -%}
+{% if redis_password -%}
 masterauth {{ redis_password }}
 {% endif -%}
 
