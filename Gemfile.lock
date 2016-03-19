@@ -4,7 +4,7 @@ GEM
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
     highline (1.7.8)
-    kitchen-ansible (0.0.36)
+    kitchen-ansible (0.0.39)
       librarian-ansible
       test-kitchen (~> 1.4)
     kitchen-vagrant (0.19.0)
@@ -12,19 +12,21 @@ GEM
     librarian (0.1.2)
       highline
       thor (~> 0.15)
-    librarian-ansible (1.0.6)
+    librarian-ansible (3.0.0)
       faraday
       librarian (~> 0.1.0)
-    mixlib-shellout (2.2.5)
+    mixlib-install (0.7.1)
+    mixlib-shellout (2.2.6)
     multipart-post (2.0.0)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
-    net-ssh (2.9.2)
+    net-ssh (3.1.0)
     safe_yaml (1.0.4)
-    test-kitchen (1.4.2)
+    test-kitchen (1.6.0)
+      mixlib-install (~> 0.7)
       mixlib-shellout (>= 1.2, < 3.0)
       net-scp (~> 1.1)
-      net-ssh (~> 2.7, < 2.10)
+      net-ssh (>= 2.9, < 4.0)
       safe_yaml (~> 1.0)
       thor (~> 0.18)
     thor (0.19.1)
@@ -36,6 +38,3 @@ DEPENDENCIES
   kitchen-ansible
   kitchen-vagrant
   test-kitchen
-
-BUNDLED WITH
-   1.11.2
