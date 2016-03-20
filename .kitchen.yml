@@ -23,3 +23,4 @@ suites:
   - name: default
   - name: logfile
   - name: sentinel
+  - name: checksum

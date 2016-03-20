@@ -38,11 +38,34 @@
     ignoreerrors: yes
   when: redis_travis_ci is not defined
 
-- name: download redis
+# get_url on Ansible 1.x only supports sha256 checksumming, so we're only
+# using `redis_checksums` on Ansible 2.x because they're sha1.
+- name: set redis checksum
+  set_fact:
+    redis_checksum: "sha1:{{ redis_checksums[redis_version] }}"
+  when:
+    - redis_verify_checksum|bool
+    - redis_checksum is not defined
+    - redis_version in redis_checksums
+    - ansible_version.major >= 2
+
+- name: download redis (ansible 1.x)
   get_url:
     url: "{{ redis_download_url }}"
     dest: /usr/local/src/redis-{{ redis_version }}.tar.gz
-  when: not redis_tarball
+    sha256sum: "{{ redis_checksum|default(omit) }}"
+  when:
+    - not redis_tarball
+    - ansible_version.major < 2
+
+- name: download redis (ansible 2.x)
+  get_url:
+    url: "{{ redis_download_url }}"
+    dest: /usr/local/src/redis-{{ redis_version }}.tar.gz
+    checksum: "{{ redis_checksum|default(omit) }}"
+  when:
+    - not redis_tarball
+    - ansible_version.major >= 2
 
 - name: upload redis
   copy:

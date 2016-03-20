@@ -1,4 +1,6 @@
 ---
+- include: check_vars.yml
+
 - include: install.yml
 
 - include: server.yml

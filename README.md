@@ -13,7 +13,8 @@
   2. [Master-Slave Replication](#master-slave-replication)
   3. [Redis Sentinel](#redis-sentinel)
  3. [Installing redis from a source file in the ansible role](#installing-redis-from-a-source-file-in-the-ansible-role)
- 4. [Role Variables](#role-variables)
+ 4. [Verifying checksums](#verifying-checksums)
+ 5. [Role Variables](#role-variables)
 
 ## Installation
 
@@ -156,7 +157,37 @@ vars:
 ```
 In this case the source archive is copied towards the server over ssh rather than downloaded.
 
+## Verifying checksums
 
+Set the `redis_verify_checksum` variable to true to use the checksum verification option for `get_url`. Note that this will only verify checksums when Redis is downloaded from a URL, not when one is provided in a tarball with `redis_tarball`. Due to differences in the `get_url` module in Ansible 1.x and Ansible 2.x, this feature behaves differently depending on the version of Ansible which you are using.
+
+### Ansible 1.x
+
+In Ansible 1.x, the `get_url` module only support verifying sha256 checksums, which are not provided by default. If you wish to set `redis_verify_checksum`, you must also define a sha256 checksum with the `redis_checksum` variable.
+
+``` yaml
+- name: install redis on ansible 1.x and verify checksums
+  hosts: all
+  roles:
+    - role: DavidWittman.redis
+      redis_version: 3.0.7
+      redis_verify_checksum: true
+      redis_checksum: b2a791c4ea3bb7268795c45c6321ea5abcc24457178373e6a6e3be6372737f23
+```
+
+### Ansible 2.x
+
+When using Ansible 2.x, this role will verify the sha1 checksum of the download against checksums defined in the `redis_checksums` variable in `vars/main.yml`. If your version is not defined in here or you wish to override the checksum with one of your own, simply set the `redis_checksum` variable. As in the example below, you will need to prefix the checksum with the type of hash which you are using.
+
+``` yaml
+- name: install redis on ansible 1.x and verify checksums
+  hosts: all
+  roles:
+    - role: DavidWittman.redis
+      redis_version: 3.0.7
+      redis_verify_checksum: true
+      redis_checksum: "sha256:b2a791c4ea3bb7268795c45c6321ea5abcc24457178373e6a6e3be6372737f23"
+```
 
 ## Role Variables
 
@@ -171,6 +202,7 @@ redis_user: redis
 redis_group: "{{ redis_user }}"
 redis_dir: /var/lib/redis/{{ redis_port }}
 redis_download_url: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
+redis_verify_checksum: false
 redis_tarball: false
 # The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
