@@ -37,6 +37,10 @@
     reload: yes
     ignoreerrors: yes
   when: redis_travis_ci is not defined
+  
+- name: Disable Transparent Hugepages
+  shell: if test -f /sys/kernel/mm/transparent_hugepage/enabled; then echo never > /sys/kernel/mm/transparent_hugepage/enabled; fi;
+  when: redis_travis_ci is not defined
 
 # get_url on Ansible 1.x only supports sha256 checksumming, so we're only
 # using `redis_checksums` on Ansible 2.x because they're sha1.
