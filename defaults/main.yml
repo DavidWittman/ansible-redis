@@ -23,6 +23,9 @@ redis_local_facts: true
 redis_bind: 0.0.0.0
 redis_port: 6379
 redis_password: false
+# Slave replication options
+redis_min_slaves_to_write: 0
+redis_min_slaves_max_lag: 10
 redis_tcp_backlog: 511
 redis_tcp_keepalive: 0
 # Max connected clients at a time
