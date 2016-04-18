@@ -40,6 +40,12 @@ repl-disable-tcp-nodelay no
 repl-backlog-size {{ redis_repl_backlog_size }}
 {% endif -%}
 slave-priority {{ redis_slave_priority }}
+{% if redis_min_slaves_to_write -%}
+min-slaves-to-write {{ redis_min_slaves_to_write }}
+{% endif -%}
+{% if redis_min_slaves_max_lag -%}
+min-slaves-max-lag {{ redis_min_slaves_max_lag }}
+{% endif -%}
 {% if redis_password -%}
 masterauth {{ redis_password }}
 {% endif -%}
