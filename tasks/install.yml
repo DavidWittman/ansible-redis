@@ -18,7 +18,7 @@
   with_items:
     - gcc
     - make
-    - jmealloc-devel
+    - jemalloc-devel
   when: ansible_os_family == "RedHat"
 
 - name: install dependencies
@@ -28,7 +28,7 @@
   with_items:
     - gcc
     - make
-    - jmealloc-devel
+    - jemalloc-devel
   when: ansible_os_family == 'Suse'
 
 - name: enable overcommit in sysctl
