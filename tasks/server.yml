@@ -70,11 +70,18 @@
     - redis_pidfile != '""'
     - not piddir.stat.exists
 
+- name: check if redis config file exists
+  stat: 
+    path: "/etc/redis/{{ redis_port }}.conf"
+  register: configfile
+  changed_when: false
+
 - name: create redis config file
   template:
     src: redis.conf.j2
     dest: /etc/redis/{{ redis_port }}.conf
     owner: "{{ redis_user }}"
+  when: not configfile.stat.exists or force_update
   notify: restart redis
 
 - name: add redis init config file

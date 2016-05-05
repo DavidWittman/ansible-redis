@@ -70,11 +70,18 @@
     - redis_sentinel_pidfile != '""'
     - not sentinel_piddir.stat.exists
 
+- name: check if redis config file exists
+  stat: 
+    path: "/etc/redis/sentinel_{{ redis_sentinel_port }}.conf"
+  register: sentinel_configfile
+  changed_when: false
+
 - name: create sentinel config file
   template:
     src: redis_sentinel.conf.j2
     dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
     owner: "{{ redis_user }}"
+  when: not sentinel_configfile.stat.exists or sentinel_force_update
   notify: restart sentinel
 
 - name: add sentinel init config file
