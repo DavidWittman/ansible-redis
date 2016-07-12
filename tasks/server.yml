@@ -9,7 +9,7 @@
 - name: create redis init script
   template:
     src: "{{ item }}"
-    dest: /etc/init.d/redis_{{ redis_port }}
+    dest: /etc/init.d/{{ redis_service_name }}
     mode: 0755
   # Choose the distro-specific template. We must specify the templates
   # path here because with_first_found tries to find files in files/
@@ -20,13 +20,13 @@
       paths:
         - ../templates
   when: redis_as_service
- 
+
 - name: set redis to start at boot
   service:
-    name: redis_{{ redis_port }}
+    name: "{{ redis_service_name }}"
     enabled: yes
   when: redis_as_service
-   
+
 # Check then create log dir to prevent aggressively overwriting permissions
 - name: check if log directory exists
   stat:
@@ -79,7 +79,7 @@
 
 - name: add redis init config file
   template:
-    dest: /etc/sysconfig/redis_{{ redis_port }}
+    dest: /etc/sysconfig/{{ redis_service_name }}
     src: redis.init.conf.j2
     mode: 0600
   when: ansible_os_family == "RedHat"
@@ -87,7 +87,7 @@
 
 - name: add redis init config file
   template:
-    dest: /etc/default/redis_{{ redis_port }}
+    dest: /etc/default/{{ redis_service_name }}
     src: redis.init.conf.j2
     mode: 0600
   when: ansible_os_family == "Debian"
@@ -100,6 +100,6 @@
 
 - name: ensure redis is running
   service:
-    name: redis_{{ redis_port }}
+    name: "{{ redis_service_name }}"
     state: started
   when: redis_as_service

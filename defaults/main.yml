@@ -18,6 +18,8 @@ redis_nofile_limit: 16384
 redis_as_service: true
 # Add local facts to /etc/ansible/facts.d for Redis
 redis_local_facts: true
+# Service name
+redis_service_name: "redis_{{ redis_port }}"
 
 ## Networking/connection options
 redis_bind: 0.0.0.0
@@ -45,15 +47,15 @@ redis_slave_priority: 100
 redis_repl_backlog_size: false
 
 ## Logging
-redis_logfile: '""'                                                             
-# Enable syslog. "yes" or "no"                                                  
-redis_syslog_enabled: "yes"                                                     
-redis_syslog_ident: redis_{{ redis_port }}                                      
-# Syslog facility. Must be USER or LOCAL0-LOCAL7                                
-redis_syslog_facility: USER   
+redis_logfile: '""'
+# Enable syslog. "yes" or "no"
+redis_syslog_enabled: "yes"
+redis_syslog_ident: "{{ redis_service_name }}"
+# Syslog facility. Must be USER or LOCAL0-LOCAL7
+redis_syslog_facility: USER
 
 ## General configuration
-redis_daemonize: "yes"                                                          
+redis_daemonize: "yes"
 redis_pidfile: /var/run/redis/{{ redis_port }}.pid
 # Number of databases to allow
 redis_databases: 16
