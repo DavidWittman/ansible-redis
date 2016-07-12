@@ -8,6 +8,7 @@ redis_dir: /var/lib/redis/{{ redis_port }}
 redis_download_url: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
 redis_verify_checksum: false
 redis_tarball: false
+redis_server: true
 # The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
 
@@ -45,15 +46,15 @@ redis_slave_priority: 100
 redis_repl_backlog_size: false
 
 ## Logging
-redis_logfile: '""'                                                             
-# Enable syslog. "yes" or "no"                                                  
-redis_syslog_enabled: "yes"                                                     
-redis_syslog_ident: redis_{{ redis_port }}                                      
-# Syslog facility. Must be USER or LOCAL0-LOCAL7                                
-redis_syslog_facility: USER   
+redis_logfile: '""'
+# Enable syslog. "yes" or "no"
+redis_syslog_enabled: "yes"
+redis_syslog_ident: redis_{{ redis_port }}
+# Syslog facility. Must be USER or LOCAL0-LOCAL7
+redis_syslog_facility: USER
 
 ## General configuration
-redis_daemonize: "yes"                                                          
+redis_daemonize: "yes"
 redis_pidfile: /var/run/redis/{{ redis_port }}.pid
 # Number of databases to allow
 redis_databases: 16
