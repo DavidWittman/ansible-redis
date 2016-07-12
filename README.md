@@ -243,7 +243,7 @@ redis_repl_backlog_size: false
 redis_logfile: '""'
 # Enable syslog. "yes" or "no"
 redis_syslog_enabled: "yes"
-redis_syslog_ident: {{ redis_service_name }}
+redis_syslog_ident: "{{ redis_service_name }}"
 # Syslog facility. Must be USER or LOCAL0-LOCAL7
 redis_syslog_facility: USER
 
