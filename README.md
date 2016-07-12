@@ -98,7 +98,7 @@ Sentinel itself uses the same redis-server binary that Redis uses, but runs with
 
 #### Configuration
 
-To add a Sentinel node to an existing deployment, assign this same `redis` role to it, and set the variable `redis_sentinel` to True on that particular host. This can be done in any number of ways, and for the purposes of this example I'll extend on the inventory file used above in the Master/Slave configuration:
+To add a Sentinel node to an existing deployment, assign this same `redis` role to it, and set the variable `redis_sentinel` to True  and `redis_server` to False on that particular host. This can be done in any number of ways, and for the purposes of this example I'll extend on the inventory file used above in the Master/Slave configuration:
 
 ``` ini
 [redis-master]
@@ -108,10 +108,12 @@ redis-master.example.com
 redis-slave0[1:3].example.com
 
 [redis-sentinel]
-redis-sentinel0[1:3].example.com redis_sentinel=True
+redis-sentinel0[1:3].example.com redis_server=False redis_sentinel=True
 ```
 
 Above, we've added three more hosts in the **redis-sentinel** group (though this group serves no purpose within the role, it's merely an identifier), and set the `redis_sentinel` variable inline within the inventory file.
+
+If redis-sentinel and redis-master or redis-slave are the same host, you could set `redis_server=True` (default value) to install redis server and redis sentinel on a same host.
 
 Now, all we need to do is set the `redis_sentinel_monitors` variable to define the Redis masters which Sentinel should monitor. In this case, I'm going to do this within the playbook:
 
