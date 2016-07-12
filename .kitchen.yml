@@ -24,3 +24,4 @@ suites:
   - name: logfile
   - name: sentinel
   - name: checksum
+  - name: service-name
