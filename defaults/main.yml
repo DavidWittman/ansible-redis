@@ -101,3 +101,8 @@ redis_sentinel_monitors:
     failover_timeout: 180000
     notification_script: false
     client_reconfig_script: false
+
+# Whether or not to force the update of the config files 
+# if they already exist
+force_update: false
+sentinel_force_update: false

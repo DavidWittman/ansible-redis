@@ -18,6 +18,7 @@
   with_items:
     - gcc
     - make
+    - jemalloc-devel
   when: ansible_os_family == "RedHat"
 
 - name: install dependencies
@@ -27,6 +28,7 @@
   with_items:
     - gcc
     - make
+    - jemalloc-devel
   when: ansible_os_family == 'Suse'
 
 - name: enable overcommit in sysctl
@@ -115,3 +117,12 @@
   args:
     chdir: /usr/local/src/redis-{{ redis_version }}
     creates: "{{ redis_install_dir }}/bin/redis-server"
+
+- name: Add redis to the PATH
+  lineinfile:
+    line={{ item }}
+    dest=/etc/profile.d/99-redis_path.sh
+    create=yes
+  with_items:
+    - export PATH={{ redis_install_dir }}/bin/:$PATH
+
