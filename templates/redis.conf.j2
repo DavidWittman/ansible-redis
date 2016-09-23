@@ -24,9 +24,9 @@ databases {{ redis_databases }}
 {% for save in redis_save -%}
 save {{ save }}
 {% endfor -%}
-stop-writes-on-bgsave-error yes
-rdbcompression yes
-rdbchecksum yes
+stop-writes-on-bgsave-error {{ redis_stop_writes_on_bgsave_error }}
+rdbcompression {{ redis_rdbcompression }}
+rdbchecksum {{ redis_rdbchecksum }}
 dbfilename dump.rdb
 
 # Replication
