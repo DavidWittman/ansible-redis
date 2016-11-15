@@ -8,6 +8,7 @@ Type={{ 'forking' if redis_daemonize == 'yes' else 'simple' }}
 ExecStartPre=-/bin/mkdir {{ redis_pidfile | dirname }}
 ExecStartPre=/bin/chown -R {{ redis_user }}:{{ redis_group }} {{ redis_pidfile | dirname }}
 ExecStart="{{ redis_install_dir }}/bin/redis-server" /etc/redis/{{ redis_port }}.conf
+EnvironmentFile=-/etc/default/redis_{{ redis_port }}
 PIDFile={{ redis_pidfile }}
 TimeoutStopSec=0
 Restart=always

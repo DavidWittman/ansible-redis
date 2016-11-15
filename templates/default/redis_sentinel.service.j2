@@ -8,6 +8,7 @@ Type={{ 'forking' if redis_daemonize == 'yes' else 'simple' }}
 ExecStartPre=-/bin/mkdir {{ redis_sentinel_pidfile | dirname }}
 ExecStartPre=/bin/chown -R {{ redis_user }}:{{ redis_group }} {{ redis_sentinel_pidfile | dirname }}
 ExecStart="{{ redis_install_dir }}/bin/redis-sentinel" /etc/redis/{{ redis_sentinel_port }}.conf
+EnvironmentFile=-/etc/default/sentinel_{{ redis_sentinel_port }}
 PIDFile={{ redis_sentinel_pidfile }}
 TimeoutStopSec=0
 Restart=always
