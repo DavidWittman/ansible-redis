@@ -1,24 +1,33 @@
 ---
 driver:
-  name: vagrant
+  name: docker
+  use_sudo: false
 
 provisioner:
   name: ansible_playbook
   ansible_verbose: true
   ansible_verbosity: 2
-  require_ruby_for_busser: false
-  require_chef_for_busser: true
+  require_ruby_for_busser: true
+  require_chef_for_busser: false
   hosts: all
+  role_name: ansible-redis
+
+busser:
+  ruby_bindir: /usr/bin
 
 platforms:
   - name: ubuntu-14.04
-  - name: centos-6.7
     driver_config:
-      box: wittman/centos-6.7-ansible
-  - name: centos-7.2
-    driver_config:
-      box: wittman/centos-7.2-ansible
+      image: williamyeh/ansible:ubuntu14.04
   - name: ubuntu-16.04
+    driver_config:
+      image: williamyeh/ansible:ubuntu16.04
+  - name: centos-6
+    driver_config:
+      image: williamyeh/ansible:centos6
+  - name: centos-7
+    driver_config:
+      image: williamyeh/ansible:centos7
 
 suites:
   - name: default
