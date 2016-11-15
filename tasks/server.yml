@@ -19,12 +19,26 @@
       - default/redis.init.j2
       paths:
         - ../templates
-  when: redis_as_service
+  when: redis_as_service and ansible_service_mgr | default != 'systemd'
+
+- name: create redis systemd service
+  template:
+    src: "{{ item }}"
+    dest: /etc/systemd/system/{{ redis_service_name }}.service
+    mode: 0644
+  with_first_found:
+    - files:
+      - "{{ ansible_os_family }}/redis.service.j2"
+      - default/redis.service.j2
+      paths:
+        - ../templates
+  when: redis_as_service and ansible_service_mgr | default == 'systemd'
 
 - name: set redis to start at boot
   service:
     name: "{{ redis_service_name }}"
     enabled: yes
+    daemon_reload: "{{ True if ansible_service_mgr | default == 'systemd' else omit }}"
   when: redis_as_service
 
 # Check then create log dir to prevent aggressively overwriting permissions
