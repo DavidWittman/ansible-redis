@@ -1,0 +1,37 @@
+#!/bin/sh
+
+set -e
+
+REDIS_CLI="'{{ redis_install_dir }}/bin/redis-cli' -p {{ redis_sentinel_port if redis_sentinel else redis_port }}"
+{% if redis_password %}
+REDIS_CLI="$REDIS_CLI -a '{{ redis_password }}'"
+{% endif %}
+
+{% if redis_sentinel | default %}
+info_section=default
+{% else %}
+info_section=all
+{% endif %}
+
+parse_info() {
+    first=1
+    tr -d '\r' | while IFS=':' read key value; do
+        case "$key" in
+        ""|\#*) continue ;;
+        esac
+
+        if [ $first -eq 1 ]; then
+            first=0
+            printf '{\n'
+        else
+            printf ',\n'
+        fi
+
+        printf '  "%s": "%s"' "$key" "$(echo "$value")"
+    done
+    unset first
+}
+
+eval $REDIS_CLI info "$info_section" | parse_info
+
+printf '\n}\n'
