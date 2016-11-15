@@ -26,3 +26,4 @@ suites:
   - name: sentinel
   - name: checksum
   - name: service-name
+  - name: facts
