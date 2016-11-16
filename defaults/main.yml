@@ -67,6 +67,11 @@ redis_slowlog_max_len: 128
 # Redis memory limit (e.g. 4294967296, 4096mb, 4gb)
 redis_maxmemory: false
 redis_maxmemory_policy: noeviction
+# Number of keys the LRU algorithm will check when looking for an old key to
+# remove. Lower sample sizes are faster at the cost of accuracy, while higher
+# sample sizes are more accurate at the cost of CPU.
+# The default of 5 is sufficient.
+redis_maxmemory_samples: 5
 redis_rename_commands: []
 # How frequently to snapshot the database to disk
 # e.g. "900 1" => 900 seconds if at least 1 key changed

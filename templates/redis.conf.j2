@@ -64,6 +64,7 @@ maxclients {{ redis_maxclients }}
 maxmemory {{ redis_maxmemory }}
 {% endif -%}
 maxmemory-policy {{ redis_maxmemory_policy }}
+maxmemory-samples {{ redis_maxmemory_samples }}
 
 # Append Only Mode
 appendonly {{ redis_appendonly }}
