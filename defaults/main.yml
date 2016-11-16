@@ -41,6 +41,8 @@ redis_socket_perm: 755
 ## Replication options
 # Set slaveof just as you would in redis.conf. (e.g. "redis01 6379")
 redis_slaveof: false
+# Ignore manually assigned roles for instances if runtime status can be used instead
+redis_runtime_replication_role: yes
 # Make slaves read-only. "yes" or "no"
 redis_slave_read_only: "yes"
 redis_slave_priority: 100

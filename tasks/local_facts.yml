@@ -15,6 +15,7 @@
     dest: /etc/ansible/facts.d/redis_{{ redis_port }}.fact
     mode: 0755
   when: not redis_sentinel
+  register: redis_facts_install_result
 
 - name: create redis sentinel facts
   template:
@@ -22,3 +23,8 @@
     dest: /etc/ansible/facts.d/redis_sentinel_{{ redis_sentinel_port }}.fact
     mode: 0755
   when: redis_sentinel
+  register: redis_sentinel_facts_install_result
+
+- name: refresh facts due to new fact scripts
+  setup:
+  when: redis_facts_install_result.changed or redis_sentinel_facts_install_result.changed
