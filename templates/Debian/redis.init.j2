@@ -22,7 +22,7 @@ REDIS_PORT={{ redis_port }}
 NAME=redis_${REDIS_PORT}
 DAEMON={{ redis_install_dir }}/bin/redis-server
 PIDFILE={{ redis_pidfile }}
-PIDFILE_DIR=$(dirname "${PIDFILE}")
+PIDFILE_DIR={{ redis_pid_dir }}
 
 REDIS_USER={{ redis_user }}
 CONF="/etc/redis/${REDIS_PORT}.conf"

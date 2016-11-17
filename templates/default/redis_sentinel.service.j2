@@ -20,12 +20,13 @@ PrivateTmp=yes
 LimitNOFILE={{ redis_nofile_limit }}
 PrivateDevices=yes
 ProtectHome=yes
+PermissionsStartOnly=yes
 ReadOnlyDirectories=/
 ReadWriteDirectories=-{{ redis_sentinel_dir }}
 {% if redis_sentinel_logfile != '""' %}
 ReadWriteDirectories=-{{ redis_sentinel_logfile|dirname }}
 {% endif %}
-ReadWriteDirectories=-{{ redis_sentinel_pidfile|dirname }}
+ReadWriteDirectories=-{{ redis_pid_dir }}
 CapabilityBoundingSet=~CAP_SYS_PTRACE
 
 # redis-sentinel writes its own config file so we allow writing there (NB.
