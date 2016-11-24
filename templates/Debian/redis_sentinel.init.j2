@@ -22,7 +22,7 @@ SENTINEL_PORT={{ redis_sentinel_port }}
 NAME="sentinel_${SENTINEL_PORT}"
 DAEMON={{ redis_install_dir }}/bin/redis-server
 PIDFILE={{ redis_sentinel_pidfile }}
-PIDFILE_DIR=$(dirname "${PIDFILE}")
+PIDFILE_DIR={{ redis_pid_dir }}
 
 REDIS_USER={{ redis_user }}
 CONF="/etc/redis/sentinel_${SENTINEL_PORT}.conf"

@@ -2,6 +2,7 @@
 ## Installation options
 redis_version: 2.8.9
 redis_install_dir: /opt/redis
+redis_pid_dir: /var/run
 redis_user: redis
 redis_group: "{{ redis_user }}"
 redis_dir: /var/lib/redis/{{ redis_port }}
@@ -56,7 +57,7 @@ redis_syslog_facility: USER
 
 ## General configuration
 redis_daemonize: "yes"
-redis_pidfile: /var/run/redis/{{ redis_port }}.pid
+redis_pidfile: "{{ redis_pid_dir }}/redis/{{ redis_port }}.pid"
 # Number of databases to allow
 redis_databases: 16
 redis_loglevel: notice
@@ -67,6 +68,11 @@ redis_slowlog_max_len: 128
 # Redis memory limit (e.g. 4294967296, 4096mb, 4gb)
 redis_maxmemory: false
 redis_maxmemory_policy: noeviction
+# Number of keys the LRU algorithm will check when looking for an old key to
+# remove. Lower sample sizes are faster at the cost of accuracy, while higher
+# sample sizes are more accurate at the cost of CPU.
+# The default of 5 is sufficient.
+redis_maxmemory_samples: 5
 redis_rename_commands: []
 # How frequently to snapshot the database to disk
 # e.g. "900 1" => 900 seconds if at least 1 key changed
@@ -90,7 +96,7 @@ redis_sentinel: false
 redis_sentinel_dir: /var/lib/redis/sentinel_{{ redis_sentinel_port }}
 redis_sentinel_bind: 0.0.0.0
 redis_sentinel_port: 26379
-redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
+redis_sentinel_pidfile: "{{ redis_pid_dir }}/redis/sentinel_{{ redis_sentinel_port }}.pid"
 redis_sentinel_logfile: '""'
 redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
 redis_sentinel_monitors:

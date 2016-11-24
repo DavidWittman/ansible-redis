@@ -20,12 +20,13 @@ PrivateTmp=yes
 LimitNOFILE={{ redis_nofile_limit }}
 PrivateDevices=yes
 ProtectHome=yes
+PermissionsStartOnly=yes
 ReadOnlyDirectories=/
 ReadWriteDirectories=-{{ redis_dir }}
 {% if redis_logfile != '""' %}
 ReadWriteDirectories=-{{ redis_logfile|dirname }}
 {% endif %}
-ReadWriteDirectories=-{{ redis_pidfile|dirname }}
+ReadWriteDirectories=-{{ redis_pid_dir }}
 CapabilityBoundingSet=~CAP_SYS_PTRACE
 
 # redis-server writes its own config file when in cluster mode so we allow
