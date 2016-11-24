@@ -91,11 +91,6 @@
     path: "{{ redis_install_dir }}"
     state: directory
 
-- name: create /etc/redis
-  file:
-    path: /etc/redis
-    state: directory
-
 - name: add redis user
   user:
     name: "{{ redis_user }}"
@@ -103,6 +98,12 @@
     home: "{{ redis_install_dir }}"
     shell: /bin/false
     system: yes
+
+- name: create /etc/redis
+  file:
+    path: /etc/redis
+    state: directory
+    owner: "{{ redis_user }}"
 
 - name: create /var/run/redis
   file:
