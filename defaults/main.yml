@@ -57,7 +57,7 @@ redis_syslog_ident: "{{ redis_service_name }}"
 redis_syslog_facility: USER
 
 ## General configuration
-redis_daemonize: "yes"
+redis_daemonize: "{{ 'no' if ansible_service_mgr|default() == 'systemd' else 'yes' }}"
 redis_pidfile: /var/run/redis/{{ redis_port }}.pid
 redis_dynamic_config_file: /etc/redis/{{ redis_port }}.run.conf
 
