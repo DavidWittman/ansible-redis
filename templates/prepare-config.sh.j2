@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -ex
+
+static_cfg="$1"
+dyn_cfg="$2"
+
+[ -f "$static_cfg" ] || exit 1
+
+filter_cfg() {
+    local myid_seen=0
+    while read line; do
+        if [[ "$line" == 'sentinel myid'* ]]; then
+            if [ $myid_seen -eq 0]; then
+                myid_seen=1
+            else
+                continue
+            fi
+        fi
+
+        echo "$line"
+    done
+}
+
+mkdir -p "$(dirname "$dyn_cfg")"
+if [ ! -f "$dyn_cfg" ]; then
+    cp "$static_cfg" "$dyn_cfg"
+else
+    dyn_cfg_data=$(sed -n '/CONFIG REWRITE/,$p' "$dyn_cfg";
+                   grep -F 'sentinel myid' "$dyn_cfg" || :)
+    cat "$static_cfg" - <<< "$dyn_cfg_data" | filter_cfg > "$dyn_cfg"
+fi
+
+chown -R redis:redis "$(dirname "$dyn_cfg")"

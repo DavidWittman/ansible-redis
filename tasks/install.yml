@@ -116,3 +116,9 @@
   args:
     chdir: /usr/local/src/redis-{{ redis_version }}
     creates: "{{ redis_install_dir }}/bin/redis-server"
+
+- name: add config preparation script
+  template:
+    dest: "{{ redis_install_dir }}/bin/prepare-config.sh"
+    src: prepare-config.sh.j2
+    mode: 0755
