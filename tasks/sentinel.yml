@@ -36,13 +36,18 @@
   when: redis_as_service and ansible_service_mgr|default() == 'systemd'
   notify: restart sentinel
 
+- name: set sentinel to start at boot (systemd)
+  systemd:
+    name: sentinel_{{ redis_sentinel_port }}
+    enabled: yes
+    daemon_reload: yes
+  when: redis_as_service and ansible_service_mgr|default() == 'systemd'
 
 - name: set sentinel to start at boot
   service:
     name: sentinel_{{ redis_sentinel_port }}
     enabled: yes
-    daemon_reload: "{{ True if ansible_service_mgr|default() == 'systemd' else omit }}"
-  when: redis_as_service
+  when: redis_as_service and ansible_service_mgr|default() != 'systemd'
 
 # Check then create log dir to prevent aggressively overwriting permissions
 - name: check if sentinel log directory exists
