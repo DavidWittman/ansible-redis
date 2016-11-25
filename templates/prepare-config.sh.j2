@@ -1,6 +1,9 @@
 #!/bin/bash
 
-set -ex
+set -e
+
+redis_user="{{ redis_user }}"
+redis_group="{{ redis_group }}"
 
 static_cfg="$1"
 dyn_cfg="$2"
@@ -29,6 +32,6 @@ else
     dyn_cfg_data=$(sed -n '/CONFIG REWRITE/,$p' "$dyn_cfg";
                    grep -F 'sentinel myid' "$dyn_cfg" || :)
     cat "$static_cfg" - <<< "$dyn_cfg_data" | filter_cfg > "$dyn_cfg"
+    chown "$redis_user:$redis_group" "$dyn_cfg"
+    chmod 0640 "$dyn_cfg"
 fi
-
-chown -R redis:redis "$(dirname "$dyn_cfg")"
