@@ -34,20 +34,18 @@
       paths:
         - ../templates
   when: redis_as_service and ansible_service_mgr|default == 'systemd'
+  register: redis_systemd_service_install
   notify: restart redis
 
-- name: set redis to start at boot (systemd)
-  systemd:
-    name: "{{ redis_service_name }}"
-    enabled: yes
-    daemon_reload: yes
-  when: redis_as_service and ansible_service_mgr|default == 'systemd'
+- name: systemd daemon reload
+  command: systemctl daemon-reload
+  when: redis_systemd_service_install.changed
 
 - name: set redis to start at boot
   service:
     name: "{{ redis_service_name }}"
     enabled: yes
-  when: redis_as_service and ansible_service_mgr|default != 'systemd'
+  when: redis_as_service
 
 # Check then create log dir to prevent aggressively overwriting permissions
 - name: check if log directory exists

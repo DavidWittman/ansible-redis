@@ -34,20 +34,18 @@
       paths:
         - ../templates
   when: redis_as_service and ansible_service_mgr|default() == 'systemd'
+  register: redis_sentinel_systemd_service_install
   notify: restart sentinel
 
-- name: set sentinel to start at boot (systemd)
-  systemd:
-    name: sentinel_{{ redis_sentinel_port }}
-    enabled: yes
-    daemon_reload: yes
-  when: redis_as_service and ansible_service_mgr|default() == 'systemd'
+- name: systemd daemon reload
+  command: systemctl daemon-reload
+  when: redis_sentinel_systemd_service_install.changed
 
 - name: set sentinel to start at boot
   service:
     name: sentinel_{{ redis_sentinel_port }}
     enabled: yes
-  when: redis_as_service and ansible_service_mgr|default() != 'systemd'
+  when: redis_as_service
 
 # Check then create log dir to prevent aggressively overwriting permissions
 - name: check if sentinel log directory exists
