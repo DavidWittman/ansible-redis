@@ -97,6 +97,7 @@
     src: redis_sentinel.conf.j2
     dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
     owner: "{{ redis_user }}"
+    group: "{{ redis_group }}"
     mode: 0640
   notify: restart sentinel
 
@@ -104,6 +105,7 @@
   template:
     dest: /etc/sysconfig/sentinel_{{ redis_sentinel_port }}
     src: redis.init.conf.j2
+    mode: 0600
   when: ansible_os_family == "RedHat"
   notify: restart sentinel
 
@@ -111,6 +113,7 @@
   template:
     dest: /etc/default/sentinel_{{ redis_sentinel_port }}
     src: redis.init.conf.j2
+    mode: 0600
   when: ansible_os_family == "Debian"
   notify: restart sentinel
 
