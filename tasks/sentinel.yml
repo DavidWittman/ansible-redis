@@ -20,6 +20,7 @@
       paths:
         - ../templates
   when: redis_as_service and ansible_service_mgr|default() != 'systemd'
+  notify: restart sentinel
 
 - name: create sentinel systemd service
   template:
@@ -33,6 +34,8 @@
       paths:
         - ../templates
   when: redis_as_service and ansible_service_mgr|default() == 'systemd'
+  notify: restart sentinel
+
 
 - name: set sentinel to start at boot
   service:
