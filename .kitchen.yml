@@ -3,6 +3,10 @@ driver:
   name: docker
   use_sudo: false
 
+transport:
+  name: ssh
+  max_ssh_sessions: 5
+
 provisioner:
   name: ansible_playbook
   ansible_verbose: true
