@@ -36,6 +36,7 @@
     state: present
     reload: yes
     ignoreerrors: yes
+  failed_when: False
   when: redis_travis_ci is not defined
 
 # get_url on Ansible 1.x only supports sha256 checksumming, so we're only
