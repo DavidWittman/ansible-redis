@@ -7,6 +7,7 @@ provisioner:
   name: ansible_playbook
   ansible_verbose: true
   ansible_verbosity: 2
+  ansible_version: <%= ENV["ANSIBLE_VERSION"] || "latest" %>
   require_ruby_for_busser: true
   require_chef_for_busser: false
   hosts: all
@@ -20,14 +21,33 @@ platforms:
     driver_config:
       image: williamyeh/ansible:ubuntu14.04
   - name: ubuntu-16.04
-    driver_config:
-      image: williamyeh/ansible:ubuntu16.04
+    platform: ubuntu
+    driver_config: &driver_config
+      disable_upstart: no
+      provision_command:
+        - find /lib/systemd/system/sysinit.target.wants -xtype f -printf '%f\n' |
+            grep -v -E '(journal|machine-id|random-seed|tmpfiles|ldconfig)' |
+            xargs -d'\n' systemctl mask
+        - find /lib/systemd/system -xtype f
+            -name '*udev*' -or -name '*dracut*' -or -name '*getty*' -printf '%f\n' |
+            xargs -d'\n' --no-run-if-empty systemctl mask
+        - systemctl mask systemd-remount-fs systemd-timesyncd systemd-networkd
+        - systemctl set-default multi-user.target
+      privileged: true
+      run_command: /sbin/init
+      volume:
+        - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      run_options:
+        tmpfs: [/run, /run/lock, /tmp]
+        stop-signal: SIGRTMIN+3
   - name: centos-6
     driver_config:
       image: williamyeh/ansible:centos6
   - name: centos-7
+    platform: centos
     driver_config:
-      image: williamyeh/ansible:centos7
+      <<: *driver_config
+      image: centos7
 
 suites:
   - name: default
