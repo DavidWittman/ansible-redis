@@ -20,35 +20,42 @@ platforms:
   - name: ubuntu-14.04
     driver_config:
       image: williamyeh/ansible:ubuntu14.04
+
   - name: ubuntu-16.04
-    platform: ubuntu
-    driver_config: &driver_config
+    driver_config: &systemd_driver_config
       disable_upstart: no
       provision_command:
-        - find /lib/systemd/system/sysinit.target.wants -xtype f -printf '%f\n' |
+        - &provision_cmd_1
+          find /lib/systemd/system/sysinit.target.wants -xtype f -printf '%f\n' |
             grep -v -E '(journal|machine-id|random-seed|tmpfiles|ldconfig)' |
-            xargs -d'\n' systemctl mask
-        - find /lib/systemd/system -xtype f
-            -name '*udev*' -or -name '*dracut*' -or -name '*getty*' -printf '%f\n' |
             xargs -d'\n' --no-run-if-empty systemctl mask
-        - systemctl mask systemd-remount-fs systemd-timesyncd systemd-networkd
-        - systemctl set-default multi-user.target
-      privileged: true
+        - &provision_cmd_2
+          find /lib/systemd/system -xtype f -printf '%f\n' |
+            grep -E '(udev|dracut|getty)' |
+            xargs -d'\n' --no-run-if-empty systemctl mask
+        - &provision_cmd_3
+          systemctl mask systemd-remount-fs systemd-timesyncd systemd-networkd
       run_command: /sbin/init
       volume:
         - /sys/fs/cgroup:/sys/fs/cgroup:ro
       run_options:
-        tmpfs: [/run, /run/lock, /tmp]
         stop-signal: SIGRTMIN+3
+      security_opt: seccomp=unconfined
+      cap_add: SYS_ADMIN
+
   - name: centos-6
     driver_config:
       image: williamyeh/ansible:centos6
-  - name: centos-7
-    platform: centos
-    driver_config:
-      <<: *driver_config
-      image: centos7
 
+  - name: centos-7
+    driver_config:
+      <<: *systemd_driver_config
+      image: centos:7
+      provision_command:
+        - *provision_cmd_1
+        - *provision_cmd_2
+        - *provision_cmd_3
+        - yum install -y iproute
 suites:
   - name: default
   - name: logfile
