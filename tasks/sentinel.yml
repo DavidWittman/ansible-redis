@@ -34,6 +34,16 @@
         - ../templates
   when: redis_as_service and ansible_service_mgr|default() == 'systemd'
 
+- name: create systemd tmpfiles configuration
+  template:
+    src: etc/tmpfiles.d/redis.conf.j2
+    dest: /etc/tmpfiles.d/redis.conf
+    mode: 0644
+  when:
+    - redis_as_service
+    - ansible_service_mgr|default() == 'systemd'
+    - (redis_sentinel_pidfile|dirname).startswith('/var/run') or (redis_sentinel_pidfile|dirname).startswith('/run')
+
 - name: set sentinel to start at boot
   service:
     name: sentinel_{{ redis_sentinel_port }}

@@ -2,3 +2,4 @@
 .kitchen/
 .bundle
 .vagrant
+*.retry
