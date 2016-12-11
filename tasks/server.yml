@@ -90,7 +90,7 @@
     dest: /etc/redis/{{ redis_port }}.conf
     owner: "{{ redis_user }}"
     mode: 0640
-  notify: restart redis
+  notify: "restart redis {{ redis_port }}"
 
 - name: add redis init config file
   template:
@@ -98,7 +98,7 @@
     src: redis.init.conf.j2
     mode: 0600
   when: ansible_os_family == "RedHat"
-  notify: restart redis
+  notify: "restart redis {{ redis_port }}"
 
 - name: add redis init config file
   template:
@@ -106,7 +106,7 @@
     src: redis.init.conf.j2
     mode: 0600
   when: ansible_os_family == "Debian"
-  notify: restart redis
+  notify: "restart redis {{ redis_port }}"
 
 # Flush handlers before ensuring the service is started to prevent
 # a start and then restart

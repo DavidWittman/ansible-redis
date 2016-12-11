@@ -11,10 +11,12 @@
   roles:
     - role: ../../ansible-redis
       redis_port: 7379
+
     - role: ../../ansible-redis
       redis_port: 8379
-      redis_slaveof: 127.0.0.1 6379
+      redis_slaveof: 127.0.0.1 7379
       redis_local_facts: false
+
     - role: ../../ansible-redis
       redis_sentinel: true
       redis_sentinel_port: 27379
