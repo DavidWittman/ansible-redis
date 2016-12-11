@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/DavidWittman/ansible-redis.svg?branch=master)](https://travis-ci.org/DavidWittman/ansible-redis) [![Ansible Galaxy](https://img.shields.io/badge/galaxy-DavidWittman.redis-blue.svg?style=flat)](https://galaxy.ansible.com/detail#/role/730)
 
- - Requires Ansible 1.6.3+
+ - Requires Ansible 1.8.0+
  - Compatible with most versions of Ubuntu/Debian and RHEL/CentOS 6.x
 
 ## Contents
