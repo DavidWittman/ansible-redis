@@ -18,8 +18,10 @@ fi
 REDIS_USER={{ redis_user }}
 PIDFILE={{ redis_pidfile }}
 CONF="/etc/redis/${REDIS_PORT}.conf"
+DYN_CONF="{{ redis_dynamic_config_file }}"
 EXEC={{ redis_install_dir }}/bin/redis-server
 CLIEXEC="{{ redis_install_dir }}/bin/redis-cli -p ${REDIS_PORT}"
+PREPARE_CONFIG_SCRIPT={{ redis_install_dir }}/bin/prepare-config.sh
 
 if [ -n "$REDIS_PASSWORD" ]; then
     CLIEXEC="${CLIEXEC} -a ${REDIS_PASSWORD}"
@@ -38,8 +40,11 @@ case "$1" in
                 if [ -n "$NOFILE_LIMIT" ]; then
                     ulimit -n $NOFILE_LIMIT
                 fi
+
+                $PREPARE_CONFIG_SCRIPT "$CONF" "$DYN_CONF"
+
                 echo "Starting Redis server..."
-                daemon --user $REDIS_USER $EXEC $CONF
+                daemon --user $REDIS_USER $EXEC $DYN_CONF
         fi
         ;;
     stop)

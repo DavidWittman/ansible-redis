@@ -41,6 +41,8 @@ redis_socket_perm: 755
 ## Replication options
 # Set slaveof just as you would in redis.conf. (e.g. "redis01 6379")
 redis_slaveof: false
+# Ignore manually assigned roles for instances if runtime status can be used instead
+redis_runtime_replication_role: yes
 # Make slaves read-only. "yes" or "no"
 redis_slave_read_only: "yes"
 redis_slave_priority: 100
@@ -55,8 +57,10 @@ redis_syslog_ident: "{{ redis_service_name }}"
 redis_syslog_facility: USER
 
 ## General configuration
-redis_daemonize: "yes"
+redis_daemonize: "{{ 'no' if ansible_service_mgr|default() == 'systemd' else 'yes' }}"
 redis_pidfile: /var/run/redis/{{ redis_port }}.pid
+redis_dynamic_config_file: /etc/redis/{{ redis_port }}.run.conf
+
 # Number of databases to allow
 redis_databases: 16
 redis_loglevel: notice
@@ -92,6 +96,8 @@ redis_sentinel_bind: 0.0.0.0
 redis_sentinel_port: 26379
 redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
 redis_sentinel_logfile: '""'
+redis_sentinel_dynamic_config_file: /etc/redis/sentinel_{{ redis_sentinel_port }}.run.conf
+
 redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
 redis_sentinel_monitors:
   - name: master01

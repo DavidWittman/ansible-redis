@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  roles:
+    - role: ansible-redis
+      redis_sentinel: true
+      redis_local_facts: true
+
+    - role: ansible-redis
+      redis_sentinel: false
+      redis_local_facts: true

@@ -1,6 +1,12 @@
 ---
 - include: check_vars.yml
 
+- include: local_facts.yml
+  when: redis_local_facts|bool
+
+- include: runtime_roles.yml
+  when: not redis_sentinel and redis_runtime_replication_role
+
 - include: install.yml
 
 - include: server.yml
@@ -13,5 +19,3 @@
   tags:
     - config
 
-- include: local_facts.yml
-  when: redis_local_facts|bool

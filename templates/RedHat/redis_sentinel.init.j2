@@ -19,8 +19,10 @@ REDIS_USER={{ redis_user }}
 BIND_ADDRESS={{ redis_sentinel_bind }}
 PIDFILE={{ redis_sentinel_pidfile }}
 CONF="/etc/redis/sentinel_${SENTINEL_PORT}.conf"
+DYN_CONF="{{ redis_sentinel_dynamic_config_file }}"
 EXEC={{ redis_install_dir }}/bin/redis-server
 CLIEXEC="{{ redis_install_dir }}/bin/redis-cli -p ${SENTINEL_PORT}"
+PREPARE_CONFIG_SCRIPT={{ redis_install_dir }}/bin/prepare-config.sh
 
 if [ -n "$REDIS_PASSWORD" ]; then
     CLIEXEC="${CLIEXEC} -a ${REDIS_PASSWORD}"
@@ -39,8 +41,11 @@ case "$1" in
                 if [ -n "$NOFILE_LIMIT" ]; then
                     ulimit -n $NOFILE_LIMIT
                 fi
+
+                $PREPARE_CONFIG_SCRIPT "$CONF" "$DYN_CONF"
+
                 echo "Starting Redis Sentinel..."
-                daemon --user $REDIS_USER $EXEC $CONF --sentinel
+                daemon --user $REDIS_USER $EXEC $DYN_CONF --sentinel
         fi
         ;;
     stop)

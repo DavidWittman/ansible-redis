@@ -307,4 +307,11 @@ The following facts are accessible in your inventory or tasks outside of this ro
 - `{{ ansible_local.redis.sentinel_port }}`
 - `{{ ansible_local.redis.sentinel_monitors }}`
 
+Variables provided by the 'info' Redis command are also made available for each
+configured server or sentinel instance. For example:
+
+- `{{ ansible_local.redis_6379.redis_version }}`
+- `{{ ansible_local.redis_6379.role }}`
+- `{{ ansible_local.redis_sentinel_26379.sentinel_masters }}`
+
 To disable these facts, set `redis_local_facts` to a false value.

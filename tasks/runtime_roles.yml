@@ -1,0 +1,16 @@
+- name: set redis to slave automatically
+  set_fact:
+    redis_slaveof: >-
+      {{ ansible_local[redis_service_name].master_host }}
+      {{ ansible_local[redis_service_name].master_port }}
+  when: >-
+    redis_service_name in ansible_local and
+    ansible_local[redis_service_name].role|default() == 'slave'
+
+- name: set redis to master automatically
+  set_fact:
+    redis_slaveof: ~
+  when: >-
+    redis_service_name in ansible_local and
+    ansible_local[redis_service_name].role|default() == 'master' and
+    ansible_local[redis_service_name].connected_slaves|default(0)|int > 0

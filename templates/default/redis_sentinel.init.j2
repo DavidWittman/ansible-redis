@@ -7,6 +7,7 @@ SENTINEL_PORT={{ redis_sentinel_port }}
 REDIS_USER={{ redis_user }}
 BIND_ADDRESS={{ redis_sentinel_bind }}
 EXEC={{ redis_install_dir }}/bin/redis-server
+PREPARE_CONFIG_SCRIPT={{ redis_install_dir }}/bin/prepare-config.sh
 {% if redis_password -%}
 CLIEXEC='{{ redis_install_dir }}/bin/redis-cli -a {{ redis_password }}'
 {% else -%}
@@ -15,6 +16,7 @@ CLIEXEC={{ redis_install_dir }}/bin/redis-cli
 
 PIDFILE={{ redis_sentinel_pidfile }}
 CONF="/etc/redis/sentinel_${SENTINEL_PORT}.conf"
+DYN_CONF="{{ redis_sentinel_dynamic_config_file }}"
 
 case "$1" in
     start)
@@ -23,8 +25,11 @@ case "$1" in
                 echo "$PIDFILE exists, process is already running or crashed"
         else
                 ulimit -n {{ redis_nofile_limit }}
+
+                $PREPARE_CONFIG_SCRIPT "$CONF" "$DYN_CONF"
+
                 echo "Starting Redis Sentinel..."
-                su $REDIS_USER -c "$EXEC $CONF --sentinel"
+                su $REDIS_USER -c "$EXEC $DYN_CONF --sentinel"
         fi
         ;;
     stop)
