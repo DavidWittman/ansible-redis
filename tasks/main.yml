@@ -1,7 +1,13 @@
 ---
 - include: check_vars.yml
 
+- include: download.yml
+  tags:
+    - download
+
 - include: install.yml
+  tags:
+    - install
 
 - include: server.yml
   when: not redis_sentinel

@@ -12,9 +12,11 @@
   1. [Single Redis node](#single-redis-node)
   2. [Master-Slave Replication](#master-slave-replication)
   3. [Redis Sentinel](#redis-sentinel)
- 3. [Installing redis from a source file in the ansible role](#installing-redis-from-a-source-file-in-the-ansible-role)
- 4. [Verifying checksums](#verifying-checksums)
- 5. [Role Variables](#role-variables)
+ 3. [Advanced Options](#advanced-options)
+  1. [Verifying checksums](#verifying-checksums)
+  2. [Install from local tarball](#installing-redis-from-a-source-file-in-the-ansible-role)
+  3. [Building 32-bit binaries](#building-32-bit-binaries)
+ 4. [Role Variables](#role-variables)
 
 ## Installation
 
@@ -144,24 +146,13 @@ This will configure the Sentinel nodes to monitor the master we created above us
 Along with the variables listed above, Sentinel has a number of its own configurables just as Redis server does. These are prefixed with `redis_sentinel_`, and are enumerated in the **Role Variables** section below.
 
 
-## Installing redis from a source file in the ansible role
+## Advanced Options
 
-If the environment your server resides in does not allow downloads (i.e. if the machine is sitting in a dmz) set the variable `redis_tarball` to the path of a locally downloaded tar.gz file to prevent a http download from redis.io.
-Do not forget to set the version variable to the same version of the tar.gz. to avoid confusion !
-
-For example (file was stored in same folder as the playbook that included the redis role):
-```yml
-vars:
-  - redis_version: 2.8.14
-  - redis_tarball: redis-2.8.14.tar.gz
-```
-In this case the source archive is copied towards the server over ssh rather than downloaded.
-
-## Verifying checksums
+### Verifying checksums
 
 Set the `redis_verify_checksum` variable to true to use the checksum verification option for `get_url`. Note that this will only verify checksums when Redis is downloaded from a URL, not when one is provided in a tarball with `redis_tarball`. Due to differences in the `get_url` module in Ansible 1.x and Ansible 2.x, this feature behaves differently depending on the version of Ansible which you are using.
 
-### Ansible 1.x
+#### Ansible 1.x
 
 In Ansible 1.x, the `get_url` module only support verifying sha256 checksums, which are not provided by default. If you wish to set `redis_verify_checksum`, you must also define a sha256 checksum with the `redis_checksum` variable.
 
@@ -175,7 +166,7 @@ In Ansible 1.x, the `get_url` module only support verifying sha256 checksums, wh
       redis_checksum: b2a791c4ea3bb7268795c45c6321ea5abcc24457178373e6a6e3be6372737f23
 ```
 
-### Ansible 2.x
+#### Ansible 2.x
 
 When using Ansible 2.x, this role will verify the sha1 checksum of the download against checksums defined in the `redis_checksums` variable in `vars/main.yml`. If your version is not defined in here or you wish to override the checksum with one of your own, simply set the `redis_checksum` variable. As in the example below, you will need to prefix the checksum with the type of hash which you are using.
 
@@ -189,6 +180,23 @@ When using Ansible 2.x, this role will verify the sha1 checksum of the download 
       redis_checksum: "sha256:b2a791c4ea3bb7268795c45c6321ea5abcc24457178373e6a6e3be6372737f23"
 ```
 
+### Install from local tarball
+
+If the environment your server resides in does not allow downloads (i.e. if the machine is sitting in a dmz) set the variable `redis_tarball` to the path of a locally downloaded tar.gz file to prevent a http download from redis.io.
+Do not forget to set the version variable to the same version of the tar.gz. to avoid confusion !
+
+For example (file was stored in same folder as the playbook that included the redis role):
+```yml
+vars:
+  - redis_version: 2.8.14
+  - redis_tarball: redis-2.8.14.tar.gz
+```
+In this case the source archive is copied towards the server over ssh rather than downloaded.
+
+### Building 32 bit binaries
+
+To build 32-bit binaries of Redis (which can be used for [memory optimization](https://redis.io/topics/memory-optimization), set `redis_make_32bit: true`. This installs the necessaries dependencies (x86 glibc) and sets the option '32bit' when running make.
+
 ## Role Variables
 
 Here is a list of all the default variables for this role, which are also available in defaults/main.yml. One of these days I'll format these into a table or something.
@@ -198,12 +206,18 @@ Here is a list of all the default variables for this role, which are also availa
 ## Installation options
 redis_version: 2.8.9
 redis_install_dir: /opt/redis
-redis_user: redis
-redis_group: "{{ redis_user }}"
 redis_dir: /var/lib/redis/{{ redis_port }}
 redis_download_url: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
+# Set this to true to validate redis tarball checksum against vars/main.yml
 redis_verify_checksum: false
+# Set this value to a local path of a tarball to use for installation instead of downloading
 redis_tarball: false
+# Set this to true to build 32-bit binaries of Redis
+redis_make_32bit: false
+
+redis_user: redis
+redis_group: "{{ redis_user }}"
+
 # The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
 
