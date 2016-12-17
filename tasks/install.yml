@@ -9,7 +9,8 @@
     - gcc
     - make
     - libc6-dev
-    - "{{ 'libc6-dev-i386' if redis_make_32bit|bool else omit }}"
+    # This should be `else omit`, but it fails on Ansible 1.x, so just duplicate gcc
+    - "{{ 'libc6-dev-i386' if redis_make_32bit|bool else 'gcc' }}"
   when: ansible_os_family == "Debian"
 
 - name: install dependencies
