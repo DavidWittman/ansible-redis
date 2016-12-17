@@ -9,19 +9,20 @@
     - gcc
     - make
     - libc6-dev
+    - "{{ 'libc6-dev-i386' if redis_make_32bit|bool else omit }}"
   when: ansible_os_family == "Debian"
 
 - name: install dependencies
   yum:
     name: "{{ item }}"
-    state: latest
+    state: present
   with_items:
     - gcc
     - make
   when: ansible_os_family == "RedHat"
 
-# Conditionally install the i686 build of libgcc if we building 32bit
-# It must be version-locked with x64 libgcc, so install that as well
+# Conditionally install the i686 build of libgcc if we are building 32-bit
+# It must be version-locked with x64 libgcc, so use 'latest'
 - name: install 32-bit dependencies
   yum:
     name: "{{ item }}"
@@ -51,7 +52,7 @@
   when: redis_travis_ci is not defined
 
 - name: compile redis
-  command: make -j{{ ansible_processor_cores + 1 }} {{ '32bit' if redis_make_32bit|bool else '' }}
+  command: make -j{{ ansible_processor_cores + 1 }}{{ ' 32bit' if redis_make_32bit|bool else '' }}
   args:
     chdir: /usr/local/src/redis-{{ redis_version }}
     creates: /usr/local/src/redis-{{ redis_version }}/src/redis-server
