@@ -154,7 +154,7 @@ Set the `redis_verify_checksum` variable to true to use the checksum verificatio
 
 #### Ansible 1.x
 
-In Ansible 1.x, the `get_url` module only support verifying sha256 checksums, which are not provided by default. If you wish to set `redis_verify_checksum`, you must also define a sha256 checksum with the `redis_checksum` variable.
+In Ansible 1.x, the `get_url` module only supports verifying sha256 checksums, which are not provided by default. If you wish to set `redis_verify_checksum`, you must also define a sha256 checksum with the `redis_checksum` variable.
 
 ``` yaml
 - name: install redis on ansible 1.x and verify checksums
@@ -195,7 +195,7 @@ In this case the source archive is copied towards the server over ssh rather tha
 
 ### Building 32 bit binaries
 
-To build 32-bit binaries of Redis (which can be used for [memory optimization](https://redis.io/topics/memory-optimization), set `redis_make_32bit: true`. This installs the necessaries dependencies (x86 glibc) and sets the option '32bit' when running make.
+To build 32-bit binaries of Redis (which can be used for [memory optimization](https://redis.io/topics/memory-optimization)), set `redis_make_32bit: true`. This installs the necessaries dependencies (x86 glibc) and sets the option '32bit' when running make.
 
 ## Role Variables
 
