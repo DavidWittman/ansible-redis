@@ -1,5 +1,5 @@
 ---
-- name: install dependencies
+- name: install debian dependencies
   apt:
     pkg: "{{ item }}"
     update_cache: yes
@@ -13,7 +13,7 @@
     - "{{ 'libc6-dev-i386' if redis_make_32bit|bool else 'gcc' }}"
   when: ansible_os_family == "Debian"
 
-- name: install dependencies
+- name: install redhat dependencies
   yum:
     name: "{{ item }}"
     state: present
@@ -24,7 +24,7 @@
 
 # Conditionally install the i686 build of libgcc if we are building 32-bit
 # It must be version-locked with x64 libgcc, so use 'latest'
-- name: install 32-bit dependencies
+- name: install redhat 32-bit dependencies
   yum:
     name: "{{ item }}"
     state: latest
@@ -34,13 +34,17 @@
     - glibc-devel.i686
   when: ansible_os_family == "RedHat" and redis_make_32bit|bool
 
-- name: install dependencies
+- name: install suse dependencies
   zypper:
     name: "{{ item }}"
     state: present
   with_items:
     - gcc
     - make
+    # This should be `else omit`, but it fails on Ansible 1.x, so just duplicate gcc
+    #- "{{ 'glibc-devel-32bit' if redis_make_32bit|bool else 'gcc' }}"
+    - "{{ 'gcc-32bit' if redis_make_32bit|bool else 'gcc' }}"
+    - "{{ 'libgcc_s1-32bit' if redis_make_32bit|bool else 'gcc' }}"
   when: ansible_os_family == 'Suse'
 
 - name: enable overcommit in sysctl
@@ -75,6 +79,11 @@
     home: "{{ redis_install_dir }}"
     shell: /bin/false
     system: yes
+
+- name: add redis group
+  group:
+    name: "{{ redis_group }}"
+    state: present
 
 - name: create /var/run/redis
   file:

@@ -182,20 +182,21 @@ When using Ansible 2.x, this role will verify the sha1 checksum of the download 
 
 ### Install from local tarball
 
-If the environment your server resides in does not allow downloads (i.e. if the machine is sitting in a dmz) set the variable `redis_tarball` to the path of a locally downloaded tar.gz file to prevent a http download from redis.io.
-Do not forget to set the version variable to the same version of the tar.gz. to avoid confusion !
+If the environment your server resides in does not allow downloads (i.e. if the machine is sitting in a dmz) set the variable `redis_tarball` to the path of a locally downloaded Redis tarball to use instead of downloading over HTTP from redis.io.
 
-For example (file was stored in same folder as the playbook that included the redis role):
+Do not forget to set the version variable to the same version of the tarball to avoid confusion! For example,
+
 ```yml
 vars:
-  - redis_version: 2.8.14
-  - redis_tarball: redis-2.8.14.tar.gz
+  redis_version: 2.8.14
+  redis_tarball: /path/to/redis-2.8.14.tar.gz
 ```
-In this case the source archive is copied towards the server over ssh rather than downloaded.
+
+In this case the source archive is copied to the server over SSH rather than downloaded.
 
 ### Building 32 bit binaries
 
-To build 32-bit binaries of Redis (which can be used for [memory optimization](https://redis.io/topics/memory-optimization)), set `redis_make_32bit: true`. This installs the necessaries dependencies (x86 glibc) and sets the option '32bit' when running make.
+To build 32-bit binaries of Redis (which can be used for [memory optimization](https://redis.io/topics/memory-optimization)), set `redis_make_32bit: true`. This installs the necessary dependencies (x86 glibc) on RHEL/Debian/SuSE and sets the option '32bit' when running make.
 
 ## Role Variables
 
