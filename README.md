@@ -14,7 +14,7 @@
   3. [Redis Sentinel](#redis-sentinel)
  3. [Advanced Options](#advanced-options)
   1. [Verifying checksums](#verifying-checksums)
-  2. [Install from local tarball](#installing-redis-from-a-source-file-in-the-ansible-role)
+  2. [Install from local tarball](#install-from-local-tarball)
   3. [Building 32-bit binaries](#building-32-bit-binaries)
  4. [Role Variables](#role-variables)
 
@@ -184,7 +184,7 @@ When using Ansible 2.x, this role will verify the sha1 checksum of the download 
 
 If the environment your server resides in does not allow downloads (i.e. if the machine is sitting in a dmz) set the variable `redis_tarball` to the path of a locally downloaded Redis tarball to use instead of downloading over HTTP from redis.io.
 
-Do not forget to set the version variable to the same version of the tarball to avoid confusion! For example,
+Do not forget to set the version variable to the same version of the tarball to avoid confusion! For example:
 
 ```yml
 vars:
