@@ -24,6 +24,11 @@
     path: /etc/redis
     state: directory
 
+- name: check if redis user exists
+  shell: /usr/bin/getent passwd {{ redis_user }} | /usr/bin/wc -l | tr -d ' '
+  register: user_exist
+  changed_when: false
+
 - name: add redis user
   user:
     name: "{{ redis_user }}"
@@ -31,11 +36,8 @@
     home: "{{ redis_install_dir }}"
     shell: /bin/false
     system: yes
+  when: "{{user_exist.stdout}} == 0" # usermod: user redis is currently used by process
 
-- name: add redis group
-  group:
-    name: "{{ redis_group }}"
-    state: present
 
 - name: create /var/run/redis
   file:
