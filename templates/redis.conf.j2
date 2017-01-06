@@ -24,9 +24,9 @@ databases {{ redis_databases }}
 {% for save in redis_save -%}
 save {{ save }}
 {% endfor -%}
-stop-writes-on-bgsave-error {{ redis_stop_writes_on_bgsave_error | string }}
-rdbcompression {{ redis_rdbcompression | string }}
-rdbchecksum {{ redis_rdbchecksum | string }}
+stop-writes-on-bgsave-error {{ redis_stop_writes_on_bgsave_error|string }}
+rdbcompression {{ redis_rdbcompression|string }}
+rdbchecksum {{ redis_rdbchecksum|string }}
 dbfilename dump.rdb
 
 # Replication
@@ -68,7 +68,7 @@ maxmemory-policy {{ redis_maxmemory_policy }}
 # Append Only Mode
 appendonly {{ redis_appendonly }}
 appendfilename "{{ redis_appendfilename }}"
-appendfsync {{ redis_appendfsync | string }}
+appendfsync {{ redis_appendfsync|string }}
 no-appendfsync-on-rewrite {{ redis_no_appendfsync_on_rewrite }}
 auto-aof-rewrite-percentage {{ redis_auto_aof_rewrite_percentage }}
 auto-aof-rewrite-min-size {{ redis_auto_aof_rewrite_min_size }}
