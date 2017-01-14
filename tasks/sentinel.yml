@@ -45,7 +45,7 @@
     - (redis_sentinel_pidfile|dirname).startswith('/var/run') or (redis_sentinel_pidfile|dirname).startswith('/run')
 
 - name: set sentinel to start at boot
-  service:
+  systemd:
     name: sentinel_{{ redis_sentinel_port }}
     enabled: yes
     daemon_reload: "{{ True if ansible_service_mgr|default() == 'systemd' else omit }}"
