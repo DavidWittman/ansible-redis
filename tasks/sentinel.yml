@@ -19,7 +19,7 @@
       - default/redis_sentinel.init.j2
       paths:
         - ../templates
-  when: redis_as_service and ansible_service_mgr|default() != 'systemd'
+  when: redis_as_service and ansible_service_mgr|default() != "systemd"
 
 - name: create sentinel systemd service
   template:
@@ -32,7 +32,8 @@
       - default/redis_sentinel.service.j2
       paths:
         - ../templates
-  when: redis_as_service and ansible_service_mgr|default() == 'systemd'
+  register: sentinel_unit_file
+  when: redis_as_service and ansible_service_mgr|default() == "systemd"
 
 - name: create systemd tmpfiles configuration
   template:
@@ -41,14 +42,20 @@
     mode: 0644
   when:
     - redis_as_service
-    - ansible_service_mgr|default() == 'systemd'
-    - (redis_sentinel_pidfile|dirname).startswith('/var/run') or (redis_sentinel_pidfile|dirname).startswith('/run')
+    - ansible_service_mgr|default() == "systemd"
+    - (redis_sentinel_pidfile|dirname).startswith("/var/run") or (redis_sentinel_pidfile|dirname).startswith("/run")
+
+- name: reload systemd daemon
+  command: systemctl daemon-reload
+  when:
+    - redis_as_service
+    - ansible_service_mgr|default() == "systemd"
+    - sentinel_unit_file|changed
 
 - name: set sentinel to start at boot
   service:
     name: sentinel_{{ redis_sentinel_port }}
     enabled: yes
-    daemon_reload: "{{ True if ansible_service_mgr|default() == 'systemd' else omit }}"
   when: redis_as_service
 
 # Check then create log dir to prevent aggressively overwriting permissions
