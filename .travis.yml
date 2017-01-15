@@ -45,3 +45,6 @@ script:
   # No idempotency check here (yet) because the sentinel config writes to itself
   # after a config is discovered from the Redis server.
   - ansible-playbook -i localhost, test/test_all.yml --connection=local --sudo
+
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/
