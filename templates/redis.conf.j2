@@ -30,7 +30,9 @@ rdbchecksum {{ redis_rdbchecksum|string }}
 dbfilename dump.rdb
 
 # Replication
-{% if redis_slaveof -%}
+{% if redis_slaveof == ansible_eth0.ipv4.address ~ " " ~ redis_port -%}
+slaveof no one
+{% elif redis_slaveof -%}
 slaveof {{ redis_slaveof }}
 {% endif -%}
 slave-serve-stale-data yes
