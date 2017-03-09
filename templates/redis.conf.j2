@@ -81,7 +81,7 @@ slowlog-log-slower-than {{ redis_slowlog_log_slower_than }}
 slowlog-max-len {{ redis_slowlog_max_len }}
 
 # Event Notification
-notify-keyspace-events ""
+notify-keyspace-events {{ redis_notify_keyspace_events }}
 
 # Advanced
 hash-max-ziplist-entries 512
