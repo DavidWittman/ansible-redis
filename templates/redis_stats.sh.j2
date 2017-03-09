@@ -1,0 +1,39 @@
+#!/bin/bash
+
+{% if redis_password -%}
+CLIEXEC='{{ redis_install_dir }}/bin/redis-cli -p {{ redis_port }} -a {{ redis_password }}'
+{% else -%}
+CLIEXEC='{{ redis_install_dir }}/bin/redis-cli -p {{ redis_port }}'
+{% endif %}
+
+PIDFILE={{ redis_pidfile }}
+LOGFILE={{ redis_logfile }}
+
+TIMESTAMP=$(date +"%d %b %H:%M:%S.%N" | sed 's/......$//g')
+
+function log_info
+{
+    local commands=$1
+    local pid=$2
+    local ipaddress=$3
+
+    local tmpfile=$(mktemp /tmp/redis-stats.XXXXX)
+
+    local command_arr=( $commands )
+    for command in ${command_arr[@]} ; do
+        $CLIEXEC info $command >> $tmpfile
+    done
+
+    local logevent=$(grep ':' $tmpfile | tr ' ' '_' | sed -e 's/\:\(.*\)\r$/=\"\1"/g' | paste -sd " " -)
+    echo "[$pid] $TIMESTAMP $ipaddress redis-info $logevent" >> $LOGFILE
+    rm "$tmpfile"
+}
+
+if [ -f $PIDFILE ]; then
+    PID=$(cat $PIDFILE)
+    ipaddress="$(ip addr show eth0 | awk '/inet/ {print $1"="$2}' | cut -d/ -f1 | grep inet=)"
+
+{% for info_command in redis_stats_info %}
+    log_info "{{ info_command }}" $PID "$ipaddress"
+{% endfor %}
+fi

@@ -125,6 +125,20 @@
   when: ansible_os_family == "Debian"
   notify: "restart redis {{ redis_port }}"
 
+- name: add stats reporting script
+  template:
+    dest: /etc/redis/redis_stats.sh
+    src: redis_stats.sh.j2
+    mode: 0700
+  when: redis_as_service and redis_stats_enabled and redis_logfile != '""'
+
+- name: configure stats reporting frequency
+  cron:
+    name: "capture redis stats"
+    minute: "{{ redis_stats_minute }}"
+    job: /etc/redis/redis_stats.sh
+  when: redis_as_service and redis_stats_enabled and redis_logfile != '""'
+
 # Flush handlers before ensuring the service is started to prevent
 # a start and then restart
 - name: flush handlers to apply config changes
