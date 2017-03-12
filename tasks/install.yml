@@ -27,13 +27,35 @@
       - default/disable-transparent-hugepages.j2
       paths:
         - ../templates
-  when: redis_travis_ci is not defined  
+  when: ansible_service_mgr|default() != 'systemd'
+
+- name: create Disable Transparent Hugepages systemd service
+  template:
+    src: "{{ item }}"
+    dest: /etc/systemd/system/disable-transparent-hugepages.service
+    mode: 0644
+  with_first_found:
+    - files:
+      - "{{ ansible_os_family }}/disable-transparent-hugepages.service.j2"
+      - default/disable-transparent-hugepages.service.j2
+      paths:
+        - ../templates
+  register: dth_unit_file
+  when: ansible_service_mgr|default() == "systemd"
 
 - name: set Disable Transparent Hugepages to start at boot
   service:
     name: disable-transparent-hugepages
     enabled: yes
-  when: redis_travis_ci is not defined  
+  when: 
+    - redis_travis_ci is not defined  
+
+- name: ensure Disable Transparent Hugepages is started
+  service:
+    name: disable-transparent-hugepages
+    state: started
+  when: 
+    - redis_travis_ci is not defined  
 
 - name: compile redis
   command: make -j{{ ansible_processor_cores + 1 }}{{ ' 32bit' if redis_make_32bit|bool else '' }}

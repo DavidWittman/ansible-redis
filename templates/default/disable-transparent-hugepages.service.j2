@@ -1,0 +1,15 @@
+[Unit]
+Description=Disable Transparent Huge Pages
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/sh -c "/usr/bin/echo never | tee /sys/kernel/mm/transparent_hugepage/enabled"
+ExecStart=/usr/bin/sh -c "/usr/bin/echo never | tee /sys/kernel/mm/transparent_hugepage/defrag"
+{% if ansible_distribution_major_version == '6' %}
+ExecStart=/usr/bin/sh -c "/usr/bin/echo no | tee /sys/kernel/mm/transparent_hugepage/khugepaged/defrag"
+{% elif ansible_distribution_major_version == '7' %}
+ExecStart=/usr/bin/sh -c "/usr/bin/echo 0 | tee /sys/kernel/mm/transparent_hugepage/khugepaged/defrag"
+{% endif %}
+
+[Install]
+WantedBy=multi-user.target
