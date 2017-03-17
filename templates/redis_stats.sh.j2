@@ -7,9 +7,10 @@ CLIEXEC='{{ redis_install_dir }}/bin/redis-cli -p {{ redis_port }}'
 {% endif %}
 
 PIDFILE={{ redis_pidfile }}
-LOGFILE={{ redis_logfile }}
 
+{% if not redis_syslog_enabled | bool %}
 TIMESTAMP=$(date +"%d %b %H:%M:%S.%N" | sed 's/......$//g')
+{% endif %}
 
 function log_info
 {
@@ -25,13 +26,17 @@ function log_info
     done
 
     local logevent=$(grep ':' $tmpfile | tr ' ' '_' | sed -e 's/\:\(.*\)\r$/=\"\1"/g' | paste -sd " " -)
-    echo "[$pid] $TIMESTAMP $ipaddress redis-info $logevent" >> $LOGFILE
+{% if redis_syslog_enabled | bool %}
+    echo "[$pid] $ipaddress $logevent" | logger -t {{ redis_stats_syslog_ident }}
+{% else -%}
+    echo "[$pid] $TIMESTAMP $ipaddress redis-info $logevent" >> {{ redis_logfile }}
+{% endif %}
     rm "$tmpfile"
 }
 
 if [ -f $PIDFILE ]; then
     PID=$(cat $PIDFILE)
-    ipaddress="$(ip addr show eth0 | awk '/inet/ {print $1"="$2}' | cut -d/ -f1 | grep inet=)"
+    ipaddress="$(/sbin/ip addr show eth0 | awk '/inet/ {print $1"="$2}' | cut -d/ -f1 | grep inet=)"
 
 {% for info_command in redis_stats_info %}
     log_info "{{ info_command }}" $PID "$ipaddress"

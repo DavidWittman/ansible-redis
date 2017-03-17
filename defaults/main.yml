@@ -62,6 +62,7 @@ redis_syslog_facility: USER
 # Set this to report periodic statistics (into redis_logfile)
 redis_stats_enabled: false
 redis_stats_minute: "*/5" # cron style
+redis_stats_syslog_ident: "redis-info"
 redis_stats_info:
   - commandstats
   - cpu memory
