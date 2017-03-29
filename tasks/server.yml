@@ -82,7 +82,9 @@
     path: "{{ redis_logfile }}"
     owner: "{{ redis_user }}"
     group: "{{ redis_group }}"
+  register: touch_log
   when: redis_logfile != '""'
+  changed_when: touch_log.diff.before.state != "file"
 
 - name: check if pid directory exists
   stat:
