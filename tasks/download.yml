@@ -33,7 +33,7 @@
   copy:
     src: "{{ redis_tarball }}"
     dest: /usr/local/src/redis-{{ redis_version }}.tar.gz
-  when: redis_tarball
+  when: redis_tarball|default(false)
 
 - name: extract redis tarball
   unarchive:
