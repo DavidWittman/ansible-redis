@@ -6,6 +6,7 @@
     state: present
     reload: yes
     ignoreerrors: yes
+  failed_when: False
   when: redis_travis_ci is not defined
 
 - name: compile redis
