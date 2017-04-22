@@ -53,7 +53,7 @@
     - sentinel_unit_file|changed
 
 - name: set sentinel to start at boot
-  service:
+  systemd:
     name: sentinel_{{ redis_sentinel_port }}
     enabled: yes
   when: redis_as_service

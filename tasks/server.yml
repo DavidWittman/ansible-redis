@@ -53,7 +53,7 @@
     - redis_unit_file|changed
 
 - name: set redis to start at boot
-  service:
+  systemd:
     name: "{{ redis_service_name }}"
     enabled: yes
   when: redis_as_service
