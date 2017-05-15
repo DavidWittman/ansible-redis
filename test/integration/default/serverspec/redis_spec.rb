@@ -26,4 +26,12 @@ describe 'Redis' do
     it { should be_file }
     it { should contain '1' }
   end
+
+  describe file('/usr/bin/redis-server') do
+    it { should be_symlink }
+  end
+
+  describe file('/usr/bin/redis-cli') do
+    it { should be_symlink }
+  end
 end
