@@ -51,3 +51,15 @@
   args:
     chdir: /usr/local/src/redis-{{ redis_version }}
     creates: "{{ redis_install_dir }}/bin/redis-server"
+
+- name: list redis binaries to add to alternatives
+  command: ls -1 {{ redis_install_dir }}/bin
+  register: redis_binaries
+  changed_when: false
+
+- name: add redis binaries to alternatives
+  alternatives:
+    name: "{{ item }}"
+    path: "{{ redis_install_dir }}/bin/{{ item }}"
+    link: "/usr/bin/{{ item }}"
+  with_items: "{{ redis_binaries.stdout_lines }}"
