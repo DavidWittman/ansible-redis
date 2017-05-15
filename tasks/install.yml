@@ -30,15 +30,21 @@
   changed_when: false
   register: user_exists
 
+- name: add redis group
+  group:
+    name: "{{ redis_group }}"
+    state: present
+  when: user_exists|failed
+
 - name: add redis user
   user:
     name: "{{ redis_user }}"
+    group: "{{ redis_group }}"
     comment: "Redis"
     home: "{{ redis_install_dir }}"
     shell: /bin/false
     system: yes
   when: user_exists|failed
-
 
 - name: create /var/run/redis
   file:
