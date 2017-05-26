@@ -1,13 +1,13 @@
 ---
 - include: check_vars.yml
 
-- include: download.yml
-  tags:
-    - download
+# - include: download.yml
+#   tags:
+#     - download
 
-- include: dependencies.yml
-  tags:
-    - install
+# - include: dependencies.yml
+#   tags:
+#     - install
 
 - include: install.yml
   tags:

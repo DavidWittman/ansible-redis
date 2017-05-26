@@ -9,7 +9,7 @@
 - name: create sentinel init script
   template:
     src: "{{ item }}"
-    dest: /etc/init.d/sentinel_{{ redis_sentinel_port }}
+    dest: "/etc/init.d/sentinel_{{ redis_sentinel_port }}"
     mode: 0755
   # Choose the distro-specific template. We must specify the templates
   # path here because with_first_found tries to find files in files/
@@ -24,7 +24,7 @@
 - name: create sentinel systemd service
   template:
     src: "{{ item }}"
-    dest: /etc/systemd/system/sentinel_{{ redis_sentinel_port }}.service
+    dest: "/etc/systemd/system/sentinel_{{ redis_sentinel_port }}.service"
     mode: 0644
   with_first_found:
     - files:
@@ -104,21 +104,21 @@
 - name: create sentinel config file
   template:
     src: redis_sentinel.conf.j2
-    dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+    dest: "/etc/redis/sentinel_{{ redis_sentinel_port }}.conf"
     owner: "{{ redis_user }}"
     mode: 0640
   notify: "restart sentinel {{ redis_sentinel_port }}"
 
 - name: add sentinel init config file
   template:
-    dest: /etc/sysconfig/sentinel_{{ redis_sentinel_port }}
+    dest: "/etc/sysconfig/sentinel_{{ redis_sentinel_port }}"
     src: redis.init.conf.j2
   when: ansible_os_family == "RedHat"
   notify: "restart sentinel {{ redis_sentinel_port }}"
 
 - name: add sentinel init config file
   template:
-    dest: /etc/default/sentinel_{{ redis_sentinel_port }}
+    dest: "/etc/default/sentinel_{{ redis_sentinel_port }}"
     src: redis.init.conf.j2
   when: ansible_os_family == "Debian"
   notify: "restart sentinel {{ redis_sentinel_port }}"
@@ -130,6 +130,6 @@
 
 - name: ensure sentinel is running
   service:
-    name: sentinel_{{ redis_sentinel_port }}
+    name: "sentinel_{{ redis_sentinel_port }}"
     state: started
   when: redis_as_service
