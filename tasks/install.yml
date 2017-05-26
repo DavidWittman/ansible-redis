@@ -19,10 +19,10 @@
 #     path: "{{ redis_install_dir }}"
 #     state: directory
 
-# - name: create /etc/redis
-#   file:
-#     path: /etc/redis
-#     state: directory
+- name: create /etc/redis
+  file:
+    path: /etc/redis
+    state: directory
 
 # - name: check if redis user exists (ignore errors)
 #   command: id {{ redis_user }}
