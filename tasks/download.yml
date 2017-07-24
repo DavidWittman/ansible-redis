@@ -4,7 +4,7 @@
 # using `redis_checksums` on Ansible 2.x because they're sha1.
 - name: set redis checksum
   set_fact:
-    redis_checksum: "sha1:{{ redis_checksums[redis_version] }}"
+    redis_checksum: "{{ 'sha1' if redis_checksums[redis_version]|length == 40 else 'sha256' }}:{{ redis_checksums[redis_version] }}"
   when:
     - redis_verify_checksum|bool
     - redis_checksum is not defined
