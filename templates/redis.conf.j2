@@ -27,7 +27,7 @@ save {{ save }}
 stop-writes-on-bgsave-error {{ redis_stop_writes_on_bgsave_error|string }}
 rdbcompression {{ redis_rdbcompression|string }}
 rdbchecksum {{ redis_rdbchecksum|string }}
-dbfilename dump.rdb
+dbfilename {{ redis_db_filename|string }}
 
 # Replication
 {% if redis_slaveof -%}
