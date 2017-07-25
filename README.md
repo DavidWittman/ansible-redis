@@ -280,7 +280,7 @@ redis_slowlog_max_len: 128
 redis_maxmemory: false
 redis_maxmemory_policy: noeviction
 redis_rename_commands: []
-redis_db_filename: {{redis_port}}_dump.db
+redis_db_filename: dump.db
 # How frequently to snapshot the database to disk
 # e.g. "900 1" => 900 seconds if at least 1 key changed
 redis_save:

@@ -76,7 +76,7 @@ redis_maxmemory_policy: noeviction
 redis_rename_commands: []
 
 # the file name for the RDB Backup
-redis_db_filename: "{{ redis_port }}_dump.db"
+redis_db_filename: "dump.db"
 
 # How frequently to snapshot the database to disk
 # e.g. "900 1" => 900 seconds if at least 1 key changed
