@@ -101,10 +101,24 @@
     - redis_pidfile != '""'
     - not piddir.stat.exists
 
-- name: create redis config file
+- name: check for dynamic redis config file
+  stat:
+    path: /etc/redis/{{ redis_port }}.conf
+  register: redis_config_file
+
+- name: create dynamic redis config file
   template:
     src: redis.conf.j2
     dest: /etc/redis/{{ redis_port }}.conf
+    owner: "{{ redis_user }}"
+    mode: 0640
+  when: not redis_config_file.stat.exists
+  notify: "restart redis {{ redis_port }}"
+
+- name: create static redis config file
+  template:
+    src: redis_include.conf.j2
+    dest: /etc/redis/{{ redis_port }}.include.conf
     owner: "{{ redis_user }}"
     mode: 0640
   notify: "restart redis {{ redis_port }}"

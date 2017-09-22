@@ -13,6 +13,12 @@ describe 'Redis' do
   describe file('/etc/redis/6379.conf') do
     it { should be_file }
     it { should be_owned_by 'redis' }
+    its(:content) { should include "include /etc/redis/6379.include.conf" }
+  end
+
+  describe file('/etc/redis/6379.include.conf') do
+    it { should be_file }
+    it { should be_owned_by 'redis' }
     its(:content) { should match /port 6379/ }
   end
 
