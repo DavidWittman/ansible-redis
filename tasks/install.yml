@@ -9,7 +9,7 @@
   when: redis_travis_ci is not defined
 
 - name: compile redis
-  command: make -j{{ ansible_processor_cores + 1 }}{{ ' 32bit' if redis_make_32bit|bool else '' }}
+  command: make -j{{ ansible_processor_cores|default(1) + 1 }}{{ ' 32bit' if redis_make_32bit|bool else '' }}
   args:
     chdir: /usr/local/src/redis-{{ redis_version }}
     creates: /usr/local/src/redis-{{ redis_version }}/src/redis-server
