@@ -101,13 +101,35 @@
     - redis_sentinel_pidfile != '""'
     - not sentinel_piddir.stat.exists
 
-- name: create sentinel config file
+- name: check if sentinel dynamic config file exists
+  stat:
+    path: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+  register: sentinel_config_file
+
+- name: create initial sentinel dynamic config file
   template:
     src: redis_sentinel.conf.j2
     dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
     owner: "{{ redis_user }}"
     mode: 0640
+  when: not sentinel_config_file.stat.exists
   notify: "restart sentinel {{ redis_sentinel_port }}"
+
+- name: create static sentinel config file
+  template:
+    src: redis_sentinel.include.conf.j2
+    dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.include.conf
+    owner: "{{ redis_user }}"
+    mode: 0640
+  notify: "restart sentinel {{ redis_sentinel_port }}"
+
+- name: create sentinel live config script
+  template:
+    src: redis_sentinel_config.sh.j2
+    dest: /etc/redis/sentinel_{{ redis_sentinel_port }}_config.sh
+    owner: "{{ redis_user }}"
+    mode: 0750
+  notify: "reconfigure sentinel {{ redis_sentinel_port }} monitors"
 
 - name: add sentinel init config file
   template:

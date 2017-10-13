@@ -10,3 +10,6 @@
     name: sentinel_{{ redis_sentinel_port }}
     state: restarted
   when: redis_as_service
+
+- name: "reconfigure sentinel {{ redis_sentinel_port }} monitors"
+  command: /etc/redis/sentinel_{{ redis_sentinel_port }}_config.sh

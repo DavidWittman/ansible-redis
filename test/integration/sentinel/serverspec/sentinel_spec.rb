@@ -13,7 +13,20 @@ describe 'Redis' do
   describe file('/etc/redis/sentinel_26379.conf') do
     it { should be_file }
     it { should be_owned_by 'redis' }
-    its(:content) { should match /port 26379/ }
+    its(:content) { should include "include /etc/redis/sentinel_26379.include.conf" }
+  end
+
+  describe file('/etc/redis/sentinel_26379.include.conf') do
+    it { should be_file }
+    it { should be_owned_by 'redis' }
+    its(:content) { should include "port 26379" }
+  end
+
+  describe file('/etc/redis/sentinel_26379_config.sh') do
+    it { should be_file }
+    it { should be_owned_by 'redis' }
+    it { should be_executable.by('group') }
+    its(:content) { should include "sentinel monitor master01 `dig +short localhost` 6379 2" }
   end
 
   describe file('/var/run/redis/sentinel_26379.pid') do

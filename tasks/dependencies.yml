@@ -9,6 +9,7 @@
     - gcc
     - make
     - libc6-dev
+    - dnsutils
     # This should be `else omit`, but it fails on Ansible 1.x, so just duplicate gcc
     - "{{ 'libc6-dev-i386' if redis_make_32bit|bool else 'gcc' }}"
   when: ansible_os_family == "Debian"
@@ -20,6 +21,7 @@
   with_items:
     - gcc
     - make
+    - bind-utils
   when: ansible_os_family == "RedHat"
 
 # Conditionally install the i686 build of libgcc if we are building 32-bit
