@@ -1,4 +1,9 @@
 ---
+- name: check for redis installation
+  stat:
+    path: "{{ redis_install_dir }}/bin/redis-server"
+  register: redis_prev_installation
+
 - name: enable overcommit in sysctl
   sysctl:
     name: vm.overcommit_memory
@@ -56,7 +61,8 @@
   command: make PREFIX={{ redis_install_dir }} install
   args:
     chdir: /usr/local/src/redis-{{ redis_version }}
-    creates: "{{ redis_install_dir }}/bin/redis-server"
+  when: redis_prev_installation.stat.exists == False or redis_upgrade.changed
+  notify: "restart redis"
 
 - name: list redis binaries to add to alternatives
   command: ls -1 {{ redis_install_dir }}/bin

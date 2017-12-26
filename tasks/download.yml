@@ -16,6 +16,7 @@
     url: "{{ redis_download_url }}"
     dest: /usr/local/src/redis-{{ redis_version }}.tar.gz
     sha256sum: "{{ redis_checksum|default(omit) }}"
+  register: redis_upgrade
   when:
     - not redis_tarball
     - ansible_version.major < 2
@@ -25,6 +26,7 @@
     url: "{{ redis_download_url }}"
     dest: /usr/local/src/redis-{{ redis_version }}.tar.gz
     checksum: "{{ redis_checksum|default(omit) }}"
+  register: redis_upgrade
   when:
     - not redis_tarball
     - ansible_version.major >= 2
