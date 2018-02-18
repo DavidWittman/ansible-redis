@@ -9,7 +9,7 @@
     - gcc
     - make
     - libc6-dev
-    # This should be `else omit`, but it fails on Ansible 1.x, so just duplicate gcc
+    # This should be `else omit`, but that doesn't quite work, so duplicate gcc
     - "{{ 'libc6-dev-i386' if redis_make_32bit|bool else 'gcc' }}"
   when: ansible_os_family == "Debian"
 
@@ -47,7 +47,7 @@
   with_items:
     - gcc
     - make
-    # This should be `else omit`, but it fails on Ansible 1.x, so just duplicate gcc
+    # These should be `else omit`, but that doesn't quite work, so duplicate gcc
     - "{{ 'gcc-32bit' if redis_make_32bit|bool else 'gcc' }}"
     - "{{ 'libgcc_s1-32bit' if redis_make_32bit|bool else 'gcc' }}"
   when: ansible_os_family == 'Suse'
