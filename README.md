@@ -3,7 +3,6 @@
 [![Build Status](https://travis-ci.org/DavidWittman/ansible-redis.svg?branch=master)](https://travis-ci.org/DavidWittman/ansible-redis) [![Ansible Galaxy](https://img.shields.io/badge/galaxy-DavidWittman.redis-blue.svg?style=flat)](https://galaxy.ansible.com/detail#/role/730)
 
  - Ansible 2.1+
-   - Ansible 1.9.x is currently supported, but it will be deprecated soon
  - Compatible with most versions of Ubuntu/Debian and RHEL/CentOS 6.x
  
 ## Contents
@@ -151,23 +150,7 @@ Along with the variables listed above, Sentinel has a number of its own configur
 
 ### Verifying checksums
 
-Set the `redis_verify_checksum` variable to true to use the checksum verification option for `get_url`. Note that this will only verify checksums when Redis is downloaded from a URL, not when one is provided in a tarball with `redis_tarball`. Due to differences in the `get_url` module in Ansible 1.x and Ansible 2.x, this feature behaves differently depending on the version of Ansible which you are using.
-
-#### Ansible 1.x
-
-In Ansible 1.x, the `get_url` module only supports verifying sha256 checksums, which are not provided by default. If you wish to set `redis_verify_checksum`, you must also define a sha256 checksum with the `redis_checksum` variable.
-
-``` yaml
-- name: install redis on ansible 1.x and verify checksums
-  hosts: all
-  roles:
-    - role: DavidWittman.redis
-      redis_version: 3.0.7
-      redis_verify_checksum: true
-      redis_checksum: b2a791c4ea3bb7268795c45c6321ea5abcc24457178373e6a6e3be6372737f23
-```
-
-#### Ansible 2.x
+Set the `redis_verify_checksum` variable to true to use the checksum verification option for `get_url`. Note that this will only verify checksums when Redis is downloaded from a URL, not when one is provided in a tarball with `redis_tarball`.
 
 When using Ansible 2.x, this role will verify the sha1 checksum of the download against checksums defined in the `redis_checksums` variable in `vars/main.yml`. If your version is not defined in here or you wish to override the checksum with one of your own, simply set the `redis_checksum` variable. As in the example below, you will need to prefix the checksum with the type of hash which you are using.
 
