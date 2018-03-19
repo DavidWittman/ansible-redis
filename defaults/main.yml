@@ -16,6 +16,7 @@ redis_group: "{{ redis_user }}"
 
 # The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
+redis_oom_score_adjust: 0
 
 ## Role options
 # Configure Redis as a service
@@ -104,6 +105,7 @@ redis_sentinel_port: 26379
 redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
 redis_sentinel_logfile: '""'
 redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
+redis_sentinel_oom_score_adjust: 0
 redis_sentinel_monitors:
   - name: master01
     host: localhost

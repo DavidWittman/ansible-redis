@@ -13,6 +13,10 @@ Restart=always
 User={{ redis_user }}
 Group={{ redis_group }}
 
+{% if redis_sentinel_oom_score_adjust != 0 %}
+OOMScoreAdjust={{ redis_sentinel_oom_score_adjust }}
+{% endif %}
+
 UMask=007
 PrivateTmp=yes
 LimitNOFILE={{ redis_nofile_limit }}
