@@ -14,7 +14,7 @@
 - name: download redis (ansible 1.x)
   get_url:
     url: "{{ redis_download_url }}"
-    dest: /usr/local/src/redis-{{ redis_version }}.tar.gz
+    dest: "{{ redis_download_dir }}/redis-{{ redis_version }}.tar.gz"
     sha256sum: "{{ redis_checksum|default(omit) }}"
   when:
     - not redis_tarball
@@ -23,7 +23,7 @@
 - name: download redis (ansible 2.x)
   get_url:
     url: "{{ redis_download_url }}"
-    dest: /usr/local/src/redis-{{ redis_version }}.tar.gz
+    dest: "{{ redis_download_dir }}/redis-{{ redis_version }}.tar.gz"
     checksum: "{{ redis_checksum|default(omit) }}"
   when:
     - not redis_tarball
@@ -32,12 +32,12 @@
 - name: upload redis
   copy:
     src: "{{ redis_tarball }}"
-    dest: /usr/local/src/redis-{{ redis_version }}.tar.gz
+    dest: "{{ redis_download_dir }}/redis-{{ redis_version }}.tar.gz"
   when: redis_tarball
 
 - name: extract redis tarball
   unarchive:
-    src: /usr/local/src/redis-{{ redis_version }}.tar.gz
-    dest: /usr/local/src
-    creates: /usr/local/src/redis-{{ redis_version }}/Makefile
+    src: "{{ redis_download_dir }}/redis-{{ redis_version }}.tar.gz"
+    dest: "{{ redis_download_dir }}"
+    creates: "{{ redis_download_dir }}/redis-{{ redis_version }}/Makefile"
     copy: no

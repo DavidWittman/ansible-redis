@@ -11,8 +11,8 @@
 - name: compile redis
   command: make -j{{ ansible_processor_cores + 1 }}{{ ' 32bit' if redis_make_32bit|bool else '' }}
   args:
-    chdir: /usr/local/src/redis-{{ redis_version }}
-    creates: /usr/local/src/redis-{{ redis_version }}/src/redis-server
+    chdir: "{{ redis_download_dir }}/redis-{{ redis_version }}"
+    creates: "{{ redis_download_dir }}/redis-{{ redis_version }}/src/redis-server"
 
 - name: create redis install directory
   file:
@@ -39,7 +39,6 @@
     system: yes
   when: user_exists|failed
 
-
 - name: create /var/run/redis
   file:
     path: /var/run/redis
@@ -49,5 +48,5 @@
 - name: install redis
   command: make PREFIX={{ redis_install_dir }} install
   args:
-    chdir: /usr/local/src/redis-{{ redis_version }}
+    chdir: "{{ redis_download_dir }}/redis-{{ redis_version }}"
     creates: "{{ redis_install_dir }}/bin/redis-server"
