@@ -189,7 +189,7 @@ Here is a list of all the default variables for this role, which are also availa
 ``` yml
 ---
 ## Installation options
-redis_version: 2.8.9
+redis_version: 2.8.24
 redis_install_dir: /opt/redis
 redis_dir: /var/lib/redis/{{ redis_port }}
 redis_download_url: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
