@@ -69,4 +69,4 @@
     path: "{{ redis_install_dir }}/bin/{{ item }}"
     link: "/usr/bin/{{ item }}"
   with_items: "{{ redis_binaries.stdout_lines }}"
-  when: not redis_binaries.skipped
+  when: redis_binaries is succeeded
