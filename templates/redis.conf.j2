@@ -92,8 +92,8 @@ set-max-intset-entries 512
 zset-max-ziplist-entries 128
 zset-max-ziplist-value 64
 activerehashing yes
-client-output-buffer-limit normal 0 0 0
-client-output-buffer-limit slave 256mb 64mb 60
-client-output-buffer-limit pubsub 32mb 8mb 60
+client-output-buffer-limit normal {{ redis_client_output_buffer_limit_normal }}
+client-output-buffer-limit slave {{ redis_client_output_buffer_limit_slave }}
+client-output-buffer-limit pubsub {{ redis_client_output_buffer_limit_pubsub }}
 hz 10
 aof-rewrite-incremental-fsync yes
