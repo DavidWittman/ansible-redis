@@ -52,6 +52,8 @@ redis_slaveof: false
 redis_slave_read_only: "yes"
 redis_slave_priority: 100
 redis_repl_backlog_size: false
+redis_repl_diskless_sync: "no"
+redis_repl_diskless_sync_delay: 5
 
 ## Logging
 redis_logfile: '""'
@@ -95,6 +97,7 @@ redis_no_appendfsync_on_rewrite: "no"
 redis_auto_aof_rewrite_percentage: "100"
 redis_auto_aof_rewrite_min_size: "64mb"
 redis_notify_keyspace_events: '""'
+redis_aof_use_rdb_preamble: "no"
 
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel

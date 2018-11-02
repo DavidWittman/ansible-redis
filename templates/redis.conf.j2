@@ -49,6 +49,8 @@ min-slaves-max-lag {{ redis_min_slaves_max_lag }}
 {% if redis_password -%}
 masterauth {{ redis_password }}
 {% endif -%}
+repl-diskless-sync {{ redis_repl_diskless_sync }}
+repl-diskless-sync-delay {{ redis_repl_diskless_sync_delay }}
 
 # Security
 {% if redis_password -%}
@@ -97,3 +99,4 @@ client-output-buffer-limit slave 256mb 64mb 60
 client-output-buffer-limit pubsub 32mb 8mb 60
 hz 10
 aof-rewrite-incremental-fsync yes
+aof-use-rdb-preamble {{ redis_aof_use_rdb_preamble }}
