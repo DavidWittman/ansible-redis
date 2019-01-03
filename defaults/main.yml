@@ -96,6 +96,10 @@ redis_auto_aof_rewrite_percentage: "100"
 redis_auto_aof_rewrite_min_size: "64mb"
 redis_notify_keyspace_events: '""'
 
+redis_client_output_buffer_limit_normal: 0 0 0
+redis_client_output_buffer_limit_slave: 256mb 64mb 60
+redis_client_output_buffer_limit_pubsub: 32mb 8mb 60
+
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false
