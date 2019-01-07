@@ -76,6 +76,9 @@ redis_maxmemory: false
 redis_maxmemory_policy: noeviction
 redis_rename_commands: []
 
+# Lua script time limit
+redis_lua_time_limit: 5000
+
 # the file name for the RDB Backup
 redis_db_filename: "dump.rdb"
 
