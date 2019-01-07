@@ -74,7 +74,7 @@ auto-aof-rewrite-percentage {{ redis_auto_aof_rewrite_percentage }}
 auto-aof-rewrite-min-size {{ redis_auto_aof_rewrite_min_size }}
 
 # Lua
-lua-time-limit 5000
+lua-time-limit {{ redis_lua_time_limit }}
 
 # Slow Log
 slowlog-log-slower-than {{ redis_slowlog_log_slower_than }}
