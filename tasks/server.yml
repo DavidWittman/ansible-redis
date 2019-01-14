@@ -103,13 +103,18 @@
     - redis_pidfile != '""'
     - not piddir.stat.exists
 
-- name: create redis config file
+# A "reference" config file is created, that will not be re-written by redis.
+# This file is used by Ansible to check for configuration changes (and trigger
+# service restart).
+- name: create redis reference config file
   template:
     src: redis.conf.j2
-    dest: /etc/redis/{{ redis_port }}.conf
+    dest: /etc/redis/{{ redis_port }}.refconf
     owner: "{{ redis_user }}"
     mode: 0640
-  notify: "restart redis {{ redis_port }}"
+  notify:
+    - enforce new redis config file
+    - "restart redis {{ redis_port }}"
 
 - name: add redis init config file
   template:

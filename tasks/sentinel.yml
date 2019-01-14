@@ -103,13 +103,18 @@
     - redis_sentinel_pidfile != '""'
     - not sentinel_piddir.stat.exists
 
-- name: create sentinel config file
+# A "reference" config file is created, that will not be re-written by sentinel.
+# This file is used by Ansible to check for configuration changes (and trigger
+# service restart).
+- name: create sentinel reference config file
   template:
     src: redis_sentinel.conf.j2
-    dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+    dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.refconf
     owner: "{{ redis_user }}"
     mode: 0640
-  notify: "restart sentinel {{ redis_sentinel_port }}"
+  notify:
+    - enforce new sentinel config file
+    - "restart sentinel {{ redis_sentinel_port }}"
 
 - name: add sentinel init config file
   template:
