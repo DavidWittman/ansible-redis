@@ -58,7 +58,8 @@
 
 - name: add redis binaries to alternatives
   alternatives:
-    name: "{{ item }}"
+    name: "{{ linknames }}"
     path: "{{ redis_install_dir }}/bin/{{ item }}"
     link: "/usr/bin/{{ item }}"
-  with_items: "{{ redis_binaries.stdout_lines }}"
+  vars:
+    linknames: "{{ redis_binaries.stdout_lines }}"
