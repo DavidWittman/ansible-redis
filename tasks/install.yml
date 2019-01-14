@@ -24,17 +24,10 @@
     path: /etc/redis
     state: directory
 
-- name: check if redis user exists (ignore errors)
-  command: id {{ redis_user }}
-  ignore_errors: yes
-  changed_when: false
-  register: user_exists
-
 - name: add redis group
   group:
     name: "{{ redis_group }}"
     state: present
-  when: user_exists|failed
 
 - name: add redis user
   user:
@@ -44,7 +37,7 @@
     home: "{{ redis_install_dir }}"
     shell: /bin/false
     system: yes
-  when: user_exists|failed
+    state: present
 
 - name: create /var/run/redis
   file:
