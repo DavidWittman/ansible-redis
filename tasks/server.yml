@@ -76,10 +76,12 @@
     - redis_logfile != '""'
     - not logdir.stat.exists
 
-- name: touch the log file
-  file:
-    state: touch
-    path: "{{ redis_logfile }}"
+# Create an empty log file only if destination file does not exist
+- name: create the log file
+  copy:
+    content: ""
+    dest: "{{ redis_logfile }}"
+    force: no
     owner: "{{ redis_user }}"
     group: "{{ redis_group }}"
   when: redis_logfile != '""'
