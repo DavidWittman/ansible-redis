@@ -50,7 +50,7 @@
   when:
     - redis_as_service
     - ansible_service_mgr|default() == "systemd"
-    - redis_unit_file|changed
+    - redis_unit_file is changed
 
 - name: set redis to start at boot
   service:
@@ -76,10 +76,12 @@
     - redis_logfile != '""'
     - not logdir.stat.exists
 
-- name: touch the log file
-  file:
-    state: touch
-    path: "{{ redis_logfile }}"
+# Create an empty log file only if destination file does not exist
+- name: create the log file
+  copy:
+    content: ""
+    dest: "{{ redis_logfile }}"
+    force: no
     owner: "{{ redis_user }}"
     group: "{{ redis_group }}"
   when: redis_logfile != '""'
@@ -101,13 +103,27 @@
     - redis_pidfile != '""'
     - not piddir.stat.exists
 
-- name: create redis config file
+# A "reference" config file is created, that will not be re-written by redis.
+# This file is used by Ansible to check for configuration changes (and trigger
+# service restart).
+- name: create redis reference config file
   template:
     src: redis.conf.j2
+    dest: /etc/redis/{{ redis_port }}.refconf
+    owner: "{{ redis_user }}"
+    mode: 0640
+  register: redis_refconf
+  notify: "restart redis {{ redis_port }}"
+
+# Create the "real" redis config file: the one that will be re-written by redis.
+- name: enforce new redis config file
+  copy:
+    remote_src: yes
+    src: /etc/redis/{{ redis_port }}.refconf
     dest: /etc/redis/{{ redis_port }}.conf
     owner: "{{ redis_user }}"
     mode: 0640
-  notify: "restart redis {{ redis_port }}"
+  when: redis_refconf.changed
 
 - name: add redis init config file
   template:
@@ -124,11 +140,6 @@
     mode: 0600
   when: ansible_os_family == "Debian"
   notify: "restart redis {{ redis_port }}"
-
-# Flush handlers before ensuring the service is started to prevent
-# a start and then restart
-- name: flush handlers to apply config changes
-  meta: flush_handlers
 
 - name: ensure redis is running
   service:

@@ -50,7 +50,7 @@
   when:
     - redis_as_service
     - ansible_service_mgr|default() == "systemd"
-    - sentinel_unit_file|changed
+    - sentinel_unit_file is changed
 
 - name: set sentinel to start at boot
   service:
@@ -76,10 +76,12 @@
     - redis_sentinel_logfile != '""'
     - not sentinel_logdir.stat.exists
 
-- name: touch the sentinel log file
-  file:
-    state: touch
-    path: "{{ redis_sentinel_logfile }}"
+# Create an empty log file only if destination file does not exist
+- name: create the sentinel log file
+  copy:
+    content: ""
+    dest: "{{ redis_sentinel_logfile }}"
+    force: no
     owner: "{{ redis_user }}"
     group: "{{ redis_group }}"
   when: redis_sentinel_logfile != '""'
@@ -101,13 +103,28 @@
     - redis_sentinel_pidfile != '""'
     - not sentinel_piddir.stat.exists
 
-- name: create sentinel config file
+# A "reference" config file is created, that will not be re-written by sentinel.
+# This file is used by Ansible to check for configuration changes (and trigger
+# service restart).
+- name: create sentinel reference config file
   template:
     src: redis_sentinel.conf.j2
+    dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.refconf
+    owner: "{{ redis_user }}"
+    mode: 0640
+  register: sentinel_refconf
+  notify: "restart sentinel {{ redis_sentinel_port }}"
+
+# Create the "real" sentinel config file: the one that will be re-written by
+# sentinel.
+- name: enforce new sentinel config file
+  copy:
+    remote_src: yes
+    src: /etc/redis/sentinel_{{ redis_sentinel_port }}.refconf
     dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
     owner: "{{ redis_user }}"
     mode: 0640
-  notify: "restart sentinel {{ redis_sentinel_port }}"
+  when: sentinel_refconf.changed
 
 - name: add sentinel init config file
   template:
@@ -122,11 +139,6 @@
     src: redis.init.conf.j2
   when: ansible_os_family == "Debian"
   notify: "restart sentinel {{ redis_sentinel_port }}"
-
-# Flush handlers before ensuring the service is started to prevent
-# a start and then restart
-- name: flush handlers to apply config changes
-  meta: flush_handlers
 
 - name: ensure sentinel is running
   service:
