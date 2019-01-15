@@ -112,9 +112,19 @@
     dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.refconf
     owner: "{{ redis_user }}"
     mode: 0640
-  notify:
-    - enforce new sentinel config file
-    - "restart sentinel {{ redis_sentinel_port }}"
+  register: sentinel_refconf
+  notify: "restart sentinel {{ redis_sentinel_port }}"
+
+# Create the "real" sentinel config file: the one that will be re-written by
+# sentinel.
+- name: enforce new sentinel config file
+  copy:
+    remote_src: yes
+    src: /etc/redis/sentinel_{{ redis_sentinel_port }}.refconf
+    dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+    owner: "{{ redis_user }}"
+    mode: 0640
+  when: sentinel_refconf.changed
 
 - name: add sentinel init config file
   template:

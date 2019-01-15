@@ -112,9 +112,18 @@
     dest: /etc/redis/{{ redis_port }}.refconf
     owner: "{{ redis_user }}"
     mode: 0640
-  notify:
-    - enforce new redis config file
-    - "restart redis {{ redis_port }}"
+  register: redis_refconf
+  notify: "restart redis {{ redis_port }}"
+
+# Create the "real" redis config file: the one that will be re-written by redis.
+- name: enforce new redis config file
+  copy:
+    remote_src: yes
+    src: /etc/redis/{{ redis_port }}.refconf
+    dest: /etc/redis/{{ redis_port }}.conf
+    owner: "{{ redis_user }}"
+    mode: 0640
+  when: redis_refconf.changed
 
 - name: add redis init config file
   template:

@@ -1,24 +1,4 @@
 ---
-# Handler to create the "real" redis config file: this will be re-written by
-# redis.
-- name: enforce new redis config file
-  copy:
-    remote_src: yes
-    src: /etc/redis/{{ redis_port }}.refconf
-    dest: /etc/redis/{{ redis_port }}.conf
-    owner: "{{ redis_user }}"
-    mode: 0640
-
-# Handler to create the "real" sentinel config file: this will be re-written by
-# sentinel.
-- name: enforce new sentinel config file
-  copy:
-    remote_src: yes
-    src: /etc/redis/sentinel_{{ redis_sentinel_port }}.refconf
-    dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
-    owner: "{{ redis_user }}"
-    mode: 0640
-
 - name: "restart redis {{ redis_port }}"
   service:
     name: "{{ redis_service_name }}"
