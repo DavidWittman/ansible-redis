@@ -130,11 +130,6 @@
   when: ansible_os_family == "Debian"
   notify: "restart sentinel {{ redis_sentinel_port }}"
 
-# Flush handlers before ensuring the service is started to prevent
-# a start and then restart
-- name: flush handlers to apply config changes
-  meta: flush_handlers
-
 - name: ensure sentinel is running
   service:
     name: sentinel_{{ redis_sentinel_port }}
