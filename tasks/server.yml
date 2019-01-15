@@ -132,11 +132,6 @@
   when: ansible_os_family == "Debian"
   notify: "restart redis {{ redis_port }}"
 
-# Flush handlers before ensuring the service is started to prevent
-# a start and then restart
-- name: flush handlers to apply config changes
-  meta: flush_handlers
-
 - name: ensure redis is running
   service:
     name: "{{ redis_service_name }}"
