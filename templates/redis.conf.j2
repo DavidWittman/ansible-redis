@@ -5,7 +5,9 @@ daemonize {{ redis_daemonize }}
 pidfile {{ redis_pidfile }}
 dir {{ redis_dir }}
 port {{ redis_port }}
+{% if redis_bind -%}}
 bind {{ redis_bind }}
+{% endif -%}
 {% if redis_socket_path -%}
 unixsocket {{ redis_socket_path }}
 unixsocketperm {{ redis_socket_perm }}
