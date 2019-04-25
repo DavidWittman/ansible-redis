@@ -103,6 +103,8 @@ redis_client_output_buffer_limit_normal: 0 0 0
 redis_client_output_buffer_limit_slave: 256mb 64mb 60
 redis_client_output_buffer_limit_pubsub: 32mb 8mb 60
 
+redis_hz: 10
+
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false
