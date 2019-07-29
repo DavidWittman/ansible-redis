@@ -7,6 +7,11 @@ pidfile {{ redis_sentinel_pidfile }}
 port {{ redis_sentinel_port }}
 bind {{ redis_sentinel_bind }}
 
+# Security
+{% if redis_sentinel_password %}
+requirepass {{ redis_sentinel_password }}
+{% endif %}
+
 {% for master in redis_sentinel_monitors -%}
 sentinel monitor {{ master.name }} {{ master.host }} {{ master.port }} {{ master.quorum|d('2') }}
 {% for option in ('auth_pass', 'down_after_milliseconds', 'parallel_syncs', 'failover_timeout', 'notification_script', 'client_reconfig_script') -%}
