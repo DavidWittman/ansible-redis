@@ -9,7 +9,7 @@
   when: redis_travis_ci is not defined
 
 - name: compile redis
-  command: make -j{{ ansible_processor_cores|default(1) + 1 }}{{ ' 32bit' if redis_make_32bit|bool else '' }}
+  shell: umask 0022 && make -j{{ ansible_processor_cores|default(1) + 1 }}{{ ' 32bit' if redis_make_32bit|bool else '' }}
   args:
     chdir: /usr/local/src/redis-{{ redis_version }}
     creates: /usr/local/src/redis-{{ redis_version }}/src/redis-server
@@ -18,11 +18,13 @@
   file:
     path: "{{ redis_install_dir }}"
     state: directory
+    mode: 0755
 
 - name: create /etc/redis
   file:
     path: /etc/redis
     state: directory
+    mode: 0755
 
 - name: check if redis user exists (ignore errors)
   command: id {{ redis_user }}
@@ -53,7 +55,7 @@
     owner: "{{ redis_user }}"
 
 - name: install redis
-  command: make PREFIX={{ redis_install_dir }} install
+  shell: umask 0022 && make PREFIX={{ redis_install_dir }} install
   args:
     chdir: /usr/local/src/redis-{{ redis_version }}
     creates: "{{ redis_install_dir }}/bin/redis-server"
