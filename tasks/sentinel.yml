@@ -107,21 +107,21 @@
     dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
     owner: "{{ redis_user }}"
     mode: 0640
-  notify: "restart sentinel {{ redis_sentinel_port }}"
+  notify: "restart sentinel"
 
 - name: add sentinel init config file
   template:
     dest: /etc/sysconfig/sentinel_{{ redis_sentinel_port }}
     src: redis.init.conf.j2
   when: ansible_os_family == "RedHat"
-  notify: "restart sentinel {{ redis_sentinel_port }}"
+  notify: "restart sentinel"
 
 - name: add sentinel init config file
   template:
     dest: /etc/default/sentinel_{{ redis_sentinel_port }}
     src: redis.init.conf.j2
   when: ansible_os_family == "Debian"
-  notify: "restart sentinel {{ redis_sentinel_port }}"
+  notify: "restart sentinel"
 
 # Flush handlers before ensuring the service is started to prevent
 # a start and then restart

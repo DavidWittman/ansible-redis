@@ -4,7 +4,7 @@
 
  - Ansible 2.1+
  - Compatible with most versions of Ubuntu/Debian and RHEL/CentOS 6.x
- 
+
 ## Contents
 
  1. [Installation](#installation)
@@ -144,6 +144,10 @@ Now, all we need to do is set the `redis_sentinel_monitors` variable to define t
 This will configure the Sentinel nodes to monitor the master we created above using the identifier `master01`. By default, Sentinel will use a quorum of 2, which means that at least 2 Sentinels must agree that a master is down in order for a failover to take place. This value can be overridden by setting the `quorum` key within your monitor definition. See the [Sentinel docs](http://redis.io/topics/sentinel) for more details.
 
 Along with the variables listed above, Sentinel has a number of its own configurables just as Redis server does. These are prefixed with `redis_sentinel_`, and are enumerated in the **Role Variables** section below.
+
+### Multiple role inclusions
+
+Should you need to execute the role several times, have a look at `test/test_all.yml` to see how to proceed. See [here](https://github.com/DavidWittman/ansible-redis/issues/133) and [here](https://github.com/DavidWittman/ansible-redis/issues/193) for context.
 
 
 ## Advanced Options
