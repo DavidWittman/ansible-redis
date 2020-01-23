@@ -196,6 +196,7 @@ Here is a list of all the default variables for this role, which are also availa
 redis_version: 2.8.24
 redis_install_dir: /opt/redis
 redis_dir: /var/lib/redis/{{ redis_port }}
+redis_config_file_name: "{{ redis_port }}.conf"
 redis_download_url: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
 # Set this to true to validate redis tarball checksum against vars/main.yml
 redis_verify_checksum: false
