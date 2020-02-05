@@ -25,7 +25,7 @@ PIDFILE={{ redis_pidfile }}
 PIDFILE_DIR=$(dirname "${PIDFILE}")
 
 REDIS_USER={{ redis_user }}
-CONF="/etc/redis/${REDIS_PORT}.conf"
+CONF="/etc/redis/{{ redis_config_file_name }}"
 CLIEXEC="{{ redis_install_dir }}/bin/redis-cli -p ${REDIS_PORT}"
 
 if [ -r /etc/default/{{ redis_service_name }} ]; then

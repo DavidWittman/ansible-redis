@@ -5,7 +5,7 @@ Documentation=http://redis.io/documentation, man:redis-server(1)
 
 [Service]
 Type={{ 'forking' if redis_daemonize == 'yes' else 'simple' }}
-ExecStart={{ redis_install_dir }}/bin/redis-server /etc/redis/{{ redis_port }}.conf
+ExecStart={{ redis_install_dir }}/bin/redis-server /etc/redis/{{ redis_config_file_name }}
 EnvironmentFile=-/etc/default/redis_{{ redis_port }}
 PIDFile={{ redis_pidfile }}
 TimeoutStopSec=0
