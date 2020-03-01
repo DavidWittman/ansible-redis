@@ -20,6 +20,6 @@ galaxy_info:
         - 12
   galaxy_tags:
     - database
-    - database:nosql
+    - nosql
 
 dependencies: []
