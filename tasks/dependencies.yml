@@ -44,6 +44,6 @@
       - make
       # These should be `else omit`, but that doesn't quite work, so duplicate gcc
       - "{{ 'gcc-32bit' if redis_make_32bit|bool else 'gcc' }}"
-      - "{{ 'libgcc_s1-32bit' if redis_make_32bit|bool else 'gcc' }}"      
+      - "{{ 'libgcc_s1-32bit' if redis_make_32bit|bool else 'gcc' }}"
     state: present
   when: ansible_os_family == 'Suse'
