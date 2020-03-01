@@ -28,6 +28,8 @@
     name: libgcc
     state: latest
   when: ansible_os_family == "RedHat" and redis_make_32bit|bool
+  tags:
+    - skip_ansible_lint
 
 - name: install redhat 32-bit dependencies
   yum:
@@ -36,6 +38,8 @@
       - glibc-devel.i686
     state: latest
   when: ansible_os_family == "RedHat" and redis_make_32bit|bool
+  tags:
+    - skip_ansible_lint
 
 - name: install suse dependencies
   zypper:
