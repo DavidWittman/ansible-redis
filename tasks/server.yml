@@ -46,7 +46,8 @@
     - (redis_pidfile|dirname).startswith('/var/run') or (redis_pidfile|dirname).startswith('/run')
 
 - name: reload systemd daemon
-  command: systemctl daemon-reload
+  systemd:
+    daemon_reload: true
   when:
     - redis_as_service
     - ansible_service_mgr|default() == "systemd"
