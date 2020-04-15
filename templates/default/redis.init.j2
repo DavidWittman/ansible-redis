@@ -13,7 +13,7 @@ CLIEXEC={{ redis_install_dir }}/bin/redis-cli
 {% endif %}
 
 PIDFILE={{ redis_pidfile }}
-CONF="/etc/redis/${REDIS_PORT}.conf"
+CONF="/etc/redis/{{ redis_config_file_name }}"
 
 case "$1" in
     start)

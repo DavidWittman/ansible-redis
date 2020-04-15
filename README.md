@@ -1,11 +1,10 @@
 # ansible-redis
 
-[![Build Status](https://travis-ci.org/DavidWittman/ansible-redis.svg?branch=master)](https://travis-ci.org/DavidWittman/ansible-redis) [![Ansible Galaxy](https://img.shields.io/badge/galaxy-DavidWittman.redis-blue.svg?style=flat)](https://galaxy.ansible.com/detail#/role/730)
+[![Build Status](https://travis-ci.org/DavidWittman/ansible-redis.svg?branch=master)](https://travis-ci.org/DavidWittman/ansible-redis) [![Ansible Galaxy](https://img.shields.io/badge/galaxy-DavidWittman.redis-blue.svg?style=flat)](https://galaxy.ansible.com/davidwittman/redis)
 
- - Ansible 2.1+
-   - Ansible 1.9.x is currently supported, but it will be deprecated soon
+ - Ansible 2.4+
  - Compatible with most versions of Ubuntu/Debian and RHEL/CentOS 6.x
- 
+
 ## Contents
 
  1. [Installation](#installation)
@@ -22,7 +21,7 @@
 ## Installation
 
 ``` bash
-$ ansible-galaxy install DavidWittman.redis
+$ ansible-galaxy install davidwittman.redis
 ```
 
 ## Getting started
@@ -41,7 +40,7 @@ Deploying a single Redis server node is pretty trivial; just add the role to you
   vars:
     - redis_bind: 127.0.0.1
   roles:
-    - DavidWittman.redis
+    - davidwittman.redis
 ```
 
 ``` bash
@@ -73,14 +72,14 @@ And here's the playbook:
 - name: configure the master redis server
   hosts: redis-master
   roles:
-    - DavidWittman.redis
+    - davidwittman.redis
 
 - name: configure redis slaves
   hosts: redis-slave
   vars:
     - redis_slaveof: redis-master.example.com 6379
   roles:
-    - DavidWittman.redis
+    - davidwittman.redis
 ```
 
 In this case, I'm assuming you have DNS records set up for redis-master.example.com, but that's not always the case. You can pretty much go crazy with whatever you need this to be set to. In many cases, I tell Ansible to use the eth1 IP address for the master. Here's a more flexible value for the sake of posterity:
@@ -122,14 +121,14 @@ Now, all we need to do is set the `redis_sentinel_monitors` variable to define t
 - name: configure the master redis server
   hosts: redis-master
   roles:
-    - DavidWittman.redis
+    - davidwittman.redis
 
 - name: configure redis slaves
   hosts: redis-slave
   vars:
     - redis_slaveof: redis-master.example.com 6379
   roles:
-    - DavidWittman.redis
+    - davidwittman.redis
 
 - name: configure redis sentinel nodes
   hosts: redis-sentinel
@@ -139,35 +138,23 @@ Now, all we need to do is set the `redis_sentinel_monitors` variable to define t
         host: redis-master.example.com
         port: 6379
   roles:
-    - DavidWittman.redis
+    - davidwittman.redis
 ```
 
 This will configure the Sentinel nodes to monitor the master we created above using the identifier `master01`. By default, Sentinel will use a quorum of 2, which means that at least 2 Sentinels must agree that a master is down in order for a failover to take place. This value can be overridden by setting the `quorum` key within your monitor definition. See the [Sentinel docs](http://redis.io/topics/sentinel) for more details.
 
 Along with the variables listed above, Sentinel has a number of its own configurables just as Redis server does. These are prefixed with `redis_sentinel_`, and are enumerated in the **Role Variables** section below.
 
+### Multiple role inclusions
+
+Should you need to execute the role several times, have a look at `test/test_all.yml` to see how to proceed. See [here](https://github.com/DavidWittman/ansible-redis/issues/133) and [here](https://github.com/DavidWittman/ansible-redis/issues/193) for context.
+
 
 ## Advanced Options
 
 ### Verifying checksums
 
-Set the `redis_verify_checksum` variable to true to use the checksum verification option for `get_url`. Note that this will only verify checksums when Redis is downloaded from a URL, not when one is provided in a tarball with `redis_tarball`. Due to differences in the `get_url` module in Ansible 1.x and Ansible 2.x, this feature behaves differently depending on the version of Ansible which you are using.
-
-#### Ansible 1.x
-
-In Ansible 1.x, the `get_url` module only supports verifying sha256 checksums, which are not provided by default. If you wish to set `redis_verify_checksum`, you must also define a sha256 checksum with the `redis_checksum` variable.
-
-``` yaml
-- name: install redis on ansible 1.x and verify checksums
-  hosts: all
-  roles:
-    - role: DavidWittman.redis
-      redis_version: 3.0.7
-      redis_verify_checksum: true
-      redis_checksum: b2a791c4ea3bb7268795c45c6321ea5abcc24457178373e6a6e3be6372737f23
-```
-
-#### Ansible 2.x
+Set the `redis_verify_checksum` variable to true to use the checksum verification option for `get_url`. Note that this will only verify checksums when Redis is downloaded from a URL, not when one is provided in a tarball with `redis_tarball`.
 
 When using Ansible 2.x, this role will verify the sha1 checksum of the download against checksums defined in the `redis_checksums` variable in `vars/main.yml`. If your version is not defined in here or you wish to override the checksum with one of your own, simply set the `redis_checksum` variable. As in the example below, you will need to prefix the checksum with the type of hash which you are using.
 
@@ -175,7 +162,7 @@ When using Ansible 2.x, this role will verify the sha1 checksum of the download 
 - name: install redis on ansible 1.x and verify checksums
   hosts: all
   roles:
-    - role: DavidWittman.redis
+    - role: davidwittman.redis
       redis_version: 3.0.7
       redis_verify_checksum: true
       redis_checksum: "sha256:b2a791c4ea3bb7268795c45c6321ea5abcc24457178373e6a6e3be6372737f23"
@@ -206,9 +193,10 @@ Here is a list of all the default variables for this role, which are also availa
 ``` yml
 ---
 ## Installation options
-redis_version: 2.8.9
+redis_version: 2.8.24
 redis_install_dir: /opt/redis
 redis_dir: /var/lib/redis/{{ redis_port }}
+redis_config_file_name: "{{ redis_port }}.conf"
 redis_download_url: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
 # Set this to true to validate redis tarball checksum against vars/main.yml
 redis_verify_checksum: false
@@ -237,6 +225,9 @@ redis_service_name: "redis_{{ redis_port }}"
 redis_bind: 0.0.0.0
 redis_port: 6379
 redis_password: false
+# Slave replication options
+redis_min_slaves_to_write: 0
+redis_min_slaves_max_lag: 10
 redis_tcp_backlog: 511
 redis_tcp_keepalive: 0
 # Max connected clients at a time
@@ -277,18 +268,23 @@ redis_slowlog_max_len: 128
 redis_maxmemory: false
 redis_maxmemory_policy: noeviction
 redis_rename_commands: []
+redis_db_filename: dump.rdb
 # How frequently to snapshot the database to disk
 # e.g. "900 1" => 900 seconds if at least 1 key changed
 redis_save:
   - 900 1
   - 300 10
   - 60 10000
+redis_stop_writes_on_bgsave_error: "yes"
+redis_rdbcompression: "yes"
+redis_rdbchecksum: "yes"
 redis_appendonly: "no"
 redis_appendfilename: "appendonly.aof"
 redis_appendfsync: "everysec"
 redis_no_appendfsync_on_rewrite: "no"
 redis_auto_aof_rewrite_percentage: "100"
 redis_auto_aof_rewrite_min_size: "64mb"
+redis_notify_keyspace_events: '""'
 
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
@@ -296,6 +292,7 @@ redis_sentinel: false
 redis_sentinel_dir: /var/lib/redis/sentinel_{{ redis_sentinel_port }}
 redis_sentinel_bind: 0.0.0.0
 redis_sentinel_port: 26379
+redis_sentinel_password: false
 redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
 redis_sentinel_logfile: '""'
 redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}

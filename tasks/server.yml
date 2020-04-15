@@ -50,7 +50,7 @@
   when:
     - redis_as_service
     - ansible_service_mgr|default() == "systemd"
-    - redis_unit_file|changed
+    - redis_unit_file is changed
 
 - name: set redis to start at boot
   service:
@@ -106,10 +106,10 @@
 - name: create redis config file
   template:
     src: redis.conf.j2
-    dest: /etc/redis/{{ redis_port }}.conf
+    dest: /etc/redis/{{ redis_config_file_name }}
     owner: "{{ redis_user }}"
     mode: 0640
-  notify: "restart redis {{ redis_port }}"
+  notify: "restart redis"
 
 - name: add redis init config file
   template:
@@ -117,7 +117,7 @@
     src: redis.init.conf.j2
     mode: 0600
   when: ansible_os_family == "RedHat"
-  notify: "restart redis {{ redis_port }}"
+  notify: "restart redis"
 
 - name: add redis init config file
   template:
@@ -125,7 +125,7 @@
     src: redis.init.conf.j2
     mode: 0600
   when: ansible_os_family == "Debian"
-  notify: "restart redis {{ redis_port }}"
+  notify: "restart redis"
 
 # Flush handlers before ensuring the service is started to prevent
 # a start and then restart

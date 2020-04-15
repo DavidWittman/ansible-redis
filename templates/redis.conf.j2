@@ -1,11 +1,13 @@
-# {{ ansible_managed }}
+{{ ansible_managed | comment }}
 
 # General
 daemonize {{ redis_daemonize }}
 pidfile {{ redis_pidfile }}
 dir {{ redis_dir }}
 port {{ redis_port }}
+{% if redis_bind -%}
 bind {{ redis_bind }}
+{% endif -%}
 {% if redis_socket_path -%}
 unixsocket {{ redis_socket_path }}
 unixsocketperm {{ redis_socket_perm }}
@@ -27,7 +29,7 @@ save {{ save }}
 stop-writes-on-bgsave-error {{ redis_stop_writes_on_bgsave_error|string }}
 rdbcompression {{ redis_rdbcompression|string }}
 rdbchecksum {{ redis_rdbchecksum|string }}
-dbfilename dump.rdb
+dbfilename {{ redis_db_filename|string }}
 
 # Replication
 {% if redis_slaveof -%}
@@ -74,7 +76,7 @@ auto-aof-rewrite-percentage {{ redis_auto_aof_rewrite_percentage }}
 auto-aof-rewrite-min-size {{ redis_auto_aof_rewrite_min_size }}
 
 # Lua
-lua-time-limit 5000
+lua-time-limit {{ redis_lua_time_limit }}
 
 # Slow Log
 slowlog-log-slower-than {{ redis_slowlog_log_slower_than }}
@@ -92,8 +94,8 @@ set-max-intset-entries 512
 zset-max-ziplist-entries 128
 zset-max-ziplist-value 64
 activerehashing yes
-client-output-buffer-limit normal 0 0 0
-client-output-buffer-limit slave 256mb 64mb 60
-client-output-buffer-limit pubsub 32mb 8mb 60
-hz 10
+client-output-buffer-limit normal {{ redis_client_output_buffer_limit_normal }}
+client-output-buffer-limit slave {{ redis_client_output_buffer_limit_slave }}
+client-output-buffer-limit pubsub {{ redis_client_output_buffer_limit_pubsub }}
+hz {{ redis_hz }}
 aof-rewrite-incremental-fsync yes
