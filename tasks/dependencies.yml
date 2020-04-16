@@ -28,6 +28,8 @@
     name: libgcc
     state: latest
   when: ansible_os_family == "RedHat" and redis_make_32bit|bool
+  tags:
+    - skip_ansible_lint
 
 - name: install redhat 32-bit dependencies
   yum:
@@ -36,6 +38,8 @@
       - glibc-devel.i686
     state: latest
   when: ansible_os_family == "RedHat" and redis_make_32bit|bool
+  tags:
+    - skip_ansible_lint
 
 - name: install suse dependencies
   zypper:
@@ -44,6 +48,6 @@
       - make
       # These should be `else omit`, but that doesn't quite work, so duplicate gcc
       - "{{ 'gcc-32bit' if redis_make_32bit|bool else 'gcc' }}"
-      - "{{ 'libgcc_s1-32bit' if redis_make_32bit|bool else 'gcc' }}"      
+      - "{{ 'libgcc_s1-32bit' if redis_make_32bit|bool else 'gcc' }}"
     state: present
   when: ansible_os_family == 'Suse'

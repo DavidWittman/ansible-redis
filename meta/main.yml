@@ -18,8 +18,8 @@ galaxy_info:
       versions:
         - 11
         - 12
-  categories:
+  galaxy_tags:
     - database
-    - database:nosql
+    - nosql
 
 dependencies: []
