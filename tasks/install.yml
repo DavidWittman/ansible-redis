@@ -19,7 +19,7 @@
     - gcc
     - make
     - jemalloc-devel
-  when: ansible_os_family == "RedHat" ansible_distribution != "Amazon"
+  when: ansible_os_family == "RedHat" and ansible_distribution != "Amazon"
 
 - name: install dependencies
   yum:
@@ -29,7 +29,7 @@
     - gcc
     - make
     - gcc-c++
-  when: ansible_os_family == "RedHat" ansible_distribution != "Amazon"
+  when: ansible_os_family == "RedHat" and ansible_distribution == "Amazon"
 
 - name: install dependencies
   zypper:
