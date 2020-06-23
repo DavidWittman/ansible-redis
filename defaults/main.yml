@@ -5,6 +5,8 @@ redis_install_dir: /opt/redis
 redis_dir: /var/lib/redis/{{ redis_port }}
 redis_config_file_name: "{{ redis_port }}.conf"
 redis_download_url: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
+
+redis_protected_mode: "yes"
 # Set this to true to validate redis tarball checksum against vars/main.yml
 redis_verify_checksum: false
 # Set this value to a local path of a tarball to use for installation instead of downloading
@@ -109,6 +111,7 @@ redis_hz: 10
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false
+redis_sentinel_protected_mode: "yes"
 redis_sentinel_dir: /var/lib/redis/sentinel_{{ redis_sentinel_port }}
 redis_sentinel_bind: 0.0.0.0
 redis_sentinel_port: 26379

@@ -2,6 +2,7 @@
 # sentinel_{{ redis_sentinel_port }}.conf
 
 daemonize {{ redis_daemonize }}
+protected-mode {{ redis_sentinel_protected_mode }}
 dir {{ redis_sentinel_dir }}
 pidfile {{ redis_sentinel_pidfile }}
 port {{ redis_sentinel_port }}
