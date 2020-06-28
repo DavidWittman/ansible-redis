@@ -286,6 +286,13 @@ redis_auto_aof_rewrite_percentage: "100"
 redis_auto_aof_rewrite_min_size: "64mb"
 redis_notify_keyspace_events: '""'
 
+## Additional configuration options
+# leave empty if not required. Use a block style scalar to add options, e.g.
+# redis_config_additional: |
+#   io-threads 4
+#   io-threads-do-reads yes
+redis_config_additional: ""
+
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false

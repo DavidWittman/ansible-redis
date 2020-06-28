@@ -108,6 +108,13 @@ redis_client_output_buffer_limit_pubsub: 32mb 8mb 60
 
 redis_hz: 10
 
+## Additional configuration options
+# leave empty if not required. Use a block style scalar to add options, e.g.
+# redis_config_additional: |
+#   io-threads 4
+#   io-threads-do-reads yes
+redis_config_additional: ""
+
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false
