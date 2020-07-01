@@ -20,7 +20,11 @@ sentinel monitor {{ master.name }} {{ master.host }} {{ master.port }} {{ master
 sentinel {{ option|replace('_', '-') }} {{ master.name }} {{ master[option] }}
 {% endif %}
 {% endfor -%}
-
+{% if master['rename_commands'] is defined -%}
+{% for command in master['rename_commands'] -%}
+sentinel rename-command {{ master.name }} {{ command }}
+{% endfor -%}
+{% endif -%}
 {% endfor -%}
 
 logfile {{ redis_sentinel_logfile }}
