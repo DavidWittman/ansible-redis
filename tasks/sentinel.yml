@@ -1,12 +1,12 @@
 ---
-- name: create sentinel working directory
+- name: Sentinel - create sentinel working directory
   file:
     path: "{{ redis_sentinel_dir }}"
     state: directory
     recurse: yes
     owner: "{{ redis_user }}"
 
-- name: create sentinel init script
+- name: Sentinel - create sentinel init script
   template:
     src: "{{ item }}"
     dest: /etc/init.d/sentinel_{{ redis_sentinel_port }}
@@ -21,7 +21,7 @@
         - ../templates
   when: redis_as_service and ansible_service_mgr|default() != "systemd"
 
-- name: create sentinel systemd service
+- name: Sentinel - create sentinel systemd service
   template:
     src: "{{ item }}"
     dest: /etc/systemd/system/sentinel_{{ redis_sentinel_port }}.service
@@ -35,7 +35,7 @@
   register: sentinel_unit_file
   when: redis_as_service and ansible_service_mgr|default() == "systemd"
 
-- name: create systemd tmpfiles configuration
+- name: Sentinel - create systemd tmpfiles configuration
   template:
     src: etc/tmpfiles.d/redis.conf.j2
     dest: /etc/tmpfiles.d/redis.conf
@@ -45,7 +45,7 @@
     - ansible_service_mgr|default() == "systemd"
     - (redis_sentinel_pidfile|dirname).startswith("/var/run") or (redis_sentinel_pidfile|dirname).startswith("/run")
 
-- name: reload systemd daemon
+- name: Sentinel - reload systemd daemon
   systemd:
     daemon_reload: true
   when:
@@ -53,21 +53,21 @@
     - ansible_service_mgr|default() == "systemd"
     - sentinel_unit_file is changed
 
-- name: set sentinel to start at boot
+- name: Sentinel - set sentinel to start at boot
   service:
     name: sentinel_{{ redis_sentinel_port }}
     enabled: yes
   when: redis_as_service
 
 # Check then create log dir to prevent aggressively overwriting permissions
-- name: check if sentinel log directory exists
+- name: Sentinel - check if sentinel log directory exists
   stat:
     path: "{{ redis_sentinel_logfile|dirname }}"
   register: sentinel_logdir
   changed_when: false
   when: redis_sentinel_logfile != '""'
 
-- name: create sentinel log directory if it does not exist
+- name: Sentinel - create sentinel log directory if it does not exist
   file:
     state: directory
     path: "{{ redis_sentinel_logfile|dirname }}"
@@ -77,7 +77,7 @@
     - redis_sentinel_logfile != '""'
     - not sentinel_logdir.stat.exists
 
-- name: touch the sentinel log file
+- name: Sentinel - touch the sentinel log file
   file:
     state: touch
     path: "{{ redis_sentinel_logfile }}"
@@ -85,14 +85,14 @@
     group: "{{ redis_group }}"
   when: redis_sentinel_logfile != '""'
 
-- name: check if sentinel pid directory exists
+- name: Sentinel - check if sentinel pid directory exists
   stat:
     path: "{{ redis_sentinel_pidfile|dirname }}"
   register: sentinel_piddir
   changed_when: false
-  when: redis_sentinel_pidfile != '""'
+  when: redis_sentinel_pidfile != '""' and ansible_service_mgr|default() != "systemd"
 
-- name: create sentinel pid directory if it does not exist
+- name: Sentinel - create sentinel pid directory if it does not exist
   file:
     state: directory
     path: "{{ redis_sentinel_pidfile|dirname }}"
@@ -100,9 +100,10 @@
     group: "{{ redis_group }}"
   when:
     - redis_sentinel_pidfile != '""'
+    - ansible_service_mgr|default() != "systemd"
     - not sentinel_piddir.stat.exists
 
-- name: create sentinel config file
+- name: Sentinel - create sentinel config file
   template:
     src: redis_sentinel.conf.j2
     dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
@@ -110,14 +111,14 @@
     mode: 0640
   notify: "restart sentinel"
 
-- name: add sentinel init config file
+- name: Sentinel - add sentinel init config file
   template:
     dest: /etc/sysconfig/sentinel_{{ redis_sentinel_port }}
     src: redis.init.conf.j2
   when: ansible_os_family == "RedHat"
   notify: "restart sentinel"
 
-- name: add sentinel init config file
+- name: Sentinel - add sentinel init config file
   template:
     dest: /etc/default/sentinel_{{ redis_sentinel_port }}
     src: redis.init.conf.j2
@@ -126,10 +127,10 @@
 
 # Flush handlers before ensuring the service is started to prevent
 # a start and then restart
-- name: flush handlers to apply config changes
+- name: Sentinel - flush handlers to apply config changes
   meta: flush_handlers
 
-- name: ensure sentinel is running
+- name: Sentinel - ensure sentinel is running
   service:
     name: sentinel_{{ redis_sentinel_port }}
     state: started

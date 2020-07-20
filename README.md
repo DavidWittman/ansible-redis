@@ -196,7 +196,7 @@ Here is a list of all the default variables for this role, which are also availa
 redis_version: 2.8.24
 redis_install_dir: /opt/redis
 redis_dir: /var/lib/redis/{{ redis_port }}
-redis_config_file_name: "{{ redis_port }}.conf"
+redis_config_file_name: "redis_{{ redis_port }}.conf"
 redis_download_url: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
 # Set this to true to validate redis tarball checksum against vars/main.yml
 redis_verify_checksum: false
@@ -256,7 +256,6 @@ redis_syslog_facility: USER
 
 ## General configuration
 redis_daemonize: "yes"
-redis_pidfile: /var/run/redis/{{ redis_port }}.pid
 # Number of databases to allow
 redis_databases: 16
 redis_loglevel: notice
@@ -300,7 +299,6 @@ redis_sentinel_dir: /var/lib/redis/sentinel_{{ redis_sentinel_port }}
 redis_sentinel_bind: 0.0.0.0
 redis_sentinel_port: 26379
 redis_sentinel_password: false
-redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
 redis_sentinel_logfile: '""'
 redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
 redis_sentinel_monitors:

@@ -7,11 +7,13 @@ Documentation=http://redis.io/documentation, man:redis-sentinel(1)
 Type={{ 'forking' if redis_daemonize == 'yes' else 'simple' }}
 ExecStart={{ redis_install_dir }}/bin/redis-server /etc/redis/sentinel_{{ redis_sentinel_port }}.conf --sentinel
 EnvironmentFile=-/etc/default/sentinel_{{ redis_sentinel_port }}
-PIDFile={{ redis_sentinel_pidfile }}
+PIDFile=/run/redis-sentinel-{{ redis_sentinel_port }}/sentinel_{{ redis_sentinel_port }}.pid
 TimeoutStopSec=0
 Restart=always
 User={{ redis_user }}
 Group={{ redis_group }}
+RuntimeDirectory=redis-sentinel-{{ redis_sentinel_port }}
+RuntimeDirectoryMode=2755
 
 {% if redis_sentinel_oom_score_adjust != 0 %}
 OOMScoreAdjust={{ redis_sentinel_oom_score_adjust }}
@@ -23,15 +25,25 @@ LimitNOFILE={{ redis_nofile_limit }}
 PrivateDevices=yes
 ProtectHome=yes
 ReadOnlyDirectories=/
-ReadWriteDirectories=-{{ redis_sentinel_dir }}
+ReadWritePaths=-{{ redis_sentinel_dir }}
+ReadWritePaths=-/var/run/redis-sentinel-{{ redis_sentinel_port }}
 {% if redis_sentinel_logfile != '""' %}
-ReadWriteDirectories=-{{ redis_sentinel_logfile|dirname }}
+ReadWritePaths=-{{ redis_sentinel_logfile|dirname }}
 {% endif %}
-ReadWriteDirectories=-{{ redis_sentinel_pidfile|dirname }}
-CapabilityBoundingSet=~CAP_SYS_PTRACE
 
-# redis-sentinel writes its own config file so we allow writing there (NB.
-# ProtectSystem=true over ProtectSystem=full)
+NoNewPrivileges=true
+CapabilityBoundingSet=CAP_SETGID CAP_SETUID CAP_SYS_RESOURCE
+MemoryDenyWriteExecute=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictNamespaces=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+# redis-server can write to its own config file when in cluster mode so we
+# permit writing there by default. If you are not using this feature, it is
+# recommended that you replace the following lines with "ProtectSystem=full".
 ProtectSystem=true
 ReadWriteDirectories=-/etc/redis
 
