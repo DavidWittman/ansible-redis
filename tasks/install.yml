@@ -26,17 +26,10 @@
     state: directory
     mode: 0755
 
-- name: check if redis user exists (ignore errors)
-  command: id {{ redis_user }}
-  ignore_errors: yes
-  changed_when: false
-  register: user_exists
-
 - name: add redis group
   group:
     name: "{{ redis_group }}"
     state: present
-  when: user_exists is failed
 
 - name: add redis user
   user:
@@ -46,7 +39,7 @@
     home: "{{ redis_install_dir }}"
     shell: /bin/false
     system: yes
-  when: user_exists is failed
+    state: present
 
 - name: create /var/run/redis
   file:
@@ -59,6 +52,7 @@
   args:
     chdir: /usr/local/src/redis-{{ redis_version }}
     creates: "{{ redis_install_dir }}/bin/redis-server"
+  register: redis_installed
 
 - name: list redis binaries to add to alternatives
   command: ls -1 {{ redis_install_dir }}/bin
@@ -70,5 +64,4 @@
     name: "{{ item }}"
     path: "{{ redis_install_dir }}/bin/{{ item }}"
     link: "/usr/bin/{{ item }}"
-  with_items: "{{ redis_binaries.stdout_lines }}"
-  when: redis_binaries is succeeded
+  loop: "{{ redis_binaries.stdout_lines }}"

@@ -77,10 +77,12 @@
     - redis_sentinel_logfile != '""'
     - not sentinel_logdir.stat.exists
 
-- name: Sentinel - touch the sentinel log file
-  file:
-    state: touch
-    path: "{{ redis_sentinel_logfile }}"
+# Create an empty log file only if destination file does not exist
+- name: Sentinel - create the sentinel log file
+  copy:
+    content: ""
+    dest: "{{ redis_sentinel_logfile }}"
+    force: no
     owner: "{{ redis_user }}"
     group: "{{ redis_group }}"
   when: redis_sentinel_logfile != '""'
@@ -103,32 +105,42 @@
     - ansible_service_mgr|default() != "systemd"
     - not sentinel_piddir.stat.exists
 
-- name: Sentinel - create sentinel config file
+# A "reference" config file is created, that will not be re-written by sentinel.
+# This file is used by Ansible to check for configuration changes (and trigger
+# service restart).
+- name: Sentinel - create sentinel reference config file
   template:
     src: redis_sentinel.conf.j2
-    dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+    dest: /etc/redis/{{ redis_sentinel_config_file_name }}.reference
     owner: "{{ redis_user }}"
     mode: 0640
-  notify: "restart sentinel"
+  register: sentinel_refconf
+  notify: "restart sentinel {{ redis_sentinel_port }}"
+
+# Create the "real" sentinel config file: the one that will be re-written by
+# sentinel.
+- name: Sentinel - enforce new sentinel config file
+  copy:
+    remote_src: yes
+    src: /etc/redis/{{ redis_sentinel_config_file_name }}.reference
+    dest: /etc/redis/{{ redis_sentinel_config_file_name }}
+    owner: "{{ redis_user }}"
+    mode: 0640
+  when: sentinel_refconf.changed
 
 - name: Sentinel - add sentinel init config file
   template:
     dest: /etc/sysconfig/sentinel_{{ redis_sentinel_port }}
     src: redis.init.conf.j2
   when: ansible_os_family == "RedHat"
-  notify: "restart sentinel"
+  notify: "restart sentinel {{ redis_sentinel_port }}"
 
 - name: Sentinel - add sentinel init config file
   template:
     dest: /etc/default/sentinel_{{ redis_sentinel_port }}
     src: redis.init.conf.j2
   when: ansible_os_family == "Debian"
-  notify: "restart sentinel"
-
-# Flush handlers before ensuring the service is started to prevent
-# a start and then restart
-- name: Sentinel - flush handlers to apply config changes
-  meta: flush_handlers
+  notify: "restart sentinel {{ redis_sentinel_port }}"
 
 - name: Sentinel - ensure sentinel is running
   service:

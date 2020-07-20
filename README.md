@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/DavidWittman/ansible-redis.svg?branch=master)](https://travis-ci.org/DavidWittman/ansible-redis) [![Ansible Galaxy](https://img.shields.io/badge/galaxy-DavidWittman.redis-blue.svg?style=flat)](https://galaxy.ansible.com/davidwittman/redis)
 
- - Ansible 2.4+
+ - Ansible 2.5+
  - Compatible with most versions of Ubuntu/Debian and RHEL/CentOS 6.x
 
 ## Contents

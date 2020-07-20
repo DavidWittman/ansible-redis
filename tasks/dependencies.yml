@@ -1,23 +1,27 @@
 ---
 - name: install debian dependencies
   apt:
-    pkg:
+    name: "{{ packages }}"
+    update_cache: yes
+    cache_valid_time: 86400
+    state: present
+  vars:
+    packages:
       - gcc
       - make
       - libc6-dev
       # This should be `else omit`, but that doesn't quite work, so duplicate gcc
       - "{{ 'libc6-dev-i386' if redis_make_32bit|bool else 'gcc' }}"
-    update_cache: yes
-    cache_valid_time: 86400
-    state: present
   when: ansible_os_family == "Debian"
 
 - name: install redhat dependencies
   yum:
-    name:
-       - gcc
-       - make
+    name: "{{ packages }}"
     state: present
+  vars:
+    packages:
+      - gcc
+      - make
   when: ansible_os_family == "RedHat"
 
 # Conditionally install the i686 build of libgcc if we are building 32-bit
@@ -33,21 +37,25 @@
 
 - name: install redhat 32-bit dependencies
   yum:
-    name:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
       - libgcc.i686
       - glibc-devel.i686
-    state: latest
   when: ansible_os_family == "RedHat" and redis_make_32bit|bool
   tags:
     - skip_ansible_lint
 
 - name: install suse dependencies
   zypper:
-    name:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
       - gcc
       - make
       # These should be `else omit`, but that doesn't quite work, so duplicate gcc
       - "{{ 'gcc-32bit' if redis_make_32bit|bool else 'gcc' }}"
       - "{{ 'libgcc_s1-32bit' if redis_make_32bit|bool else 'gcc' }}"
-    state: present
   when: ansible_os_family == 'Suse'
