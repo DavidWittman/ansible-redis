@@ -23,6 +23,7 @@
     name: redis-server
     enabled: no
     state: stopped
+  ignore_errors: yes
 
 - name: remove default systemd service file
   file:
