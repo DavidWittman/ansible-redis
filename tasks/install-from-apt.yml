@@ -6,5 +6,5 @@
 
 - name: intall redis
   apt:
-    name: redis-server redis-tools
+    name: ["redis-server", "redis-tools"]
 ...
