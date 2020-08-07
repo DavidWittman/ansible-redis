@@ -7,6 +7,8 @@ redis_config_file_name: "{{ redis_port }}.conf"
 redis_download_url: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
 
 redis_protected_mode: "yes"
+
+install_from_repo: true
 # Set this to true to validate redis tarball checksum against vars/main.yml
 redis_verify_checksum: false
 # Set this value to a local path of a tarball to use for installation instead of downloading
