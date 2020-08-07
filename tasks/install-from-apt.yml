@@ -28,4 +28,8 @@
   file:
     path: /lib/systemd/system/redis-server.service
     state: absent
+
+- name: setting redis install dir
+  set_fact:
+    redis_install_dir: /usr
 ...
