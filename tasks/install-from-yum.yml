@@ -5,6 +5,45 @@
     state: present
     enablerepo: epel
 
+- name: create redis config dir
+  file:
+    path: /etc/redis
+    state: directory
+    owner: redis
+    group: redis
+
+- name: disable default system service
+  systemd:
+    name: redis-server
+    enabled: no
+    state: stopped
+  ignore_errors: yes
+
+- name: remove default systemd service file
+  file:
+    path: /lib/systemd/system/redis.service
+    state: absent
+
+- name: remove sentinel systemd dir
+  file:
+    path: /etc/systemd/system/redis-sentinel.service.d
+    state: absent
+
+- name: remove redis systemd dir
+  file:
+    path: /etc/systemd/system/redis.service.d
+    state: absent
+
+- name: remove default redis conf
+  file:
+    path: /etc/redis.conf
+    state: absent
+
+- name: remove default sentinel conf
+  file:
+    path: /etc/redis-server.conf
+    state: absent
+
 - name: setting redis install dir
   set_fact:
     redis_install_dir: /usr
