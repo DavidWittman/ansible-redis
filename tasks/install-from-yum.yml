@@ -3,6 +3,7 @@
   yum:
     name: redis
     state: present
+    enablerepo: epel
 
 - name: setting redis install dir
   set_fact:
