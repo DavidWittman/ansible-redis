@@ -218,7 +218,7 @@ To build 32-bit binaries of Redis (which can be used for [memory optimization](h
 
 ### Installing from repository
 
-By setting `install_from_repo` to `true`, Redis is installed from the repository.
+By setting `install_from_repo` to `true`, Redis is installed from the repository. Only recommended on Ubuntu/Debian hosts.
 
 ## Role Variables
 
