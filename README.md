@@ -110,12 +110,12 @@ redis-master.example.com
 redis-slave0[1:3].example.com
 
 [redis-sentinel]
-redis-sentinel0[1:3].example.com redis_sentinel=True
+redis-sentinel0[1:3].example.com
 ```
 
-Above, we've added three more hosts in the **redis-sentinel** group (though this group serves no purpose within the role, it's merely an identifier), and set the `redis_sentinel` variable inline within the inventory file.
+Above, we've added three more hosts in the **redis-sentinel** group (though this group serves no purpose within the role, it's merely an identifier).
 
-Now, all we need to do is set the `redis_sentinel_monitors` variable to define the Redis masters which Sentinel should monitor. In this case, I'm going to do this within the playbook:
+Now, all we need to do is set the `redis_sentinel` variable to `True` and `redis_sentinel_monitors` variable to define the Redis masters which Sentinel should monitor. In this case, I'm going to do this within the playbook:
 
 ``` yml
 - name: configure the master redis server
@@ -133,6 +133,7 @@ Now, all we need to do is set the `redis_sentinel_monitors` variable to define t
 - name: configure redis sentinel nodes
   hosts: redis-sentinel
   vars:
+    - redis_sentinel: True
     - redis_sentinel_monitors:
       - name: master01
         host: redis-master.example.com
@@ -144,6 +145,35 @@ Now, all we need to do is set the `redis_sentinel_monitors` variable to define t
 This will configure the Sentinel nodes to monitor the master we created above using the identifier `master01`. By default, Sentinel will use a quorum of 2, which means that at least 2 Sentinels must agree that a master is down in order for a failover to take place. This value can be overridden by setting the `quorum` key within your monitor definition. See the [Sentinel docs](http://redis.io/topics/sentinel) for more details.
 
 Along with the variables listed above, Sentinel has a number of its own configurables just as Redis server does. These are prefixed with `redis_sentinel_`, and are enumerated in the **Role Variables** section below.
+
+#### Running Setinels and Redis servers on the same maching
+
+There is a scenario where you need to run Setinels and Redis on the same machines. This role supports that as well. Inside the playbook just set the `redis_server` variable to `False` on the sentinel play. This is to avoid reconfiguring redis server. Example:
+
+``` yml
+- name: configure the master redis server
+  hosts: redis-master
+  roles:
+    - davidwittman.redis
+
+- name: configure redis slaves
+  hosts: redis-slave
+  vars:
+    - redis_slaveof: redis-master.example.com 6379
+  roles:
+    - davidwittman.redis
+
+- name: configure redis sentinel nodes
+  hosts: redis-sentinel
+  vars:
+    - redis_server: False # this is important if you have your Sentinels and Redis servers on the same machines
+    - redis_sentinel_monitors:
+      - name: master01
+        host: redis-master.example.com
+        port: 6379
+  roles:
+    - davidwittman.redis
+```
 
 ### Multiple role inclusions
 
@@ -185,6 +215,10 @@ In this case the source archive is copied to the server over SSH rather than dow
 ### Building 32 bit binaries
 
 To build 32-bit binaries of Redis (which can be used for [memory optimization](https://redis.io/topics/memory-optimization)), set `redis_make_32bit: true`. This installs the necessary dependencies (x86 glibc) on RHEL/Debian/SuSE and sets the option '32bit' when running make.
+
+### Installing from repository
+
+By setting `install_from_repo` to `true`, Redis is installed from the repository.
 
 ## Role Variables
 
