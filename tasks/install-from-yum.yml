@@ -1,4 +1,9 @@
 ---
+- name: set selinux to permissive
+  selinux:
+    state: permissive
+  ignore_errors: yes
+
 - name: intall redis
   yum:
     name: redis
@@ -41,7 +46,7 @@
 
 - name: remove default sentinel conf
   file:
-    path: /etc/redis-server.conf
+    path: /etc/redis-sentinel.conf
     state: absent
 
 - name: setting redis install dir
