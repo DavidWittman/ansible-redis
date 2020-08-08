@@ -13,7 +13,7 @@
     - include: install.yml
       tags:
         - install
-  when: ansible_os_family != "Debian" or not install_from_repo
+  when: (ansible_os_family != "Debian" and ansible_os_family != "RedHat") or not install_from_repo
 
 - include: install-from-apt.yml
   tags:
@@ -22,6 +22,12 @@
     - ansible_os_family == "Debian"
     - install_from_repo
 
+- include: install-from-yum.yml
+  tags:
+    - install
+  when:
+    - ansible_os_family == "RedHat"
+    - install_from_repo
 
 - include: server.yml
   when: redis_server

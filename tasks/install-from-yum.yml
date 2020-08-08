@@ -1,0 +1,10 @@
+---
+- name: intall redis
+  yum:
+    name: redis
+    state: present
+
+- name: setting redis install dir
+  set_fact:
+    redis_install_dir: /usr
+...
