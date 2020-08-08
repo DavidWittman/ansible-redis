@@ -120,8 +120,8 @@ redis_config_additional: ""
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false
-# Set this to false on host to not configure it as Redis Server
-redis_server: false
+# Set this to false on a host to skip configuring it as Redis Server
+redis_server: true
 redis_sentinel_protected_mode: "yes"
 redis_sentinel_dir: /var/lib/redis/sentinel_{{ redis_sentinel_port }}
 redis_sentinel_bind: 0.0.0.0
