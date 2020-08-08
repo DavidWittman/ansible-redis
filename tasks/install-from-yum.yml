@@ -1,6 +1,7 @@
 ---
 - name: set selinux to permissive
   selinux:
+    policy: targeted
     state: permissive
   ignore_errors: yes
 
