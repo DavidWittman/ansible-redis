@@ -26,33 +26,17 @@
     state: directory
     mode: 0755
 
-- name: add redis group
-  group:
-    name: "{{ redis_group }}"
-    state: present
-
-- name: add redis user
-  user:
-    name: "{{ redis_user }}"
-    group: "{{ redis_group }}"
-    comment: "Redis"
-    home: "{{ redis_install_dir }}"
-    shell: /bin/false
-    system: yes
-    state: present
-
 - name: create /var/run/redis
   file:
     path: /var/run/redis
     state: directory
     owner: "{{ redis_user }}"
 
-- name: install redis
+- name: install redis (if not installed or if different version)
   shell: umask 0022 && make PREFIX={{ redis_install_dir }} install
   args:
     chdir: /usr/local/src/redis-{{ redis_version }}
-    creates: "{{ redis_install_dir }}/bin/redis-server"
-  register: redis_installed
+  when: not redis_is_installed or (redis_runtime_version is defined and redis_version != redis_runtime_version)
 
 - name: list redis binaries to add to alternatives
   command: ls -1 {{ redis_install_dir }}/bin

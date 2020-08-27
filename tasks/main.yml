@@ -1,5 +1,16 @@
 ---
+# never is a special tag, so this task will be run if tag 'sentinel_reset' (or 'never') is specified
+# https://docs.ansible.com/ansible/latest/user_guide/playbooks_tags.html#special-tags
+- include: sentinel_reset.yml
+  tags:
+    - never
+    - sentinel_reset
+
 - include: check_vars.yml
+
+- include: pre_install.yml
+
+- include: runtime_facts.yml
 
 - include: download.yml
   tags:

@@ -104,27 +104,19 @@
     - ansible_service_mgr|default() != "systemd"
     - not piddir.stat.exists
 
-# A "reference" config file is created, that will not be re-written by redis.
-# This file is used by Ansible to check for configuration changes (and trigger
-# service restart).
-- name: Server - create redis reference config file
-  template:
-    src: redis.conf.j2
-    dest: /etc/redis/{{ redis_config_file_name }}.reference
+- name: Server - create or update config file
+  lineinfile:
+    path: /etc/redis/{{ redis_config_file_name }}
+    create: yes
+    regexp: "^{{ item.split(':')[0].strip() | regex_escape() }}$"
+    line: "{{ item.split(':')[0].strip() }} {{ item.split(':')[1].strip() }}"
     owner: "{{ redis_user }}"
-    mode: 0640
-  register: redis_refconf
-  notify: "restart redis {{ redis_port }}"
-
-# Create the "real" redis config file: the one that will be re-written by redis.
-- name: Server - enforce new redis config file
-  copy:
-    remote_src: yes
-    src: /etc/redis/{{ redis_config_file_name }}.reference
-    dest: /etc/redis/{{ redis_config_file_name }}
-    owner: "{{ redis_user }}"
-    mode: 0640
-  when: redis_refconf.changed
+    group: "{{ redis_group }}"
+    mode: '0640'
+  loop: "{{ lookup('template', './templates/redis.conf.j2').splitlines() | reject('match', '^$') | reject('match', '^#.*') | list }}"
+  loop_control:
+    label: "write line: {{ item }}"
+  register: redis_conf_file
 
 - name: Server - add redis init config file (RedHat)
   template:
@@ -132,7 +124,7 @@
     src: redis.init.conf.j2
     mode: 0600
   when: ansible_os_family == "RedHat"
-  notify: "restart redis {{ redis_port }}"
+  register: redis_init_config
 
 - name: Server - add redis init config file (Debian)
   template:
@@ -140,10 +132,22 @@
     src: redis.init.conf.j2
     mode: 0600
   when: ansible_os_family == "Debian"
-  notify: "restart redis {{ redis_port }}"
+  register: redis_init_config
 
 - name: Server - ensure redis is running
   service:
     name: "{{ redis_service_name }}"
     state: started
   when: redis_as_service
+
+- name: Server - rolling restart when already running and config or version changed
+  shell:
+    executable: /bin/bash
+    cmd: "set -o pipefail && systemctl restart {{ redis_service_name }} && sleep 30 && {{ redis_install_dir }}/bin/redis-cli -p {{ redis_port }} {% if redis_password %}-a '{{ redis_password }}'{% endif %} ping"
+  throttle: 1
+  when: >
+    redis_is_running and (
+     redis_conf_file is changed or 
+     redis_init_config is changed or
+     (redis_runtime_version is defined and redis_version != redis_runtime_version)
+    )

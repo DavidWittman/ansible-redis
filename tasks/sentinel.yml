@@ -105,45 +105,48 @@
     - ansible_service_mgr|default() != "systemd"
     - not sentinel_piddir.stat.exists
 
-# A "reference" config file is created, that will not be re-written by sentinel.
-# This file is used by Ansible to check for configuration changes (and trigger
-# service restart).
-- name: Sentinel - create sentinel reference config file
-  template:
-    src: redis_sentinel.conf.j2
-    dest: /etc/redis/{{ redis_sentinel_config_file_name }}.reference
+- name: Sentinel - create or update config file
+  lineinfile:
+    path: /etc/redis/{{ redis_sentinel_config_file_name }}
+    create: yes
+    regexp: "^{{ item.split(':')[0].strip() | regex_escape() }}$"
+    line: "{{ item.split(':')[0].strip() }} {{ item.split(':')[1].strip() }}"
     owner: "{{ redis_user }}"
-    mode: 0640
-  register: sentinel_refconf
-  notify: "restart sentinel {{ redis_sentinel_port }}"
-
-# Create the "real" sentinel config file: the one that will be re-written by
-# sentinel.
-- name: Sentinel - enforce new sentinel config file
-  copy:
-    remote_src: yes
-    src: /etc/redis/{{ redis_sentinel_config_file_name }}.reference
-    dest: /etc/redis/{{ redis_sentinel_config_file_name }}
-    owner: "{{ redis_user }}"
-    mode: 0640
-  when: sentinel_refconf.changed
+    group: "{{ redis_group }}"
+    mode: '0640'
+  loop: "{{ lookup('template', './templates/redis_sentinel.conf.j2').splitlines() | reject('match', '^$') | reject('match', '^#.*') | list }}"
+  loop_control:
+    label: "write line: {{ item }}"
+  register: redis_sentinel_conf_file
 
 - name: Sentinel - add sentinel init config file
   template:
     dest: /etc/sysconfig/sentinel_{{ redis_sentinel_port }}
     src: redis.init.conf.j2
   when: ansible_os_family == "RedHat"
-  notify: "restart sentinel {{ redis_sentinel_port }}"
+  register: redis_sentinel_init_config
 
 - name: Sentinel - add sentinel init config file
   template:
     dest: /etc/default/sentinel_{{ redis_sentinel_port }}
     src: redis.init.conf.j2
   when: ansible_os_family == "Debian"
-  notify: "restart sentinel {{ redis_sentinel_port }}"
+  register: redis_sentinel_init_config
 
 - name: Sentinel - ensure sentinel is running
   service:
     name: sentinel_{{ redis_sentinel_port }}
     state: started
   when: redis_as_service
+
+- name: Sentinel - rolling restart when already running and config or version changed
+  shell:
+    executable: /bin/bash
+    cmd: "set -o pipefail && systemctl restart sentinel_{{ redis_sentinel_port }} && sleep 30 && {{ redis_install_dir }}/bin/redis-cli -p {{ redis_sentinel_port }} {% if redis_password %}-a '{{ redis_password }}'{% endif %} ping"
+  throttle: 1
+  when: >
+    redis_is_running and (
+      redis_sentinel_conf_file is changed or 
+      redis_sentinel_init_config is changed or
+     (redis_runtime_version is defined and redis_version != redis_runtime_version)
+    )

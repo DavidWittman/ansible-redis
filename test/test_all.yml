@@ -20,8 +20,7 @@
         name: ../../ansible-redis
       vars:
         redis_port: 8379
-        redis_slaveof: 127.0.0.1 7379
-        redis_local_facts: false
+        redis_replicaof: 127.0.0.1 7379
 
     - meta: flush_handlers
 
@@ -36,4 +35,3 @@
             port: 7379
             quorum: 1
             auth_pass: "{{ redis_password }}"
-        redis_local_facts: false

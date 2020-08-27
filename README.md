@@ -10,7 +10,7 @@
  1. [Installation](#installation)
  2. [Getting Started](#getting-started)
   1. [Single Redis node](#single-redis-node)
-  2. [Master-Slave Replication](#master-slave-replication)
+  2. [Master-Replica Replication](#master-replica-replication)
   3. [Redis Sentinel](#redis-sentinel)
  3. [Advanced Options](#advanced-options)
   1. [Verifying checksums](#verifying-checksums)
@@ -51,18 +51,18 @@ $ ansible-playbook -i redis01.example.com, redis.yml
 
 That's it! You'll now have a Redis server listening on 127.0.0.1 on redis01.example.com. By default, the Redis binaries are installed under /opt/redis, though this can be overridden by setting the `redis_install_dir` variable.
 
-### Master-Slave replication
+### Master-Replica replication
 
-Configuring [replication](http://redis.io/topics/replication) in Redis is accomplished by deploying multiple nodes, and setting the `redis_slaveof` variable on the slave nodes, just as you would in the redis.conf. In the example that follows, we'll deploy a Redis master with three slaves.
+Configuring [replication](http://redis.io/topics/replication) in Redis is accomplished by deploying multiple nodes, and setting the `redis_replicaof` variable on the replica nodes, just as you would in the redis.conf. In the example that follows, we'll deploy a Redis master with three replicas.
 
-In this example, we're going to use groups to separate the master and slave nodes. Let's start with the inventory file:
+In this example, we're going to use groups to separate the master and replica nodes. Let's start with the inventory file:
 
 ``` ini
 [redis-master]
 redis-master.example.com
 
-[redis-slave]
-redis-slave0[1:3].example.com
+[redis-replica]
+redis-replica0[1:3].example.com
 ```
 
 And here's the playbook:
@@ -74,10 +74,10 @@ And here's the playbook:
   roles:
     - davidwittman.redis
 
-- name: configure redis slaves
-  hosts: redis-slave
+- name: configure redis replicas
+  hosts: redis-replica
   vars:
-    - redis_slaveof: redis-master.example.com 6379
+    - redis_replicaof: redis-master.example.com 6379
   roles:
     - davidwittman.redis
 ```
@@ -85,29 +85,29 @@ And here's the playbook:
 In this case, I'm assuming you have DNS records set up for redis-master.example.com, but that's not always the case. You can pretty much go crazy with whatever you need this to be set to. In many cases, I tell Ansible to use the eth1 IP address for the master. Here's a more flexible value for the sake of posterity:
 
 ``` yml
-redis_slaveof: "{{ hostvars['redis-master.example.com'].ansible_eth1.ipv4.address }} {{ redis_port }}"
+redis_replicaof: "{{ hostvars['redis-master.example.com'].ansible_eth1.ipv4.address }} {{ redis_port }}"
 ```
 
-Now you're cooking with gas! Running this playbook should have you ready to go with a Redis master and three slaves.
+Now you're cooking with gas! Running this playbook should have you ready to go with a Redis master and three replicas.
 
 ### Redis Sentinel
 
 #### Introduction
 
-Using Master-Slave replication is great for durability and distributing reads and writes, but not so much for high availability. If the master node fails, a slave must be manually promoted to master, and connections will need to be redirected to the new master. The solution for this problem is [Redis Sentinel](http://redis.io/topics/sentinel), a distributed system which uses Redis itself to communicate and handle automatic failover in a Redis cluster.
+Using Master-Replica replication is great for durability and distributing reads and writes, but not so much for high availability. If the master node fails, a replica must be manually promoted to master, and connections will need to be redirected to the new master. The solution for this problem is [Redis Sentinel](http://redis.io/topics/sentinel), a distributed system which uses Redis itself to communicate and handle automatic failover in a Redis cluster.
 
 Sentinel itself uses the same redis-server binary that Redis uses, but runs with the `--sentinel` flag and with a different configuration file. All of this, of course, is abstracted with this Ansible role, but it's still good to know.
 
 #### Configuration
 
-To add a Sentinel node to an existing deployment, assign this same `redis` role to it, and set the variable `redis_sentinel` to True on that particular host. This can be done in any number of ways, and for the purposes of this example I'll extend on the inventory file used above in the Master/Slave configuration:
+To add a Sentinel node to an existing deployment, assign this same `redis` role to it, and set the variable `redis_sentinel` to True on that particular host. This can be done in any number of ways, and for the purposes of this example I'll extend on the inventory file used above in the Master/Replica configuration:
 
 ``` ini
 [redis-master]
 redis-master.example.com
 
-[redis-slave]
-redis-slave0[1:3].example.com
+[redis-replica]
+redis-replica0[1:3].example.com
 
 [redis-sentinel]
 redis-sentinel0[1:3].example.com redis_sentinel=True
@@ -123,10 +123,10 @@ Now, all we need to do is set the `redis_sentinel_monitors` variable to define t
   roles:
     - davidwittman.redis
 
-- name: configure redis slaves
-  hosts: redis-slave
+- name: configure redis replicas
+  hosts: redis-replica
   vars:
-    - redis_slaveof: redis-master.example.com 6379
+    - redis_replicaof: redis-master.example.com 6379
   roles:
     - davidwittman.redis
 
@@ -149,6 +149,37 @@ Along with the variables listed above, Sentinel has a number of its own configur
 
 Should you need to execute the role several times, have a look at `test/test_all.yml` to see how to proceed. See [here](https://github.com/DavidWittman/ansible-redis/issues/133) and [here](https://github.com/DavidWittman/ansible-redis/issues/193) for context.
 
+## Config file management, version changes and server restarts
+
+As redis (server and sentinel) may rewrite their configuration files we cannot simply overwrite an updated file with our static
+view of the redis deployment. E.g. in case of a fail-over/switch-over the `replicaof` property of the server and the `sentinel monitor` property
+for the respective instance will change and these changes may not be overwritten during the next run of this playbook.
+
+This playbook gets current runtime values where it is needed and dynamically updates the facts in the inventory. The configuration files
+are only created/updated via `lineinfile` such that we do not interfere with additional options that redis may write/update.
+
+You need to keep an eye on unwanted changes. E.g. if we would set `pidfile /var/run/redis-6379/redis_6379.pid` in `redis.conf`, then redis would rewrite it to `pidfile "/var/run/redis-6379/redis_6379.pid"` (i.e. redis adds quotes around the path). When running the playbook the next time 
+we would remove the quotes and the playbook would register a change in the config file. So you should make sure that you define properties the same way as redis will rewrite them.
+
+All servers and sentinels where a configuration file change occurs will be restarted. Only one server/sentinel will be restarted at a time and between and after the restart we will wait 30 seconds before task finishes and the next server/sentinel will be restarted.
+
+Restarts will also be scheduled when a new version of redis is installed.
+
+## Adding or removing nodes
+
+As per https://redis.io/topics/sentinel adding a new sentinel only requires starting the process. Should you want to add multiple sentinels, you should wait at least 30 seconds after each sentinel before adding more.
+
+This playbook does not provide any additional support or safeguards for this. If you want to add additional nodes, just add one node at a time to your inventory and run this playbook. Wait at least 30 seconds before adding another node.
+
+When you want to permanently remove a node you need to inform each sentinel about that change. These are the steps you need to do:
+
+1. You need to stop the redis server/sentinel on that node manually, i.e. this playbook does not support uninstallations.
+2. Remove that node from your inventory (or at least configure it such that neither the server nor the sentinel will be installed)
+3. Run this playbook as follows which will send a `sentinel reset '*'` to all remaining sentinels and wait 30 seconds between each sentinel:
+
+```
+ansible-playbook -i hosts --tags sentinel_reset redis.yml
+```
 
 ## Advanced Options
 
@@ -193,11 +224,13 @@ Here is a list of all the default variables for this role, which are also availa
 ``` yml
 ---
 ## Installation options
-redis_version: 2.8.24
+redis_version: 6.0.6
 redis_install_dir: /opt/redis
 redis_dir: /var/lib/redis/{{ redis_port }}
 redis_config_file_name: "redis_{{ redis_port }}.conf"
 redis_download_url: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
+
+redis_protected_mode: "yes"
 # Set this to true to validate redis tarball checksum against vars/main.yml
 redis_verify_checksum: false
 # Set this value to a local path of a tarball to use for installation instead of downloading
@@ -210,8 +243,10 @@ redis_group: "{{ redis_user }}"
 
 # The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
+redis_oom_score_adjust: 0
 
 ## Role options
+redis_server: true
 # Configure Redis as a service
 # This creates the init scripts for Redis and ensures the process is running
 # Also applies for Redis Sentinel
@@ -222,12 +257,12 @@ redis_local_facts: true
 redis_service_name: "redis_{{ redis_port }}"
 
 ## Networking/connection options
-redis_bind: 0.0.0.0
+redis_bind: false
 redis_port: 6379
 redis_password: false
-# Slave replication options
-redis_min_slaves_to_write: 0
-redis_min_slaves_max_lag: 10
+# replication options
+redis_min_replicas_to_write: 0
+redis_min_replicas_max_lag: 10
 redis_tcp_backlog: 511
 redis_tcp_keepalive: 0
 # Max connected clients at a time
@@ -239,11 +274,14 @@ redis_socket_path: false
 redis_socket_perm: 755
 
 ## Replication options
-# Set slaveof just as you would in redis.conf. (e.g. "redis01 6379")
-redis_slaveof: false
-# Make slaves read-only. "yes" or "no"
-redis_slave_read_only: "yes"
-redis_slave_priority: 100
+# Set replicaof just as you would in redis.conf. (e.g. "redis01 6379")
+redis_replicaof: false
+# Make replicas read-only. "yes" or "no"
+redis_replica_read_only: "yes"
+# default priority for promotion to master in case of master failure
+# - lower value means higher priority for promotion
+# - nodes with a priority of 0 will never be promoted to master
+redis_replica_priority: 100
 redis_repl_backlog_size: false
 
 ## Logging
@@ -252,10 +290,12 @@ redis_logfile: '""'
 redis_syslog_enabled: "yes"
 redis_syslog_ident: "{{ redis_service_name }}"
 # Syslog facility. Must be USER or LOCAL0-LOCAL7
-redis_syslog_facility: USER
+redis_syslog_facility: user
 
 ## General configuration
 redis_daemonize: "yes"
+# DO NOT CHANGE redis_pidfile, otherwise the systemd unit file will not work properly
+redis_pidfile: /var/run/redis-{{ redis_port }}/redis_{{ redis_port }}.pid
 # Number of databases to allow
 redis_databases: 16
 redis_loglevel: notice
@@ -267,7 +307,13 @@ redis_slowlog_max_len: 128
 redis_maxmemory: false
 redis_maxmemory_policy: noeviction
 redis_rename_commands: []
-redis_db_filename: dump.rdb
+
+# Lua script time limit
+redis_lua_time_limit: 5000
+
+# the file name for the RDB Backup
+redis_db_filename: "dump.rdb"
+
 # How frequently to snapshot the database to disk
 # e.g. "900 1" => 900 seconds if at least 1 key changed
 redis_save:
@@ -285,22 +331,37 @@ redis_auto_aof_rewrite_percentage: "100"
 redis_auto_aof_rewrite_min_size: "64mb"
 redis_notify_keyspace_events: '""'
 
+redis_client_output_buffer_limit_normal: 0 0 0
+redis_client_output_buffer_limit_replica: 256mb 64mb 60
+redis_client_output_buffer_limit_pubsub: 32mb 8mb 60
+
+redis_hz: 10
+
 ## Additional configuration options
 # leave empty if not required. Use a block style scalar to add options, e.g.
 # redis_config_additional: |
-#   io-threads 4
-#   io-threads-do-reads yes
+#   io-threads: 4
+#   io-threads-do-reads: yes
+# NOTE: you need to add a colon after the option name for config file modification via lineinfile to work
 redis_config_additional: ""
 
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false
+redis_sentinel_protected_mode: "yes"
 redis_sentinel_dir: /var/lib/redis/sentinel_{{ redis_sentinel_port }}
+redis_sentinel_config_file_name: "sentinel_{{ redis_sentinel_port }}.conf"
 redis_sentinel_bind: 0.0.0.0
 redis_sentinel_port: 26379
+redis_sentinel_announce_ip: false
 redis_sentinel_password: false
+# DO NOT CHANGE redis_sentinel_pidfile, otherwise the systemd unit file will not work properly
+redis_sentinel_pidfile: /var/run/redis-sentinel-{{ redis_sentinel_port }}/sentinel_{{ redis_sentinel_port }}.pid
 redis_sentinel_logfile: '""'
 redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
+redis_sentinel_oom_score_adjust: 0
+# NOTE: do not set options to its default values otherwise sentinel will delete these settings when flushing the config
+#       which would result in Ansible changing the config again
 redis_sentinel_monitors:
   - name: master01
     host: localhost
@@ -308,8 +369,8 @@ redis_sentinel_monitors:
     quorum: 2
     auth_pass: ant1r3z
     down_after_milliseconds: 30000
-    parallel_syncs: 1
-    failover_timeout: 180000
+#    parallel_syncs: 1
+#    failover_timeout: 180000
     notification_script: false
     client_reconfig_script: false
     rename_commands: []
@@ -326,3 +387,8 @@ The following facts are accessible in your inventory or tasks outside of this ro
 - `{{ ansible_local.redis.sentinel_monitors }}`
 
 To disable these facts, set `redis_local_facts` to a false value.
+
+Note that `{{ ansible_local.redis.sentinel_monitors }}` gets only updated with live values
+on nodes where Redis Sentinel is running. On nodes where only the server is running this fact
+will always contain the static values from the inventory which might be stale after fail-overs and
+switch-overs.
