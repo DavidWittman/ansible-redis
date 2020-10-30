@@ -115,6 +115,9 @@ redis_hz: 10
 #   io-threads-do-reads yes
 redis_config_additional: ""
 
+# install redis server if this is true
+redis_server: true
+
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false
