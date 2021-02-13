@@ -1,38 +1,38 @@
 ---
-# never is a special tag, so this task will be run if tag 'sentinel_reset' (or 'never') is specified
-# https://docs.ansible.com/ansible/latest/user_guide/playbooks_tags.html#special-tags
-- include: sentinel_reset.yml
-  tags:
-    - never
-    - sentinel_reset
 
-- include: check_vars.yml
+# tags: [never,sentinel_reset] cannot be used when this playbook is included in another playbook and tags
+# are used to run only this playbook within that larger playbook, as this tag will then be copied to all
+# imported tasks by Ansible and as such this include_task would always run
+- include_tasks: sentinel_reset.yml
+  when: ('sentinel_reset' in ansible_run_tags)
 
-- include: pre_install.yml
+- include_tasks: check_vars.yml
 
-- include: runtime_facts.yml
+- include_tasks: pre_install.yml
 
-- include: download.yml
+- include_tasks: runtime_facts.yml
+
+- include_tasks: download.yml
   tags:
     - download
 
-- include: dependencies.yml
+- include_tasks: dependencies.yml
   tags:
     - install
 
-- include: install.yml
+- include_tasks: install.yml
   tags:
     - install
 
-- include: server.yml
+- include_tasks: server.yml
   when: redis_server
   tags:
     - config
 
-- include: sentinel.yml
+- include_tasks: sentinel.yml
   when: redis_sentinel
   tags:
     - config
 
-- include: local_facts.yml
+- include_tasks: local_facts.yml
   when: redis_local_facts|bool

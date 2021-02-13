@@ -39,8 +39,10 @@
   when: not redis_is_installed or (redis_runtime_version is defined and redis_version != redis_runtime_version)
 
 - name: list redis binaries to add to alternatives
-  command: ls -1 {{ redis_install_dir }}/bin
+  shell: "[ -d {{ redis_install_dir }}/bin ] && ls -1 {{ redis_install_dir }}/bin"
+  check_mode: no
   register: redis_binaries
+  failed_when: redis_binaries.rc != 0 and not ansible_check_mode
   changed_when: false
 
 - name: add redis binaries to alternatives

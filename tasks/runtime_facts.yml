@@ -15,6 +15,7 @@
   shell: 
     executable: /bin/bash
     cmd: "set -o pipefail && [ -x {{ redis_install_dir }}/bin/redis-cli ] && {{ redis_install_dir }}/bin/redis-cli --version | cut -d' ' -f2"
+  check_mode: no
   changed_when: false
   failed_when: false
   register: redis_runtime_version_result
@@ -32,6 +33,7 @@
   shell: 
     executable: /bin/bash
     cmd: "set -o pipefail && {{ redis_install_dir }}/bin/redis-cli -p {{ redis_port }} {% if redis_password %}-a '{{ redis_password }}'{% endif %} ping | grep -i pong"
+  check_mode: no
   changed_when: false
   failed_when: false
   register: redis_runtime_status_result
@@ -45,6 +47,7 @@
   shell: 
     executable: /bin/bash
     cmd: "set -o pipefail && {{ redis_install_dir }}/bin/redis-cli --raw -p {{ redis_port }} {% if redis_password %}-a '{{ redis_password }}'{% endif %} info replication | {{ redis_install_dir }}/bin/redis-parse-info.sh"
+  check_mode: no
   changed_when: false
   register: redis_runtime_replication_info_result
   when: redis_server and redis_is_running
@@ -68,6 +71,7 @@
   shell: 
     executable: /bin/bash
     cmd: "set -o pipefail && {{ redis_install_dir }}/bin/redis-cli --raw -p {{ redis_sentinel_port }} {% if redis_password %}-a '{{ redis_password }}'{% endif %} sentinel master {{ item.name }} | {{ redis_install_dir }}/bin/redis-parse-field-value-pairs-array.sh"
+  check_mode: no
   changed_when: false
   register: redis_runtime_sentinel_monitor_result
   loop: "{{ redis_sentinel_monitors }}"
