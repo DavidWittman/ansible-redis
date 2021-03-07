@@ -13,6 +13,8 @@ redis_verify_checksum: false
 redis_tarball: false
 # Set this to true to build 32-bit binaries of Redis
 redis_make_32bit: false
+# Set this to true to build redis with TLS support, available only for versions >= 6 (require OpenSSL development libraries)
+redis_make_tls: false
 
 redis_user: redis
 redis_group: "{{ redis_user }}"

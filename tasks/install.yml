@@ -9,7 +9,7 @@
   when: redis_travis_ci is not defined
 
 - name: compile redis
-  shell: umask 0022 && make -j{{ ansible_processor_cores|default(1) + 1 }}{{ ' 32bit' if redis_make_32bit|bool else '' }}
+  shell: umask 0022 && make -j{{ ansible_processor_cores|default(1) + 1 }}{{ ' 32bit' if redis_make_32bit|bool else '' }}{{ ' BUILD_TLS=yes' if redis_make_tls|bool else '' }}
   args:
     chdir: /usr/local/src/redis-{{ redis_version }}
     creates: /usr/local/src/redis-{{ redis_version }}/src/redis-server
