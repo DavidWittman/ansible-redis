@@ -1,0 +1,29 @@
+---
+- name: Set pin content
+  set_fact:
+    pin_content: |
+      {{ pin_content | default('') }}
+      Package: {{ item }}
+      Pin: version {{ redis_version }}
+      Pin-Priority: 1001
+  loop: "{{ redis_packages }}"
+
+- name: Pin Redis release
+  copy:
+    dest: /etc/apt/preferences.d/redis
+    owner: root
+    group: root
+    mode: '0644'
+    content: "{{ pin_content }}"
+  when:
+    - redis_pin_package
+    - ansible_distribution == "Ubuntu" or ansible_distribution == "Debian"
+
+- name: Install Redis package
+  package:
+    name: "{{ redis_packages }}"
+    state: present
+  notify: "disable redis"
+
+- name: flush handlers to disable redis after install
+  meta: flush_handlers

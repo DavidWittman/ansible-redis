@@ -2,19 +2,31 @@
 - include: check_vars.yml
 
 - include: download.yml
+  when: redis_install_method == "source"
   tags:
     - download
 
 - include: dependencies.yml
+  when: redis_install_method == "source"
   tags:
     - install
 
-- include: install.yml
+- include: setup.yml
+  tags:
+    - install
+
+- include: package.yml
+  when: redis_install_method == "package"
+  tags:
+    - install
+
+- include: source.yml
+  when: redis_install_method == "source"
   tags:
     - install
 
 - include: server.yml
-  when: not redis_sentinel
+  when: redis_server
   tags:
     - config
 
