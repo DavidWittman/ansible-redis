@@ -228,7 +228,7 @@ redis_local_facts: true
 redis_service_name: "redis_{{ redis_port }}"
 
 ## Networking/connection options
-redis_bind: 0.0.0.0
+redis_bind: false
 redis_port: 6379
 redis_password: false
 # Slave replication options
