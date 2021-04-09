@@ -30,13 +30,14 @@
   command: id {{ redis_user }}
   ignore_errors: yes
   changed_when: false
+  failed_when: false
   register: user_exists
 
 - name: add redis group
   group:
     name: "{{ redis_group }}"
     state: present
-  when: user_exists is failed
+  when: user_exists.rc != 0
 
 - name: add redis user
   user:
@@ -46,7 +47,7 @@
     home: "{{ redis_install_dir }}"
     shell: /bin/false
     system: yes
-  when: user_exists is failed
+  when: user_exists.rc != 0
 
 - name: create /var/run/redis
   file:
