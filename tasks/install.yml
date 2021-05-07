@@ -64,6 +64,7 @@
   command: ls -1 {{ redis_install_dir }}/bin
   register: redis_binaries
   changed_when: false
+  check_mode: false
 
 - name: add redis binaries to alternatives
   alternatives:
