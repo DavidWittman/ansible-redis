@@ -21,7 +21,7 @@
 ## Installation
 
 ``` bash
-$ ansible-galaxy install davidwittman.redis
+$ ansible-galaxy install git+https://github.com/DavidWittman/ansible-redis
 ```
 
 ## Getting started
