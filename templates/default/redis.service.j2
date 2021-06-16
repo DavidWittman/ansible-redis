@@ -6,12 +6,14 @@ Documentation=http://redis.io/documentation, man:redis-server(1)
 [Service]
 Type={{ 'forking' if redis_daemonize == 'yes' else 'simple' }}
 ExecStart={{ redis_install_dir }}/bin/redis-server /etc/redis/{{ redis_config_file_name }}
-EnvironmentFile=-/etc/default/{{ redis_service_name }}
-PIDFile={{ redis_pidfile }}
+#EnvironmentFile=-/etc/default/{{ redis_service_name }}
+PIDFile=/run/redis-{{ redis_port }}/redis_{{ redis_port }}.pid
 TimeoutStopSec=0
 Restart=always
 User={{ redis_user }}
 Group={{ redis_group }}
+RuntimeDirectory=redis-{{ redis_port }}
+RuntimeDirectoryMode=2755
 
 {% if redis_oom_score_adjust != 0 %}
 OOMScoreAdjust={{ redis_oom_score_adjust }}
@@ -23,15 +25,25 @@ LimitNOFILE={{ redis_nofile_limit }}
 PrivateDevices=yes
 ProtectHome=yes
 ReadOnlyDirectories=/
-ReadWriteDirectories=-{{ redis_dir }}
+ReadWritePaths=-{{ redis_dir }}
+ReadWritePaths=-/var/run/redis-{{ redis_port }}
 {% if redis_logfile != '""' %}
-ReadWriteDirectories=-{{ redis_logfile|dirname }}
+ReadWritePaths=-{{ redis_logfile|dirname }}
 {% endif %}
-ReadWriteDirectories=-{{ redis_pidfile|dirname }}
-CapabilityBoundingSet=~CAP_SYS_PTRACE
 
-# redis-server writes its own config file when in cluster mode so we allow
-# writing there (NB. ProtectSystem=true over ProtectSystem=full)
+NoNewPrivileges=true
+CapabilityBoundingSet=CAP_SETGID CAP_SETUID CAP_SYS_RESOURCE
+MemoryDenyWriteExecute=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictNamespaces=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+# redis-server can write to its own config file when in cluster mode so we
+# permit writing there by default. If you are not using this feature, it is
+# recommended that you replace the following lines with "ProtectSystem=full".
 ProtectSystem=true
 ReadWriteDirectories=-/etc/redis
 

@@ -1,0 +1,6 @@
+---
+- name: Sentinel reset - send 'sentinel reset *' to all sentinels waiting 30 seconds after each sentinel
+  shell:
+    executable: /bin/bash
+    cmd: "set -o pipefail && {{ redis_install_dir }}/bin/redis-cli -p {{ redis_sentinel_port }} {% if redis_password %}-a '{{ redis_password }}'{% endif %} sentinel reset '*' && sleep 30"
+  throttle: 1

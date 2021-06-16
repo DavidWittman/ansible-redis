@@ -1,0 +1,90 @@
+---
+
+- name: Runtime facts - Copy helper scripts
+  copy:
+    src: "files/{{ item }}"
+    dest: "{{ redis_install_dir }}/bin/{{ item }}"
+    owner: "{{ redis_user }}"
+    group: "{{ redis_group }}"
+    mode: '0755'
+  loop:
+    - redis-parse-field-value-pairs-array.sh
+    - redis-parse-info.sh
+
+- name: Runtime facts - get installed version
+  shell: 
+    executable: /bin/bash
+    cmd: "set -o pipefail && [ -x {{ redis_install_dir }}/bin/redis-cli ] && {{ redis_install_dir }}/bin/redis-cli --version | cut -d' ' -f2"
+  check_mode: no
+  changed_when: false
+  failed_when: false
+  register: redis_runtime_version_result
+
+- name: Runtime facts - set_fact redis_is_installed
+  set_fact:
+    redis_is_installed: "{{ true if (redis_runtime_version_result.rc == 0) else false }}"
+
+- name: Runtime facts - set_fact 'redis_runtime_version'
+  set_fact:
+    redis_runtime_version: "{{ redis_runtime_version_result.stdout }}"
+  when: redis_is_installed
+
+- name: Runtime facts - check if running
+  shell: 
+    executable: /bin/bash
+    cmd: "set -o pipefail && {{ redis_install_dir }}/bin/redis-cli -p {{ redis_port }} {% if redis_password %}-a '{{ redis_password }}'{% endif %} ping | grep -i pong"
+  check_mode: no
+  changed_when: false
+  failed_when: false
+  register: redis_runtime_status_result
+  when: redis_is_installed
+
+- name: Runtime facts - set_fact 'redis_is_running'
+  set_fact:
+    redis_is_running: "{{ true if (redis_is_installed and redis_runtime_status_result.rc == 0) else false }}"
+
+- name: Runtime facts - (server) get replicaof
+  shell: 
+    executable: /bin/bash
+    cmd: "set -o pipefail && {{ redis_install_dir }}/bin/redis-cli --raw -p {{ redis_port }} {% if redis_password %}-a '{{ redis_password }}'{% endif %} info replication | {{ redis_install_dir }}/bin/redis-parse-info.sh"
+  check_mode: no
+  changed_when: false
+  register: redis_runtime_replication_info_result
+  when: redis_server and redis_is_running
+
+- name: Runtime facts - (server) get json info output
+  set_fact:
+    redis_runtime_replication_info: "{{ redis_runtime_replication_info_result.stdout | from_json }}"
+  when: redis_server and redis_is_running and redis_runtime_replication_info_result is success
+
+- name: Runtime facts - (server) set_fact 'redis_replicaof' for replicas
+  set_fact:
+    redis_replicaof: "{{ redis_runtime_replication_info.master_host }} {{ redis_runtime_replication_info.master_port }}"
+  when: redis_server and redis_is_running and redis_runtime_replication_info_result is success and redis_runtime_replication_info.role|lower != "master"
+
+- name: Runtime facts - (server) unset fact 'redis_replicaof' for masters
+  set_fact:
+    redis_replicaof:
+  when: redis_server and redis_is_running and redis_runtime_replication_info_result is success and redis_runtime_replication_info.role|lower == "master"
+
+- name: Runtime facts - (sentinel) get replicaof
+  shell: 
+    executable: /bin/bash
+    cmd: "set -o pipefail && {{ redis_install_dir }}/bin/redis-cli --raw -p {{ redis_sentinel_port }} {% if redis_password %}-a '{{ redis_password }}'{% endif %} sentinel master {{ item.name }} | {{ redis_install_dir }}/bin/redis-parse-field-value-pairs-array.sh"
+  check_mode: no
+  changed_when: false
+  register: redis_runtime_sentinel_monitor_result
+  loop: "{{ redis_sentinel_monitors }}"
+  when: redis_sentinel and redis_is_running
+
+- name: Runtime facts - (sentinel) set_fact 'redis_sentinel_runtime_monitors'
+  set_fact:
+    redis_sentinel_runtime_monitors: "{{ {} | combine( {item.name: item} ) }}"
+  loop: "{{ redis_runtime_sentinel_monitor_result.results | map(attribute='stdout') | map('from_json') | list }}"
+  when: redis_sentinel and redis_is_running
+
+- name: Runtime facts - (sentinel) update fact 'redis_sentinel_monitors'
+  set_fact:
+    redis_sentinel_monitors: "{{ [] + [ item | combine( { 'host': redis_sentinel_runtime_monitors[item.name].ip, 'port': redis_sentinel_runtime_monitors[item.name].port, 'quorum': redis_sentinel_runtime_monitors[item.name].quorum }) ] }}"
+  loop: "{{ redis_sentinel_monitors }}"
+  when: redis_sentinel and redis_is_running

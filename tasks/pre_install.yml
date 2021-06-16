@@ -1,0 +1,21 @@
+---
+- name: Pre-install | add redis group
+  group:
+    name: "{{ redis_group }}"
+    state: present
+
+- name: Pre-install | add redis user
+  user:
+    name: "{{ redis_user }}"
+    group: "{{ redis_group }}"
+    comment: "Redis"
+    home: "{{ redis_install_dir }}"
+    shell: /bin/false
+    system: yes
+    state: present
+
+- name: Pre-install | Create bin directory if it does not exist
+  file:
+    path: "{{ redis_install_dir }}/bin"
+    state: directory
+    mode: '0755'
