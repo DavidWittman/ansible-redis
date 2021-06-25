@@ -1,4 +1,23 @@
 ---
+
+
+- name: Detect Redis version
+  shell: redis-server -v | awk '{print $3}' | sed -e 's/v=//'
+  changed_when: False
+  register: redis_installed_server_version
+
+- name: Installed Redis Found, Stopping
+  debug:
+    msg: "Redis Version: {{ redis_installed_server_version.stdout }}"
+  notify: stop redis {{ redis_port }}  
+  when: redis_installed_server_version.stdout != ""
+
+- name: Removing Installed Redis
+  file:
+    state: absent
+    path: "{{ redis_install_dir }}/bin/"
+  when: redis_installed_server_version.stdout != ""  
+  
 - name: enable overcommit in sysctl
   sysctl:
     name: vm.overcommit_memory
