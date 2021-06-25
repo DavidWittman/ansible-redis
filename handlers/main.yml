@@ -10,3 +10,9 @@
     name: sentinel_{{ redis_sentinel_port }}
     state: restarted
   when: redis_as_service
+  
+- name: "stop redis {{ redis_port }}"
+  service:
+    name: "{{ redis_service_name }}"
+    state: stopped
+  when: redis_stop
