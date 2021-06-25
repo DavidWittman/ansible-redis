@@ -18,10 +18,10 @@ OOMScoreAdjust={{ redis_sentinel_oom_score_adjust }}
 {% endif %}
 
 UMask=007
-PrivateTmp=yes
+PrivateTmp={{ 'no' if inside_container else 'yes' }}
 LimitNOFILE={{ redis_nofile_limit }}
-PrivateDevices=yes
-ProtectHome=yes
+PrivateDevices={{ 'no' if inside_container else 'yes' }}
+ProtectHome={{ 'no' if inside_container else 'yes' }}
 ReadOnlyDirectories=/
 ReadWriteDirectories=-{{ redis_sentinel_dir }}
 {% if redis_sentinel_logfile != '""' %}
