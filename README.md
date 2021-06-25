@@ -88,6 +88,8 @@ In this case, I'm assuming you have DNS records set up for redis-master.example.
 redis_slaveof: "{{ hostvars['redis-master.example.com'].ansible_eth1.ipv4.address }} {{ redis_port }}"
 ```
 
+**Note:** You should set `redis_bind: 0.0.0.0` (or other non localhost address) or add `protected-mode no` in the configuration file if used release <= 1.2.8, else   set `redis_protected_mode: "no"`. Otherwise you see in the log: ` Error reply to PING from master: '-DENIED Redis is running in protected mode ...`
+
 Now you're cooking with gas! Running this playbook should have you ready to go with a Redis master and three slaves.
 
 ### Redis Sentinel
@@ -192,7 +194,7 @@ To build Redis with [TLS support](https://redis.io/topics/encryption) (Added in 
 
 ## Role Variables
 
-Here is a list of all the default variables for this role, which are also available in defaults/main.yml. One of these days I'll format these into a table or something.
+Here is a list of all the default [variables](defaults/main.yml) for this role, which are also available in defaults/main.yml. One of these days I'll format these into a table or something.
 
 ``` yml
 ---
@@ -202,6 +204,8 @@ redis_install_dir: /opt/redis
 redis_dir: /var/lib/redis/{{ redis_port }}
 redis_config_file_name: "{{ redis_port }}.conf"
 redis_download_url: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
+
+redis_protected_mode: "yes"
 # Set this to true to validate redis tarball checksum against vars/main.yml
 redis_verify_checksum: false
 # Set this value to a local path of a tarball to use for installation instead of downloading
@@ -216,6 +220,7 @@ redis_group: "{{ redis_user }}"
 
 # The open file limit for Redis/Sentinel
 redis_nofile_limit: 16384
+redis_oom_score_adjust: 0
 
 ## Role options
 # Configure Redis as a service
@@ -274,7 +279,13 @@ redis_slowlog_max_len: 128
 redis_maxmemory: false
 redis_maxmemory_policy: noeviction
 redis_rename_commands: []
-redis_db_filename: dump.rdb
+
+# Lua script time limit
+redis_lua_time_limit: 5000
+
+# the file name for the RDB Backup
+redis_db_filename: "dump.rdb"
+
 # How frequently to snapshot the database to disk
 # e.g. "900 1" => 900 seconds if at least 1 key changed
 redis_save:
@@ -292,6 +303,12 @@ redis_auto_aof_rewrite_percentage: "100"
 redis_auto_aof_rewrite_min_size: "64mb"
 redis_notify_keyspace_events: '""'
 
+redis_client_output_buffer_limit_normal: 0 0 0
+redis_client_output_buffer_limit_slave: 256mb 64mb 60
+redis_client_output_buffer_limit_pubsub: 32mb 8mb 60
+
+redis_hz: 10
+
 ## Additional configuration options
 # leave empty if not required. Use a block style scalar to add options, e.g.
 # redis_config_additional: |
@@ -302,6 +319,7 @@ redis_config_additional: ""
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false
+redis_sentinel_protected_mode: "yes"
 redis_sentinel_dir: /var/lib/redis/sentinel_{{ redis_sentinel_port }}
 redis_sentinel_bind: 0.0.0.0
 redis_sentinel_port: 26379
@@ -309,6 +327,7 @@ redis_sentinel_password: false
 redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
 redis_sentinel_logfile: '""'
 redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
+redis_sentinel_oom_score_adjust: 0
 redis_sentinel_monitors:
   - name: master01
     host: localhost
