@@ -10,3 +10,8 @@
     name: sentinel_{{ redis_sentinel_port }}
     state: restarted
   when: redis_as_service
+
+- name: "restart disable-transparent-hugepages"
+  service:
+    name: disable-transparent-hugepages
+    state: restarted
