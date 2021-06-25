@@ -37,7 +37,7 @@ dbfilename {{ redis_db_filename|string }}
 slaveof {{ redis_slaveof }}
 {% endif -%}
 slave-serve-stale-data yes
-slave-read-only {{ redis_slave_read_only }}
+slave-read-only {{ 'yes' if redis_slave_read_only else 'no' }}
 repl-disable-tcp-nodelay no
 {% if redis_repl_backlog_size -%}
 repl-backlog-size {{ redis_repl_backlog_size }}
