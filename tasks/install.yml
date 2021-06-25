@@ -20,12 +20,6 @@
     state: directory
     mode: 0755
 
-- name: create /etc/redis
-  file:
-    path: /etc/redis
-    state: directory
-    mode: 0755
-
 - name: check if redis user exists (ignore errors)
   command: id {{ redis_user }}
   ignore_errors: yes
@@ -47,6 +41,13 @@
     shell: /bin/false
     system: yes
   when: user_exists is failed
+
+- name: create /etc/redis
+  file:
+    path: /etc/redis
+    state: directory
+    mode: 0755
+    owner: "{{ redis_user }}"
 
 - name: create /var/run/redis
   file:
