@@ -1,0 +1,9 @@
+---
+- name: enable overcommit in sysctl
+  sysctl:
+    name: vm.overcommit_memory
+    value: "1"
+    state: present
+    reload: yes
+    ignoreerrors: yes
+  when: redis_travis_ci is not defined
