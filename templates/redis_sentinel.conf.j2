@@ -31,3 +31,9 @@ logfile {{ redis_sentinel_logfile }}
 syslog-enabled {{ redis_syslog_enabled }}
 syslog-ident {{ redis_sentinel_syslog_ident }}
 syslog-facility {{ redis_syslog_facility }}
+
+
+{% if redis_sentinel_config_additional|length -%}
+# Additional
+{{ redis_sentinel_config_additional -}}
+{% endif -%}

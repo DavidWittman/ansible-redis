@@ -141,3 +141,10 @@ redis_sentinel_monitors:
     notification_script: false
     client_reconfig_script: false
     rename_commands: []
+
+## Additional configuration options
+# leave empty if not required. Use a block style scalar to add options, e.g.
+# redis_config_additional: |
+#   io-threads 4
+#   io-threads-do-reads yes
+redis_sentinel_config_additional: ""
