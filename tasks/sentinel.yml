@@ -55,7 +55,7 @@
 
 - name: set sentinel to start at boot
   service:
-    name: {{ redis_sentinel_service_name }}
+    name: "{{ redis_sentinel_service_name }}"
     enabled: yes
   when: redis_as_service
 
@@ -131,6 +131,6 @@
 
 - name: ensure sentinel is running
   service:
-    name: {{ redis_sentinel_service_name }}
+    name: "{{ redis_sentinel_service_name }}"
     state: started
   when: redis_as_service
