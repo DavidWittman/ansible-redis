@@ -105,7 +105,7 @@
 - name: create sentinel config file
   template:
     src: redis_sentinel.conf.j2
-    dest: /etc/redis/{{ redis_sentinel_config_file_name }}.conf
+    dest: /etc/redis/{{ redis_sentinel_config_file_name }}
     owner: "{{ redis_user }}"
     mode: 0640
   notify: "restart sentinel"
