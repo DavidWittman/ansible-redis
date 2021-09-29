@@ -128,7 +128,7 @@ redis_sentinel_port: 26379
 redis_sentinel_password: false
 redis_sentinel_pidfile: /var/run/redis/{{ redis_sentinel_service_name }}.pid
 redis_sentinel_logfile: '""'
-redis_sentinel_syslog_ident: {{ redis_sentinel_service_name }}
+redis_sentinel_syslog_ident: "{{ redis_sentinel_service_name }}"
 redis_sentinel_oom_score_adjust: 0
 redis_sentinel_monitors:
   - name: master01
