@@ -9,7 +9,7 @@
 . /etc/init.d/functions
 
 SENTINEL_PORT={{ redis_sentinel_port }}
-NAME="sentinel_${SENTINEL_PORT}"
+NAME="{{ redis_sentinel_service_name }}"
 
 if [ -r /etc/sysconfig/sentinel_${SENTINEL_PORT} ]; then
     . /etc/sysconfig/sentinel_${SENTINEL_PORT}
@@ -18,7 +18,7 @@ fi
 REDIS_USER={{ redis_user }}
 BIND_ADDRESS={{ redis_sentinel_bind }}
 PIDFILE={{ redis_sentinel_pidfile }}
-CONF="/etc/redis/sentinel_${SENTINEL_PORT}.conf"
+CONF="/etc/redis/{{ redis_sentinel_config_file_name }}"
 EXEC={{ redis_install_dir }}/bin/redis-server
 CLIEXEC="{{ redis_install_dir }}/bin/redis-cli -p ${SENTINEL_PORT}"
 
@@ -60,7 +60,7 @@ case "$1" in
         fi
         ;;
     status)
-        status -p "${PIDFILE}" "sentinel_${SENTINEL_PORT}"
+        status -p "${PIDFILE}" "${NAME}"
         ;;
     restart|force-reload)
         ${0} stop

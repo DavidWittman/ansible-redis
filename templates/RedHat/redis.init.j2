@@ -9,7 +9,7 @@
 . /etc/init.d/functions
 
 REDIS_PORT={{ redis_port }}
-NAME="redis_${REDIS_PORT}"
+NAME="{{ redis_service_name }}"
 
 if [ -r /etc/sysconfig/redis_${REDIS_PORT} ]; then
     . /etc/sysconfig/redis_${REDIS_PORT}
@@ -59,7 +59,7 @@ case "$1" in
         fi
         ;;
     status)
-        status -p "${PIDFILE}" "redis_${REDIS_PORT}"
+        status -p "${PIDFILE}" "${NAME}"
         ;;
     restart|force-reload)
         ${0} stop

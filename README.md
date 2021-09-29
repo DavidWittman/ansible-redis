@@ -302,13 +302,14 @@ redis_config_additional: ""
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false
-redis_sentinel_dir: /var/lib/redis/sentinel_{{ redis_sentinel_port }}
+redis_sentinel_service_name: "sentinel_{{ redis_sentinel_port }}"
+redis_sentinel_dir: /var/lib/redis/{{ redis_sentinel_service_name }}
 redis_sentinel_bind: 0.0.0.0
 redis_sentinel_port: 26379
 redis_sentinel_password: false
-redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
+redis_sentinel_pidfile: /var/run/redis/{{ redis_sentinel_service_name }}.pid
 redis_sentinel_logfile: '""'
-redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
+redis_sentinel_syslog_ident: {{ redis_sentinel_service_name }}
 redis_sentinel_monitors:
   - name: master01
     host: localhost
