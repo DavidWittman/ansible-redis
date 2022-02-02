@@ -57,7 +57,7 @@
   service:
     name: "{{ redis_service_name }}"
     enabled: yes
-  when: redis_as_service
+  when: redis_as_service or redis_install_method == "package"
 
 # Check then create log dir to prevent aggressively overwriting permissions
 - name: check if log directory exists
@@ -85,7 +85,7 @@
     owner: "{{ redis_user }}"
     group: "{{ redis_group }}"
   when: redis_logfile != '""'
-  
+
 - name: update permissions of log file if needed
   file:
     state: file
