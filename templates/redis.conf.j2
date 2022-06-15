@@ -58,6 +58,9 @@ masterauth {{ redis_password }}
 cluster-enabled yes
 cluster-config-file nodes-{{ redis_port }}.conf
 cluster-node-timeout {{ redis_cluster_node_timeout }}
+{% if redis_version | split('.') | first | int >= 4 %}
+cluster-slave-no-failover {{ redis_cluster_slave_no_failover }}
+{% end %}
 {% endif -%}
 
 # Security
