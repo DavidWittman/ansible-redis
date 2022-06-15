@@ -120,6 +120,9 @@ redis_config_additional: ""
 ## Redis cluster configs
 redis_cluster_enabled: false
 redis_cluster_node_timeout: 15000
+# Prevent slave to be promoted as a master in case of auto-failover 
+# only works in version 4.x and above
+redis_cluster_slave_no_failover: "no"
 
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
