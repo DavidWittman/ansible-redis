@@ -138,6 +138,9 @@ redis_sentinel_logfile: '""'
 redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
 redis_sentinel_oom_score_adjust: 0
 redis_sentinel_monitors: []
+# Set this to false if you monitor master via command instead hardcoded
+# in the config file
+redis_sentinel_static_monitor_master: true
 # Example:
 # redis_sentinel_monitors:
 #   - name: master01
