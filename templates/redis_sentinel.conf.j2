@@ -1,3 +1,4 @@
+### STATIC CONFIG START HERE ###
 # redis-sentinel {{ redis_version }} configuration file
 # sentinel_{{ redis_sentinel_port }}.conf
 
@@ -13,7 +14,6 @@ bind {{ redis_sentinel_bind }}
 requirepass {{ redis_sentinel_password }}
 {% endif %}
 
-{% if redis_sentinel_static_monitor_master %}
 {% for master in redis_sentinel_monitors -%}
 sentinel monitor {{ master.name }} {{ master.host }} {{ master.port }} {{ master.quorum|d('2') }}
 {% for option in ('auth_pass', 'down_after_milliseconds', 'parallel_syncs', 'failover_timeout', 'notification_script', 'client_reconfig_script') -%}
@@ -27,9 +27,10 @@ sentinel rename-command {{ master.name }} {{ command }}
 {% endfor -%}
 {% endif -%}
 {% endfor -%}
-{% endif %}
 
 logfile {{ redis_sentinel_logfile }}
 syslog-enabled {{ redis_syslog_enabled }}
 syslog-ident {{ redis_sentinel_syslog_ident }}
 syslog-facility {{ redis_syslog_facility }}
+
+### STATIC CONFIG STOP HERE ###
