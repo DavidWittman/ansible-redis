@@ -102,6 +102,26 @@
     - redis_sentinel_pidfile != '""'
     - not sentinel_piddir.stat.exists
 
+- name: check if sentinel is running
+  command:
+    cmd: systemctl status sentinel_{{ redis_sentinel_port }}
+  ignore_errors: true
+  changed_when: false
+  register: sentinel_service_status
+  
+- name: run flushconfig to rewrite config file from current configuration
+  command:
+    cmd: "redis-cli -p {{ redis_sentinel_port }} SENTINEL FLUSHCONFIG"
+  when: sentinel_service_status | success
+
+- name: backup existing config file
+  copy:
+    src: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+    dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf.{{ ansible_date_time['date'] }}
+    owner: "{{ redis_user }}"
+    mode: 0640
+    backup: yes
+  
 - name: create sentinel config file
   template:
     src: redis_sentinel.conf.j2
@@ -109,6 +129,50 @@
     owner: "{{ redis_user }}"
     mode: 0640
   notify: "restart sentinel"
+  when: not redis_sentinel_runtime_monitor_master
+
+- name: update static configuration in config file
+  blockinfile:
+    path: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+    insertafter: "### STATIC CONFIG START HERE ###"
+    insertbefore: "### STATIC CONFIG STOP HERE ###"
+    owner: "{{ redis_user }}"
+    mode: 0640
+    when: redis_sentinel_runtime_monitor_master == true
+    block: |
+      # redis-sentinel {{ redis_version }} configuration file
+      # sentinel_{{ redis_sentinel_port }}.conf
+
+      daemonize {{ redis_daemonize }}
+      protected-mode {{ redis_sentinel_protected_mode }}
+      dir {{ redis_sentinel_dir }}
+      pidfile {{ redis_sentinel_pidfile }}
+      port {{ redis_sentinel_port }}
+      bind {{ redis_sentinel_bind }}
+
+      # Security
+      {% if redis_sentinel_password %}
+      requirepass {{ redis_sentinel_password }}
+      {% endif %}
+
+      {% for master in redis_sentinel_monitors -%}
+      sentinel monitor {{ master.name }} {{ master.host }} {{ master.port }} {{ master.quorum|d('2') }}
+      {% for option in ('auth_pass', 'down_after_milliseconds', 'parallel_syncs', 'failover_timeout', 'notification_script', 'client_reconfig_script') -%}
+      {% if master[option] is defined and master[option] -%}
+      sentinel {{ option|replace('_', '-') }} {{ master.name }} {{ master[option] }}
+      {% endif %}
+      {% endfor -%}
+      {% if master['rename_commands'] is defined -%}
+      {% for command in master['rename_commands'] -%}
+      sentinel rename-command {{ master.name }} {{ command }}
+      {% endfor -%}
+      {% endif -%}
+      {% endfor -%}
+
+      logfile {{ redis_sentinel_logfile }}
+      syslog-enabled {{ redis_syslog_enabled }}
+      syslog-ident {{ redis_sentinel_syslog_ident }}
+      syslog-facility {{ redis_syslog_facility }}
 
 - name: add sentinel init config file
   template:
