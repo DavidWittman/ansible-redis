@@ -135,7 +135,6 @@
 - name: update static configuration in config file
   blockinfile:
     path: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
-    insertafter: "### STATIC CONFIG START HERE ###"
     insertbefore: "### STATIC CONFIG STOP HERE ###"
     owner: "{{ redis_user }}"
     mode: 0640
