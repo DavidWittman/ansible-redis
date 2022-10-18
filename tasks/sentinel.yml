@@ -113,7 +113,7 @@
 - name: run flushconfig to rewrite config file from current configuration
   command:
     cmd: "redis-cli -p {{ redis_sentinel_port }} SENTINEL FLUSHCONFIG"
-  when: sentinel_service_status | success
+  when: sentinel_service_status.rc == 0
 
 - name: backup existing config file
   copy:
