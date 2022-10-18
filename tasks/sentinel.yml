@@ -122,6 +122,7 @@
     owner: "{{ redis_user }}"
     mode: 0640
     backup: yes
+    remote_src: true
   
 - name: create sentinel config file
   template:
