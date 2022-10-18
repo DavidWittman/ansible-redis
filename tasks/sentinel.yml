@@ -120,7 +120,6 @@
     dest: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf.{{ ansible_date_time['date'] }}
     owner: "{{ redis_user }}"
     mode: 0640
-    backup: yes
     remote_src: true
   
 - name: create sentinel config file
