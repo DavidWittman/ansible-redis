@@ -139,7 +139,7 @@
     insertbefore: "### STATIC CONFIG STOP HERE ###"
     owner: "{{ redis_user }}"
     mode: 0640
-    when: redis_sentinel_runtime_monitor_master == true
+    backup: yes
     block: |
       # redis-sentinel {{ redis_version }} configuration file
       # sentinel_{{ redis_sentinel_port }}.conf
@@ -174,6 +174,7 @@
       syslog-enabled {{ redis_syslog_enabled }}
       syslog-ident {{ redis_sentinel_syslog_ident }}
       syslog-facility {{ redis_syslog_facility }}
+  when: redis_sentinel_runtime_monitor_master == true
 
 - name: add sentinel init config file
   template:
