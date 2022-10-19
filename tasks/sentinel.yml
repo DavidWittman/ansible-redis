@@ -172,6 +172,7 @@
       syslog-enabled {{ redis_syslog_enabled }}
       syslog-ident {{ redis_sentinel_syslog_ident }}
       syslog-facility {{ redis_syslog_facility }}
+  notify: "restart sentinel"
   when: redis_sentinel_runtime_monitor_master == true
 
 - name: add sentinel init config file
