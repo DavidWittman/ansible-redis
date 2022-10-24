@@ -114,6 +114,11 @@
     cmd: "redis-cli -p {{ redis_sentinel_port }} SENTINEL FLUSHCONFIG"
   when: sentinel_service_status.rc == 0
 
+- name: check if sentinel config file exists
+  stat:
+    path: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
+  register: _config_file
+
 - name: backup existing config file
   copy:
     src: /etc/redis/sentinel_{{ redis_sentinel_port }}.conf
@@ -121,6 +126,7 @@
     owner: "{{ redis_user }}"
     mode: 0640
     remote_src: true
+  when: _config_file.stat.exists
   
 - name: create sentinel config file
   template:
@@ -129,7 +135,9 @@
     owner: "{{ redis_user }}"
     mode: 0640
   notify: "restart sentinel"
-  when: not redis_sentinel_runtime_monitor_master
+  when:
+    - not redis_sentinel_runtime_monitor_master or
+      not _config_file.stat.exists
 
 - name: update static configuration in config file
   blockinfile:
