@@ -2,14 +2,22 @@
 - include: check_vars.yml
 
 - include: download.yml
+  when: redis_install_from_source
   tags:
     - download
 
 - include: dependencies.yml
+  when: redis_install_from_source
   tags:
     - install
 
-- include: install.yml
+- include: install_from_source.yml
+  when: redis_install_from_source
+  tags:
+    - install
+
+- include: install_from_repo.yml
+  when: not redis_install_from_source
   tags:
     - install
 

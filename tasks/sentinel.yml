@@ -19,7 +19,7 @@
       - default/redis_sentinel.init.j2
       paths:
         - ../templates
-  when: redis_as_service and ansible_service_mgr|default() != "systemd"
+  when: redis_as_service and ansible_service_mgr|default() != "systemd" and not (not redis_install_from_source and redis_service_name == 'redis')
 
 - name: create sentinel systemd service
   template:
@@ -33,7 +33,7 @@
       paths:
         - ../templates
   register: sentinel_unit_file
-  when: redis_as_service and ansible_service_mgr|default() == "systemd"
+  when: redis_as_service and ansible_service_mgr|default() == "systemd" and not (not redis_install_from_source and redis_service_name == 'redis')
 
 - name: create systemd tmpfiles configuration
   template:
@@ -44,6 +44,7 @@
     - redis_as_service
     - ansible_service_mgr|default() == "systemd"
     - (redis_sentinel_pidfile|dirname).startswith("/var/run") or (redis_sentinel_pidfile|dirname).startswith("/run")
+    - not (not redis_install_from_source and redis_service_name == 'redis')
 
 - name: reload systemd daemon
   systemd:
