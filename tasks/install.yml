@@ -4,8 +4,8 @@
     name: vm.overcommit_memory
     value: "1"
     state: present
-    reload: yes
-    ignoreerrors: yes
+    reload: true
+    ignoreerrors: true
   when: redis_travis_ci is not defined
 
 - name: compile redis
@@ -28,7 +28,7 @@
 
 - name: check if redis user exists (ignore errors)
   command: id {{ redis_user }}
-  ignore_errors: yes
+  ignore_errors: true
   changed_when: false
   failed_when: false
   register: user_exists
@@ -46,7 +46,7 @@
     comment: "Redis"
     home: "{{ redis_install_dir }}"
     shell: /bin/false
-    system: yes
+    system: true
   when: user_exists.rc != 0
 
 - name: create /var/run/redis

@@ -28,5 +28,5 @@
     src: "{{ redis_download_dir }}/redis-{{ redis_version }}.tar.gz"
     dest: "{{ redis_download_dir }}"
     creates: "{{ redis_download_dir }}/redis-{{ redis_version }}/Makefile"
-    copy: no
+    copy: false
   when: not ansible_check_mode

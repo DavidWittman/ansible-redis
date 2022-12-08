@@ -6,27 +6,27 @@
     - download
 
 - include: dependencies.yml
-  become: yes
+  become: true
   tags:
     - install
 
 - include: install.yml
-  become: yes
+  become: true
   tags:
     - install
 
 - include: server.yml
-  become: yes
+  become: true
   when: not redis_sentinel
   tags:
     - config
 
 - include: sentinel.yml
-  become: yes
+  become: true
   when: redis_sentinel
   tags:
     - config
 
 - include: local_facts.yml
-  become: yes
+  become: true
   when: redis_local_facts|bool

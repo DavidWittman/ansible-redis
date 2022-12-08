@@ -7,7 +7,7 @@
       - libc6-dev
       # This should be `else omit`, but that doesn't quite work, so duplicate gcc
       - "{{ 'libc6-dev-i386' if redis_make_32bit|bool else 'gcc' }}"
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 86400
     state: present
   when: ansible_os_family == "Debian"
@@ -15,8 +15,8 @@
 - name: install redhat dependencies
   yum:
     name:
-       - gcc
-       - make
+      - gcc
+      - make
     state: present
   when: ansible_os_family == "RedHat"
 
@@ -44,6 +44,6 @@
       - make
       # These should be `else omit`, but that doesn't quite work, so duplicate gcc
       - "{{ 'gcc-32bit' if redis_make_32bit|bool else 'gcc' }}"
-      - "{{ 'libgcc_s1-32bit' if redis_make_32bit|bool else 'gcc' }}"      
+      - "{{ 'libgcc_s1-32bit' if redis_make_32bit|bool else 'gcc' }}"
     state: present
   when: ansible_os_family == 'Suse'
