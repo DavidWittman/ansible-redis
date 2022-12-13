@@ -7,7 +7,8 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 def test_dir(host):
     dirs = [
         "/etc/redis",
-        "/var/run/redis"
+        "/var/run/redis",
+        "/var/log/redis"
     ]
     for dir in dirs:
         d = host.file(dir)
@@ -18,7 +19,8 @@ def test_files(host):
     files = [
         "/etc/systemd/system/redis.service",
         "/etc/redis/6379.conf",
-        "/etc/sysconfig/redis_6379"
+        "/etc/sysconfig/redis_6379",
+        "/var/log/redis/redis_6379.log"
     ]
     for file in files:
         f = host.file(file)
