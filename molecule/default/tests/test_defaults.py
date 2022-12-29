@@ -17,9 +17,8 @@ def test_dir(host):
 
 def test_files(host):
     files = [
-        "/etc/systemd/system/redis.service",
+        "/etc/systemd/system/redis_6379.service",
         "/etc/redis/6379.conf",
-        "/etc/sysconfig/redis_6379",
         "/var/log/redis/redis_6379.log"
     ]
     for file in files:
@@ -27,10 +26,10 @@ def test_files(host):
         assert f.exists
         assert f.is_file
 
-def test_passwd_file(host):
-    passwd = host.file("/etc/passwd")
-    assert passwd.user == "redis"
-    assert passwd.group == "redis"
+# def test_passwd_file(host):
+#     passwd = host.file("/etc/passwd")
+#     assert passwd.user == "redis"
+#     assert passwd.group == "redis"
 
 def test_bin(host):
     bins = [
@@ -42,18 +41,14 @@ def test_bin(host):
         assert b.is_file
 
 def test_service(host):
-    s = host.service("redis")
+    s = host.service("redis_6379")
     assert s.is_enabled
     assert s.is_running
-
-# def test_command(host):
-#     # Run and check specific status codes in one step
-#     host.run_expect([0], "sox --version")
 
 
 def test_socket(host):
     sockets = [
-        "tcp://0.0.0.0:6379"
+        "tcp://127.0.0.1:6379"
     ]
     for socket in sockets:
         s = host.socket(socket)

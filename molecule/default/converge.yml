@@ -18,7 +18,7 @@
         redis_port: 6379
         # redis_verify_checksum: true
         redis_logfile: "/var/log/redis/redis_{{ redis_port }}.log"
-        redis_syslog_enabled: "no"
+        # redis_syslog_enabled: "no"
 
 
       tags:
