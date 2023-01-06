@@ -11,7 +11,7 @@
   tags:
     - install
 
-- include: install_from_source.yml
+- include: install.yml
   when: redis_install_from_source
   tags:
     - install
