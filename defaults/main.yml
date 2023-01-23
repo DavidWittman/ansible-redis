@@ -26,6 +26,8 @@ redis_oom_score_adjust: 0
 
 ## Role options
 # Configure Redis as a service
+redis_server: true
+
 # This creates the init scripts for Redis and ensures the process is running
 # Also applies for Redis Sentinel
 redis_as_service: true

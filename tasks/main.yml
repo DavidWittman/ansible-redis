@@ -22,7 +22,7 @@
     - install
 
 - include: server.yml
-  when: not redis_sentinel
+  when: redis_server
   tags:
     - config
 
