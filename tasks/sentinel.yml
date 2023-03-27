@@ -157,6 +157,8 @@
       pidfile {{ redis_sentinel_pidfile }}
       port {{ redis_sentinel_port }}
       bind {{ redis_sentinel_bind }}
+      maxclients {{ redis_maxclients }}
+      timeout {{ redis_timeout }}
 
       # Security
       {% if redis_sentinel_password %}
