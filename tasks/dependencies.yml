@@ -14,10 +14,17 @@
 
 - name: install redhat dependencies
   yum:
-    name:
-       - gcc
-       - make
+    name: "{{ item }}"
     state: present
+  with_items:
+    - gcc
+    - make
+    # - tcl
+    # - centos-release-scl
+    # - devtoolset-9-gcc
+    # # - devtooset-g-gcc-c++   # Requires update to install after centos-release-scl is installed
+    # - devtoolset-9-binutils
+    # - openssl-devel*
   when: ansible_os_family == "RedHat"
 
 # Conditionally install the i686 build of libgcc if we are building 32-bit
@@ -44,6 +51,6 @@
       - make
       # These should be `else omit`, but that doesn't quite work, so duplicate gcc
       - "{{ 'gcc-32bit' if redis_make_32bit|bool else 'gcc' }}"
-      - "{{ 'libgcc_s1-32bit' if redis_make_32bit|bool else 'gcc' }}"      
+      - "{{ 'libgcc_s1-32bit' if redis_make_32bit|bool else 'gcc' }}"
     state: present
   when: ansible_os_family == 'Suse'

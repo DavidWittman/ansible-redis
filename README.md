@@ -1,9 +1,11 @@
 # ansible-redis
+![CI](https://github.com/miarec/ansible-role-grafana/actions/workflows/ci.yml/badge.svg?event=push)
 
-[![Build Status](https://travis-ci.org/DavidWittman/ansible-redis.svg?branch=master)](https://travis-ci.org/DavidWittman/ansible-redis) [![Ansible Galaxy](https://img.shields.io/badge/galaxy-DavidWittman.redis-blue.svg?style=flat)](https://galaxy.ansible.com/davidwittman/redis)
+(Not fully tested)
+- Centos7 supports version 2.6.17 to 5.x.x
+- Ubuntu 20.04 support version 3.x.x to 7.x.x
+- Ubuntu 22.04 support version 6.0.0 to 7.0.12
 
- - Ansible 2.4+
- - Compatible with most versions of Ubuntu/Debian and RHEL/CentOS 6.x
 
 ## Contents
 
