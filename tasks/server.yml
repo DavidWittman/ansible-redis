@@ -3,7 +3,7 @@
   file:
     path: "{{ redis_dir }}"
     state: directory
-    recurse: yes
+    recurse: true
     owner: "{{ redis_user }}"
 
 - name: create redis init script
@@ -15,8 +15,8 @@
   # path here because with_first_found tries to find files in files/
   with_first_found:
     - files:
-      - "{{ ansible_os_family }}/redis.init.j2"
-      - default/redis.init.j2
+        - "{{ ansible_os_family }}/redis.init.j2"
+        - default/redis.init.j2
       paths:
         - ../templates
   when: redis_as_service and ansible_service_mgr|default() != "systemd"
@@ -28,8 +28,8 @@
     mode: 0644
   with_first_found:
     - files:
-      - "{{ ansible_os_family }}/redis.service.j2"
-      - default/redis.service.j2
+        - "{{ ansible_os_family }}/redis.service.j2"
+        - default/redis.service.j2
       paths:
         - ../templates
   register: redis_unit_file
@@ -55,7 +55,7 @@
 - name: set redis to start at boot
   service:
     name: "{{ redis_service_name }}"
-    enabled: yes
+    enabled: true
   when: redis_as_service
 
 # Check then create log dir to prevent aggressively overwriting permissions

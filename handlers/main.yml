@@ -4,11 +4,11 @@
     name: "{{ redis_service_name }}"
     state: restarted
   when: redis_as_service
-  become: yes
+  become: true
 
 - name: "restart sentinel"
   service:
     name: sentinel_{{ redis_sentinel_port }}
     state: restarted
   when: redis_as_service
-  become: yes
+  become: true
