@@ -8,12 +8,6 @@
     ignoreerrors: true
   when: redis_travis_ci is not defined
 
-# - name: compile redis
-#   shell: make -j1
-#   args:
-#     chdir: "{{ redis_download_dir }}/redis-{{ redis_version }}"
-#     creates: "{{ redis_download_dir }}/redis-{{ redis_version }}/src/redis-server"
-
 - name: compile redis
   shell: umask 0022 && make -j{{ ansible_processor_cores|default(1) + 1 }}{{ ' 32bit' if redis_make_32bit|bool else '' }}
   args:

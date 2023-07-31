@@ -13,13 +13,10 @@
           changed_when: false
           when: ansible_os_family == "Debian"
 
-        - name: Install gpg-agent
-          apt:
-            name: gpg-agent
-            state: present
-          when: ansible_os_family == "Debian"
+    - set_fact:
+        redis_logfile: "/var/log/redis/redis_{{ redis_port }}.log"
 
   roles:
-    - role: ansible-role-pgbouncer
+    - role: redis
       tags:
-        - pgbouncer
+        - redis

@@ -7,9 +7,9 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 def test_directories(host):
     dirs = [
-        "/etc/pgbouncer",
-        "/var/log/pgbouncer",
-        "/var/run/pgbouncer"
+        "/etc/redis",
+        "/var/run/redis",
+        "/var/log/redis"
     ]
     for dir in dirs:
         d = host.file(dir)
@@ -19,11 +19,11 @@ def test_directories(host):
 
 def test_files(host):
     files = [
-        "/etc/pgbouncer/pgbouncer.ini",
-        "etc/pgbouncer/userlist.txt",
-        "/etc/pgbouncer/pgbouncer_hba.conf",
-        "/var/log/pgbouncer/pgbouncer.log",
-        "/var/run/pgbouncer/pgbouncer.pid"
+        "/etc/systemd/system/redis_6379.service",
+        "/etc/redis/6379.conf",
+        "/var/run/redis/6379.pid",
+        "/var/log/redis/redis_6379.log",
+        "/opt/redis/bin/redis-server"
     ]
     for file in files:
         f = host.file(file)
@@ -32,14 +32,14 @@ def test_files(host):
 
 
 def test_service(host):
-    s = host.service("pgbouncer")
+    s = host.service("redis_6379")
     assert s.is_enabled
     assert s.is_running
 
 
 def test_socket(host):
     sockets = [
-        "tcp://0.0.0.0:6432"
+        "tcp://0.0.0.0:6379"
     ]
     for socket in sockets:
         s = host.socket(socket)

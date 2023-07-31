@@ -1,10 +1,10 @@
 # ansible-redis
-![CI](https://github.com/miarec/ansible-role-grafana/actions/workflows/ci.yml/badge.svg?event=push)
+![CI](https://github.com/miarec/ansible-redis/actions/workflows/ci.yml/badge.svg?event=push)
 
-(Not fully tested)
-- Centos7 supports version 2.6.17 to 5.x.x
-- Ubuntu 20.04 support version 3.x.x to 7.x.x
-- Ubuntu 22.04 support version 6.0.0 to 7.0.12
+
+- Centos7 supports version 2.6.17 to 5.0.14
+- Ubuntu 20.04 support version 3.0.0. to 7.0.12
+- Ubuntu 22.04 support version 5.0.10 to 7.0.12
 
 
 ## Contents

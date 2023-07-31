@@ -1,23 +1,19 @@
 ---
 galaxy_info:
-  author: David Wittman
-  description: Highly configurable role to install Redis and Redis Sentinel from source
-  min_ansible_version: 2.4.0
+  author: miarec
+  description: Deploy Specific Python version from source
+  role_name: redis
   license: MIT
+  company: MiaRec, Inc.
+  min_ansible_version: 2.7
   platforms:
     - name: Ubuntu
       versions:
-        - all
-    - name: Debian
-      versions:
-        - all
+        - focal
+        - jammy
     - name: EL
       versions:
-        - 6
-    - name: SLES
-      versions:
-        - 11
-        - 12
+        - 7
   categories:
     - database
     - database:nosql

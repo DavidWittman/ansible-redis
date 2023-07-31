@@ -3,3 +3,4 @@
 .bundle
 .vagrant
 *.retry
+**/__pycache__/
