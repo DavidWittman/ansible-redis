@@ -51,3 +51,10 @@
       - "{{ 'libgcc_s1-32bit' if redis_make_32bit|bool else 'gcc' }}"
     state: present
   when: ansible_os_family == 'Suse'
+
+- name: "Add patch for redis-5.0.5 in Ubuntu 22.04"
+  ansible.builtin.lineinfile:
+    path: /usr/local/src/redis-5.0.5/src/sds.h
+    regexp: '^const char \*SDS_NOINIT;'
+    line: 'extern const char *SDS_NOINIT;'
+  when: redis_version == '5.0.5'

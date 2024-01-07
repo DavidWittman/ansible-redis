@@ -53,6 +53,16 @@ min-slaves-max-lag {{ redis_min_slaves_max_lag }}
 masterauth {{ redis_password }}
 {% endif -%}
 
+{% if redis_cluster_enabled %}
+# Cluster
+cluster-enabled yes
+cluster-config-file nodes-{{ redis_port }}.conf
+cluster-node-timeout {{ redis_cluster_node_timeout }}
+{% if redis_version.split('.') | first | int >= 4 -%}
+cluster-slave-no-failover {{ redis_cluster_slave_no_failover }}
+{% endif -%}
+{% endif -%}
+
 # Security
 {% if redis_password -%}
 requirepass {{ redis_password }}
