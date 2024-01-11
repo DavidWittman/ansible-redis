@@ -182,6 +182,10 @@ vars:
 
 In this case the source archive is copied to the server over SSH rather than downloaded.
 
+### Install inside restricted environment (e.g. container)
+
+If Redis is to be installed inside a systemctl restricted environment, it might be neccessary to change `vm.overcommit_memory` using other means than this role. In such a case the config key `redis_inside_container` can be defined, which causes the role to skip this setting.
+
 ### Building 32 bit binaries
 
 To build 32-bit binaries of Redis (which can be used for [memory optimization](https://redis.io/topics/memory-optimization)), set `redis_make_32bit: true`. This installs the necessary dependencies (x86 glibc) on RHEL/Debian/SuSE and sets the option '32bit' when running make.
