@@ -5,7 +5,7 @@ redis_install_dir: /opt/redis
 redis_install_from_source: true
 redis_dir: /var/lib/redis/{{ redis_port }}
 redis_config_file_name: "{{ redis_port }}.conf"
-redis_download_url: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
+redis_download_url: "https://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
 
 redis_protected_mode: "yes"
 # Set this to true to validate redis tarball checksum against vars/main.yml
@@ -118,10 +118,17 @@ redis_hz: 10
 #   io-threads-do-reads yes
 redis_config_additional: ""
 
+## Redis cluster configs
+redis_cluster_enabled: false
+redis_cluster_node_timeout: 15000
+# Prevent slave to be promoted as a master in case of auto-failover 
+# only works in version 4.x and above
+redis_cluster_slave_no_failover: "no"
+
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
 redis_sentinel: false
-redis_sentinel_protected_mode: "yes"
+redis_sentinel_protected_mode: "no"
 redis_sentinel_dir: /var/lib/redis/sentinel_{{ redis_sentinel_port }}
 redis_sentinel_bind: 0.0.0.0
 redis_sentinel_port: 26379
@@ -130,15 +137,20 @@ redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
 redis_sentinel_logfile: '""'
 redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
 redis_sentinel_oom_score_adjust: 0
-redis_sentinel_monitors:
-  - name: master01
-    host: localhost
-    port: 6379
-    quorum: 2
-    auth_pass: ant1r3z
-    down_after_milliseconds: 30000
-    parallel_syncs: 1
-    failover_timeout: 180000
-    notification_script: false
-    client_reconfig_script: false
-    rename_commands: []
+redis_sentinel_monitors: []
+# Set this to true if you update the configuration via runtime
+# e.g: registering master to monitor via command-line instead manually edit the config file
+redis_sentinel_runtime_monitor_master: false
+# Example:
+# redis_sentinel_monitors:
+#   - name: master01
+#     host: localhost
+#     port: 6379
+#     quorum: 2
+#     auth_pass: ant1r3z
+#     down_after_milliseconds: 30000
+#     parallel_syncs: 1
+#     failover_timeout: 180000
+#     notification_script: false
+#     client_reconfig_script: false
+#     rename_commands: []
