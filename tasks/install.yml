@@ -59,7 +59,13 @@
   shell: umask 0022 && make PREFIX={{ redis_install_dir }} install
   args:
     chdir: /usr/local/src/redis-{{ redis_version }}
-    creates: "{{ redis_install_dir }}/bin/redis-server"
+    creates: "{{ redis_install_dir }}/bin/redis-server-{{ redis_version }}"
+
+- name: create symlink to installed redis
+  file:
+    src: "{{ redis_install_dir }}/bin/redis-server-{{ redis_version }}"
+    dest: "{{ redis_install_dir }}/bin/redis-server"
+    state: link
 
 - name: list redis binaries to add to alternatives
   command: ls -1 {{ redis_install_dir }}/bin
