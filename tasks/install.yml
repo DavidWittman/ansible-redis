@@ -56,7 +56,7 @@
     owner: "{{ redis_user }}"
 
 - name: install redis
-  shell: umask 0022 && make PREFIX={{ redis_install_dir }} install
+  shell: umask 0022 && make PREFIX={{ redis_install_dir }} PROG_SUFFIX="-{{ redis_version }}" install
   args:
     chdir: /usr/local/src/redis-{{ redis_version }}
     creates: "{{ redis_install_dir }}/bin/redis-server-{{ redis_version }}"
