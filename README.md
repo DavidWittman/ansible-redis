@@ -226,6 +226,8 @@ redis_as_service: true
 redis_local_facts: true
 # Service name
 redis_service_name: "redis_{{ redis_port }}"
+# Service name aliases, redis_service_name alternatives
+redis_service_aliases: []
 
 ## Networking/connection options
 redis_bind: false

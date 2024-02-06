@@ -37,3 +37,6 @@ ReadWriteDirectories=-/etc/redis
 
 [Install]
 WantedBy=multi-user.target
+{% if redis_service_aliases %}
+Alias={{ redis_service_aliases | list | join(' ') }}
+{% endif %}
