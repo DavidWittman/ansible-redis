@@ -262,6 +262,10 @@ redis_syslog_facility: USER
 
 ## General configuration
 redis_daemonize: "yes"
+
+# Defaults to upstart or systemd depending on  
+redis_supervised: "no"
+
 redis_pidfile: /var/run/redis/{{ redis_port }}.pid
 # Number of databases to allow
 redis_databases: 16
