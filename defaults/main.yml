@@ -69,6 +69,7 @@ redis_syslog_facility: USER
 
 ## General configuration
 redis_daemonize: "yes"
+redis_supervised: "{{ 'systemd' if ansible_service_mgr|default() in ('systemd', 'upstart') else 'no' }}"
 redis_pidfile: /var/run/redis/{{ redis_port }}.pid
 # Number of databases to allow
 redis_databases: 16
