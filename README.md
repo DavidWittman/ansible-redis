@@ -309,6 +309,7 @@ redis_sentinel_password: false
 redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
 redis_sentinel_logfile: '""'
 redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
+redis_sentinel_resolve_hostnames: no
 redis_sentinel_monitors:
   - name: master01
     host: localhost
