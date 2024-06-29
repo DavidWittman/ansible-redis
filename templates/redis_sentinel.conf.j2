@@ -8,6 +8,8 @@ pidfile {{ redis_sentinel_pidfile }}
 port {{ redis_sentinel_port }}
 bind {{ redis_sentinel_bind }}
 
+sentinel resolve-hostnames {{ redis_sentinel_resolve_hostnames }}
+
 # Security
 {% if redis_sentinel_password %}
 requirepass {{ redis_sentinel_password }}
